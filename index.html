@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catch Sports</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="logo-container">
+      <div class="logo-icon">
+        <img src="assets/catch_sports_logo.png" alt="Catch Sports Logo" style="height: 32px; width: 32px; border-radius: 50%; object-fit: cover;">
+      </div>
+      <div class="logo-text">CATCH <span>SPORTS</span></div>
+    </a>
+    <a href="admin.html" class="btn btn-outline" style="font-size: 12px; padding: 8px 16px;">Admin</a>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <h1 class="page-title" id="storeTitle">Colección Oficial</h1>
+    <p class="page-subtitle" id="storeSubtitle">Los mejores artículos deportivos con diseño premium</p>
+
+    <!-- Product Grid -->
+    <div id="productGrid" class="product-grid">
+      <!-- Products will be injected here via JS -->
+    </div>
+    
+    <div id="loader" class="loader-container">
+      <div class="spinner"></div>
+    </div>
+  </main>
+
+  <!-- Firebase & App Logic -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
