@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Admin - Catch Sports</title>
-  <link rel="stylesheet" href="css/styles.css?v=5.0">
+  <link rel="stylesheet" href="css/styles.css?v=6.0">
   
   <script>
     if ('serviceWorker' in navigator) {
@@ -23,356 +23,360 @@
 
   <!-- Ticker Banner -->
   <div class="ticker-banner">
-    ⚡ PANEL DE ADMINISTRACIÓN — CATCH SPORTS
+    ⚡ PANEL DE ADMINISTRACIÓN COMPACTO — CATCH SPORTS
   </div>
 
   <!-- Navbar -->
-  <nav class="navbar">
+  <nav class="navbar" style="padding: 10px 16px;">
     <a href="index.html" class="logo-container">
       <div class="logo-icon">
-        <img src="assets/catch_sports_logo.png" alt="Catch Sports Logo" style="height: 32px; width: 32px; border-radius: 50%; object-fit: cover;">
+        <img src="assets/catch_sports_logo.png" alt="Catch Sports Logo" style="height: 30px; width: 30px; border-radius: 50%; object-fit: cover;">
       </div>
-      <div class="logo-text">CATCH <span>SPORTS</span> <span style="font-size:12px; color:#aaa; letter-spacing:1px;">ADMIN</span></div>
+      <div class="logo-text" style="font-size: 16px;">CATCH <span>SPORTS</span> <span style="font-size:11px; color:#aaa; letter-spacing:1px;">ADMIN</span></div>
     </a>
     <div class="nav-actions">
-      <a href="index.html" class="btn btn-outline" style="font-size: 12px; padding: 8px 16px;">👁️ Ver Tienda</a>
-      <button id="btnLogout" class="btn btn-outline" style="display: none; font-size: 12px; padding: 8px 16px; border-color: #ef4444; color: #ef4444;">Salir</button>
+      <a href="index.html" class="btn btn-outline" style="font-size: 11px; padding: 6px 12px;">👁️ Ver Tienda</a>
+      <button id="btnLogout" class="btn btn-outline" style="display: none; font-size: 11px; padding: 6px 12px; border-color: #ef4444; color: #ef4444;">Salir</button>
     </div>
   </nav>
 
   <!-- Main Content -->
-  <main class="container" style="margin-top: 24px;">
+  <main class="container" style="margin-top: 14px; max-width: 1000px; padding: 0 10px;">
 
     <!-- Admin Login Section -->
-    <div id="loginSection" class="admin-card" style="display: block;">
-      <h2 style="font-size: 26px; color: var(--accent-color);">🔐 Acceso Administrador</h2>
-      <p class="text-secondary" style="margin-bottom: 24px; font-size: 14px;">Ingresa tus credenciales para gestionar productos y existencias.</p>
+    <div id="loginSection" class="admin-card" style="display: block; max-width: 400px; margin: 20px auto; padding: 20px;">
+      <h2 style="font-size: 22px; color: var(--accent-color);">🔐 Acceso Administrador</h2>
+      <p class="text-secondary" style="margin-bottom: 16px; font-size: 13px;">Ingresa tus credenciales para gestionar el catálogo.</p>
       
-      <div class="form-group">
-        <label>Correo Electrónico</label>
-        <input type="email" id="adminEmail" class="form-control" placeholder="admin@tienda.com">
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label style="font-size: 12px;">Correo Electrónico</label>
+        <input type="email" id="adminEmail" class="form-control" placeholder="admin@tienda.com" style="padding: 8px;">
       </div>
-      <div class="form-group">
-        <label>Contraseña</label>
-        <input type="password" id="adminPassword" class="form-control" placeholder="••••••••">
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label style="font-size: 12px;">Contraseña</label>
+        <input type="password" id="adminPassword" class="form-control" placeholder="••••••••" style="padding: 8px;">
       </div>
       
-      <div id="loginError" style="color: #ff6b6b; font-size: 14px; margin-bottom: 16px; display: none;"></div>
-      <button id="btnLogin" class="btn" style="width: 100%;">Entrar al Panel →</button>
+      <div id="loginError" style="color: #ff6b6b; font-size: 13px; margin-bottom: 12px; display: none;"></div>
+      <button id="btnLogin" class="btn" style="width: 100%; padding: 10px; font-size: 14px;">Entrar al Panel →</button>
     </div>
 
     <!-- Admin Section Tabs -->
     <div id="adminSection" style="display: none;">
       
       <!-- Mode Tabs -->
-      <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap;">
-        <button type="button" class="btn active" id="tabSingleBtn" onclick="switchAdminTab('single')">➕ Publicar / Editar Producto</button>
-        <button type="button" class="btn btn-outline" id="tabBulkBtn" onclick="switchAdminTab('bulk')">⚡ Carga Masiva por Bloque (Fotos)</button>
-        <button type="button" class="btn btn-outline" id="tabSeedBtn" onclick="seedDemoCatalog()" style="border-color: var(--accent-color); color: var(--accent-color);">🌱 Inyectar Catálogo de Muestra</button>
+      <div style="display: flex; gap: 8px; margin-bottom: 12px; justify-content: center; flex-wrap: wrap;">
+        <button type="button" class="btn active" id="tabSingleBtn" onclick="switchAdminTab('single')" style="padding: 6px 14px; font-size: 12px;">➕ Publicar / Editar</button>
+        <button type="button" class="btn btn-outline" id="tabBulkBtn" onclick="switchAdminTab('bulk')" style="padding: 6px 14px; font-size: 12px;">⚡ Carga Masiva (Fotos)</button>
+        <button type="button" class="btn btn-outline" id="tabSeedBtn" onclick="seedDemoCatalog()" style="border-color: var(--accent-color); color: var(--accent-color); padding: 6px 14px; font-size: 12px;">🌱 Inyectar Muestra</button>
       </div>
 
-      <!-- FORMULARIO PRINCIPAL: CASCADA LIMPIA DE ARRIBA HACIA ABAJO -->
-      <div id="singleUploadCard" class="admin-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <h2 id="formTitle" style="font-size: 24px; color: var(--accent-color);">➕ Publicar Nuevo Artículo</h2>
-          <button type="button" id="btnCancelEdit" class="btn btn-outline" style="display: none; border-color: #ef4444; color: #ef4444; font-size: 12px;" onclick="cancelEditMode()">✕ Cancelar Edición</button>
+      <!-- FORMULARIO PRINCIPAL: ULTRA-COMPACTO (AHORRO MÁXIMO DE ESPACIO) -->
+      <div id="singleUploadCard" class="admin-card" style="padding: 16px; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h2 id="formTitle" style="font-size: 18px; color: var(--accent-color); margin: 0;">➕ Publicar Nuevo Artículo</h2>
+          <button type="button" id="btnCancelEdit" class="btn btn-outline" style="display: none; border-color: #ef4444; color: #ef4444; font-size: 11px; padding: 4px 10px;" onclick="cancelEditMode()">✕ Cancelar Edición</button>
         </div>
         
         <form id="productForm">
           <input type="hidden" id="editingProductId" value="">
           
-          <!-- DEPORTE -->
-          <div class="form-group" id="sportGroup">
-            <label>Deporte *</label>
-            <div style="display: flex; gap: 8px;">
-              <select id="prodSport" class="form-control" required onchange="onAdminSportChange()">
-                <!-- Populated dynamically -->
-              </select>
-              <button type="button" class="btn btn-outline" style="white-space: nowrap; font-size: 12px;" onclick="openNewSportModal()">➕ Agregar Deporte</button>
+          <!-- BARRA HORIZONTAL ÚNICA EN CASCADA (DEPORTE -> LIGA -> EQUIPO) -->
+          <div style="background: rgba(250, 204, 21, 0.05); border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 10px; padding: 10px; margin-bottom: 12px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px;">
+              
+              <!-- DEPORTE -->
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+                  <span style="font-size: 10px; font-weight: 800; color: var(--accent-color);">Deporte *</span>
+                  <button type="button" onclick="openNewSportModal()" style="background: none; border: none; color: var(--accent-color); font-size: 10px; cursor: pointer; padding: 0;">+ Nuevo</button>
+                </div>
+                <select id="prodSport" class="form-control" required onchange="onAdminSportChange()" style="padding: 6px; font-size: 12px;">
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+
+              <!-- LIGA -->
+              <div id="leagueGroup" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+                  <span style="font-size: 10px; font-weight: 800; color: #38bdf8;">Liga / Torneo *</span>
+                  <button type="button" onclick="openNewLeagueModal()" style="background: none; border: none; color: #38bdf8; font-size: 10px; cursor: pointer; padding: 0;">+ Nueva</button>
+                </div>
+                <select id="prodLeague" class="form-control" onchange="onAdminLeagueChange()" style="padding: 6px; font-size: 12px;">
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+
+              <!-- EQUIPO -->
+              <div id="teamGroup" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+                  <span style="font-size: 10px; font-weight: 800; color: #facc15;">Equipo *</span>
+                  <button type="button" onclick="openNewTeamModal()" style="background: none; border: none; color: #facc15; font-size: 10px; cursor: pointer; padding: 0;">+ Nuevo</button>
+                </div>
+                <select id="prodTeam" class="form-control" style="padding: 6px; font-size: 12px;">
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+
             </div>
           </div>
 
-          <!-- LIGA (SE DESPLIEGA AL ELEGIR DEPORTE) -->
-          <div class="form-group" id="leagueGroup" style="display: none;">
-            <label>Liga / Torneo *</label>
-            <div style="display: flex; gap: 8px;">
-              <select id="prodLeague" class="form-control" onchange="onAdminLeagueChange()">
-                <!-- Populated dynamically -->
-              </select>
-              <button type="button" class="btn btn-outline" style="white-space: nowrap; font-size: 12px;" onclick="openNewLeagueModal()">➕ Agregar Liga</button>
-            </div>
-          </div>
-
-          <!-- EQUIPO (SE DESPLIEGA AL ELEGIR LIGA) -->
-          <div class="form-group" id="teamGroup" style="display: none;">
-            <label>Equipo / Franquicia *</label>
-            <div style="display: flex; gap: 8px;">
-              <select id="prodTeam" class="form-control">
-                <!-- Populated dynamically -->
-              </select>
-              <button type="button" class="btn btn-outline" style="white-space: nowrap; font-size: 12px;" onclick="openNewTeamModal()">➕ Agregar Equipo</button>
-            </div>
-          </div>
-
-          <!-- NOMBRE DEL PRODUCTO -->
-          <div class="form-group">
-            <label>Nombre del Producto *</label>
-            <input type="text" id="prodName" class="form-control" required placeholder="Ej. Jersey Steelers Oficial Temporada 2026">
-          </div>
-
-          <!-- DESCRIPCIÓN DEL ARTÍCULO -->
-          <div class="form-group">
-            <label>Descripción del Artículo *</label>
-            <textarea id="prodDesc" class="form-control" required placeholder="Detalles de tela, ajuste, edición y bordados..."></textarea>
-          </div>
-
-          <!-- GÉNERO / DEPARTAMENTO Y TIPO DE ARTÍCULO -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-            <div class="form-group">
-              <label>Género / Departamento *</label>
-              <select id="prodGender" class="form-control" required onchange="onGenderSelectChange()">
-                <option value="caballero">👨 Caballero</option>
-                <option value="dama">👩 Dama</option>
-                <option value="nino">🧒 Niño / Infantil</option>
-                <option value="unisex">🧢 Unisex / Gorras / Calzado</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Tipo de Artículo *</label>
-              <select id="prodCategory" class="form-control" required>
-                <!-- Populated dynamically -->
-              </select>
-            </div>
-          </div>
-
-          <!-- TALLAS Y EXISTENCIAS EN STOCK (RENGLEONES HORIZONTALES ULTRA-COMPACTOS DE 1 LÍNEA) -->
-          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-gold); padding: 16px; border-radius: 12px; margin-bottom: 18px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
-              <label style="margin-bottom: 0; color: var(--accent-color); font-weight: 800; font-size: 14px;">
-                Tallas y Existencias en Stock (Tienda vs Bodega) *
-              </label>
-              <button type="button" class="btn" style="font-size: 12px; padding: 4px 10px;" onclick="addSizeStockRow()">
-                ➕ Agregar Talla
-              </button>
-            </div>
-            <p class="text-secondary" style="font-size: 12px; margin-bottom: 12px;">
-              Ingresa cada talla y sus existencias en <strong>⚡ Tienda</strong> y <strong>🏢 Bodega</strong>.
-            </p>
-
-            <!-- Dynamic Size Stock Rows -->
-            <div id="sizeStockRows" style="display: flex; flex-direction: column; gap: 6px;">
-              <!-- Dynamic rows injected via JS -->
-            </div>
-          </div>
-
-          <!-- PRECIOS E INSIGNIA -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
-            <div class="form-group">
-              <label>Precio de Venta ($ MXN) *</label>
-              <input type="number" id="prodPrice" class="form-control" required placeholder="Ej. 1499" min="0" step="0.01">
-            </div>
+          <!-- GRID COMPACTO DE 2 COLUMNAS -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 12px;">
             
-            <div class="form-group">
-              <label>Precio Regular / Lista ($ MXN)</label>
-              <input type="number" id="prodOriginalPrice" class="form-control" placeholder="Ej. 1999 (Opcional)" min="0" step="0.01">
+            <!-- COLUMNA IZQUIERDA: DATOS BÁSICOS & PRECIOS -->
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              
+              <!-- NOMBRE DEL PRODUCTO -->
+              <div style="margin-bottom: 0;">
+                <label style="font-size: 11px; font-weight: 700; margin-bottom: 3px; display: block;">Nombre del Producto *</label>
+                <input type="text" id="prodName" class="form-control" required placeholder="Ej. Jersey Steelers Home 2026" style="padding: 6px 10px; font-size: 12px;">
+              </div>
+
+              <!-- GÉNERO Y CATEGORÍA -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                  <label style="font-size: 11px; font-weight: 700; margin-bottom: 3px; display: block;">Género *</label>
+                  <select id="prodGender" class="form-control" required onchange="onGenderSelectChange()" style="padding: 6px; font-size: 12px;">
+                    <option value="caballero">👨 Caballero</option>
+                    <option value="dama">👩 Dama</option>
+                    <option value="nino">🧒 Niño</option>
+                    <option value="unisex">🧢 Unisex</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 700; margin-bottom: 3px; display: block;">Tipo *</label>
+                  <select id="prodCategory" class="form-control" required style="padding: 6px; font-size: 12px;">
+                    <!-- Populated dynamically -->
+                  </select>
+                </div>
+              </div>
+
+              <!-- PRECIOS E INSIGNIA -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;">
+                <div>
+                  <label style="font-size: 10px; font-weight: 700; margin-bottom: 3px; display: block;">Precio ($) *</label>
+                  <input type="number" id="prodPrice" class="form-control" required placeholder="1499" min="0" step="0.01" style="padding: 6px; font-size: 12px;">
+                </div>
+                <div>
+                  <label style="font-size: 10px; font-weight: 700; margin-bottom: 3px; display: block;">Regular ($)</label>
+                  <input type="number" id="prodOriginalPrice" class="form-control" placeholder="1999" min="0" step="0.01" style="padding: 6px; font-size: 12px;">
+                </div>
+                <div>
+                  <label style="font-size: 10px; font-weight: 700; margin-bottom: 3px; display: block;">Badge</label>
+                  <select id="prodBadge" class="form-control" style="padding: 6px; font-size: 11px;">
+                    <!-- Populated dynamically -->
+                  </select>
+                </div>
+              </div>
+
+              <!-- IMAGEN DEL PRODUCTO -->
+              <div>
+                <label style="font-size: 11px; font-weight: 700; margin-bottom: 3px; display: block;">Foto / Imagen del Producto *</label>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                  <input type="file" id="prodImage" class="form-control" accept="image/*" style="padding: 4px; font-size: 11px; flex: 1;">
+                  <input type="url" id="prodImageUrlInput" class="form-control" placeholder="O pega URL (https://...)" style="padding: 6px; font-size: 11px; flex: 1;">
+                </div>
+                <div id="urlValidationTip" style="display: none;"></div>
+                <div style="margin-top: 6px; text-align: center;">
+                  <img id="imagePreview" src="" style="max-width: 90px; max-height: 90px; border-radius: 6px; display: none; border: 1px solid var(--accent-color);">
+                </div>
+              </div>
+
             </div>
 
-            <div class="form-group">
-              <label>Insignia / Badge Especial</label>
-              <select id="prodBadge" class="form-control">
-                <!-- Populated dynamically -->
-              </select>
-            </div>
-          </div>
+            <!-- COLUMNA DERECHA: TALLAS Y DESCRIPCIÓN -->
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              
+              <!-- TALLAS Y EXISTENCIAS EN STOCK -->
+              <div style="background: rgba(0,0,0,0.4); border: 1px solid #333; padding: 10px; border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <span style="color: var(--accent-color); font-weight: 800; font-size: 12px;">Existencias en Stock *</span>
+                  <button type="button" class="btn btn-outline" style="font-size: 10px; padding: 2px 6px;" onclick="addSizeStockRow()">+ Talla</button>
+                </div>
+                <div id="sizeStockRows" style="display: flex; flex-direction: column; gap: 4px;">
+                  <!-- Dynamic single-line rows -->
+                </div>
+              </div>
 
-          <!-- IMAGEN DEL PRODUCTO -->
-          <div class="form-group">
-            <label>Imagen del Producto (Subir Foto o Dirección de Imagen) *</label>
-            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
-              <input type="file" id="prodImage" class="form-control" accept="image/*" style="padding: 10px; flex: 1;">
-              <span style="font-size: 12px; color: #888;">Ó</span>
-              <input type="url" id="prodImageUrlInput" class="form-control" placeholder="URL directa de la imagen (ej. https://...jpg)" style="flex: 1;">
+              <!-- DESCRIPCIÓN -->
+              <div style="flex: 1; display: flex; flex-direction: column;">
+                <label style="font-size: 11px; font-weight: 700; margin-bottom: 3px; display: block;">Descripción del Producto *</label>
+                <textarea id="prodDesc" class="form-control" required placeholder="Detalles de tela, ajuste, edición y bordados..." style="padding: 6px 10px; font-size: 12px; flex: 1; min-height: 60px;"></textarea>
+              </div>
+
             </div>
 
-            <!-- Smart Amazon / Webpage Tip Banner -->
-            <div id="urlValidationTip" style="display: none;"></div>
-            
-            <!-- Image Preview -->
-            <div style="margin-top: 12px; text-align: center;">
-              <img id="imagePreview" src="" style="max-width: 180px; max-height: 180px; border-radius: 8px; display: none; border: 2px solid var(--accent-color);">
-            </div>
           </div>
           
-          <div id="uploadStatus" style="font-size: 14px; margin-bottom: 16px; font-weight: bold;"></div>
+          <div id="uploadStatus" style="font-size: 13px; margin-bottom: 10px; font-weight: bold;"></div>
           
-          <button type="submit" id="btnSubmit" class="btn" style="width: 100%; font-size: 16px; padding: 14px;">🔥 Publicar Producto</button>
+          <button type="submit" id="btnSubmit" class="btn" style="width: 100%; font-size: 14px; padding: 10px;">🔥 Publicar Producto</button>
         </form>
       </div>
 
       <!-- FORM 2: CARGA MASIVA POR BLOQUE (SUBIR MÚLTIPLES FOTOS) -->
-      <div id="bulkUploadCard" class="admin-card" style="display: none; max-width: 1100px;">
-        <h2 style="font-size: 24px; color: var(--accent-color); margin-bottom: 8px;">⚡ Carga Masiva por Fotos (Subida en Bloque)</h2>
-        <p class="text-secondary" style="font-size: 14px; margin-bottom: 20px;">
-          Selecciona varias fotos simultáneamente de tu dispositivo. Se generará una tabla para que edites los detalles en línea y los publiques todos con 1 clic.
+      <div id="bulkUploadCard" class="admin-card" style="display: none; padding: 16px; margin-bottom: 16px;">
+        <h2 style="font-size: 18px; color: var(--accent-color); margin-bottom: 6px;">⚡ Carga Masiva por Fotos</h2>
+        <p class="text-secondary" style="font-size: 12px; margin-bottom: 14px;">
+          Selecciona varias fotos simultáneamente para editar los detalles en línea y publicarlas juntas.
         </p>
 
-        <div class="form-group">
-          <label>Selecciona múltiples imágenes de tu cámara / galería *</label>
-          <input type="file" id="bulkImagesInput" class="form-control" multiple accept="image/*" style="padding: 14px; border: 2px dashed var(--accent-color);">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <input type="file" id="bulkImagesInput" class="form-control" multiple accept="image/*" style="padding: 10px; border: 2px dashed var(--accent-color);">
         </div>
 
-        <div id="bulkTableContainer" style="display: none; margin-top: 24px;">
-          <h3 style="font-size: 16px; color: #fff; margin-bottom: 12px;">Edición Rápida en Línea (<span id="bulkCount" style="color: var(--accent-color);">0</span> productos)</h3>
+        <div id="bulkTableContainer" style="display: none; margin-top: 14px;">
+          <h3 style="font-size: 14px; color: #fff; margin-bottom: 8px;">Edición Rápida en Línea (<span id="bulkCount" style="color: var(--accent-color);">0</span> productos)</h3>
           
-          <div style="overflow-x: auto; margin-bottom: 20px; border: 1px solid var(--border-color); border-radius: 10px;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+          <div style="overflow-x: auto; margin-bottom: 14px; border: 1px solid var(--border-color); border-radius: 8px;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
               <thead>
                 <tr style="background: rgba(250, 204, 21, 0.1); color: var(--accent-color); text-align: left;">
-                  <th style="padding: 12px; min-width: 70px;">Foto</th>
-                  <th style="padding: 12px; min-width: 180px;">Nombre Producto</th>
-                  <th style="padding: 12px; min-width: 160px;">Equipo</th>
-                  <th style="padding: 12px; min-width: 140px;">Departamento</th>
-                  <th style="padding: 12px; min-width: 110px;">Precio ($)</th>
-                  <th style="padding: 12px; min-width: 80px;">Stock</th>
-                  <th style="padding: 12px; min-width: 60px;">Quitar</th>
+                  <th style="padding: 8px;">Foto</th>
+                  <th style="padding: 8px;">Nombre</th>
+                  <th style="padding: 8px;">Equipo</th>
+                  <th style="padding: 8px;">Dept</th>
+                  <th style="padding: 8px;">Precio</th>
+                  <th style="padding: 8px;">Stock</th>
+                  <th style="padding: 8px;">Quitar</th>
                 </tr>
               </thead>
               <tbody id="bulkTableBody">
-                <!-- Inline rows injected via JS -->
+                <!-- Inline rows -->
               </tbody>
             </table>
           </div>
 
-          <div id="bulkPublishStatus" style="font-size: 14px; margin-bottom: 16px; font-weight: bold;"></div>
+          <div id="bulkPublishStatus" style="font-size: 13px; margin-bottom: 10px; font-weight: bold;"></div>
 
-          <button type="button" id="btnPublishBulk" onclick="publishAllBulkProducts()" class="btn btn-whatsapp" style="width: 100%; font-size: 16px; padding: 14px;">
-            🚀 Publicar Todos los Productos en Bloque →
+          <button type="button" id="btnPublishBulk" onclick="publishAllBulkProducts()" class="btn btn-whatsapp" style="width: 100%; font-size: 14px; padding: 10px;">
+            🚀 Publicar Todos los Productos →
           </button>
         </div>
       </div>
     </div>
     
     <!-- PRODUCT CATALOG MANAGEMENT WITH CASCADING SEQUENCE SELECTOR -->
-    <div id="manageSection" class="admin-card" style="display: none; margin-top: 24px; max-width: 1100px;">
-      <div style="margin-bottom: 16px;">
-        <h2 style="font-size: 24px; color: var(--accent-color); margin-bottom: 6px;">
+    <div id="manageSection" class="admin-card" style="display: none; margin-top: 16px; padding: 16px;">
+      <div style="margin-bottom: 12px;">
+        <h2 style="font-size: 18px; color: var(--accent-color); margin-bottom: 4px;">
           📦 Catálogo Publicado (<span id="adminProdCount">0</span>)
         </h2>
-        <p class="text-secondary" style="font-size: 13px;">
-          Selecciona Deporte ➔ Liga ➔ Equipo para ver sus productos y existencias exactas.
+        <p class="text-secondary" style="font-size: 12px; margin-bottom: 0;">
+          Filtra por Deporte ➔ Liga ➔ Equipo para ver sus productos y existencias.
         </p>
       </div>
 
       <!-- CASCADING SEQUENCE NAVIGATOR IN ADMIN CATALOG -->
-      <div style="background: rgba(0,0,0,0.5); border: 2px solid var(--accent-color); border-radius: 14px; padding: 16px; margin-bottom: 20px;">
+      <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--accent-color); border-radius: 10px; padding: 10px; margin-bottom: 14px;">
         
         <!-- STEP 1: DEPORTE -->
-        <div style="margin-bottom: 12px;">
-          <div style="font-size: 12px; font-weight: 800; color: var(--accent-color); margin-bottom: 6px; text-transform: uppercase;">
+        <div style="margin-bottom: 8px;">
+          <div style="font-size: 11px; font-weight: 800; color: var(--accent-color); margin-bottom: 4px; text-transform: uppercase;">
             Deporte:
           </div>
-          <div id="adminSportChips" style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <div id="adminSportChips" style="display: flex; flex-wrap: wrap; gap: 4px;">
             <!-- Dynamic Sport Chips -->
           </div>
         </div>
 
         <!-- STEP 2: LIGA -->
-        <div id="adminLeagueStep" style="display: none; margin-bottom: 12px;">
-          <div style="font-size: 12px; font-weight: 800; color: #38bdf8; margin-bottom: 6px; text-transform: uppercase;">
+        <div id="adminLeagueStep" style="display: none; margin-bottom: 8px;">
+          <div style="font-size: 11px; font-weight: 800; color: #38bdf8; margin-bottom: 4px; text-transform: uppercase;">
             Liga / Torneo:
           </div>
-          <div id="adminLeagueChips" style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <div id="adminLeagueChips" style="display: flex; flex-wrap: wrap; gap: 4px;">
             <!-- Dynamic League Chips -->
           </div>
         </div>
 
         <!-- STEP 3: EQUIPO -->
-        <div id="adminTeamStep" style="display: none; margin-bottom: 12px;">
-          <div style="font-size: 12px; font-weight: 800; color: #facc15; margin-bottom: 6px; text-transform: uppercase;">
+        <div id="adminTeamStep" style="display: none; margin-bottom: 8px;">
+          <div style="font-size: 11px; font-weight: 800; color: #facc15; margin-bottom: 4px; text-transform: uppercase;">
             Equipo / Franquicia:
           </div>
-          <div id="adminTeamChips" style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <div id="adminTeamChips" style="display: flex; flex-wrap: wrap; gap: 4px;">
             <!-- Dynamic Team Chips -->
           </div>
         </div>
 
         <!-- TOOLBAR & ALL PRODUCTS BTN -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 12px; border-top: 1px solid #333; flex-wrap: wrap; gap: 10px;">
-          <input type="text" id="adminSearchInput" class="form-control" placeholder="🔍 O busca directamente por nombre..." style="max-width: 280px; padding: 6px 12px; font-size: 12px;">
-          <button type="button" class="btn btn-outline" style="font-size: 11px; padding: 6px 12px;" onclick="resetAdminCatalogFilter()">
-            🌐 Ver Todo el Catálogo Sin Filtros
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid #333; flex-wrap: wrap; gap: 8px;">
+          <input type="text" id="adminSearchInput" class="form-control" placeholder="🔍 O busca por nombre..." style="max-width: 220px; padding: 4px 8px; font-size: 11px;">
+          <button type="button" class="btn btn-outline" style="font-size: 10px; padding: 4px 8px;" onclick="resetAdminCatalogFilter()">
+            🌐 Ver Todo Sin Filtros
           </button>
         </div>
 
       </div>
       
       <!-- PRODUCT CARDS LIST -->
-      <div id="adminProductList" style="display: flex; flex-direction: column; gap: 12px;">
-        <p class="text-secondary">Cargando productos...</p>
+      <div id="adminProductList" style="display: flex; flex-direction: column; gap: 8px;">
+        <p class="text-secondary" style="font-size: 12px;">Cargando productos...</p>
       </div>
     </div>
   </main>
 
   <!-- MODAL: AGREGAR NUEVO DEPORTE -->
   <div class="modal-overlay" id="newSportModal">
-    <div class="modal-box" style="max-width: 450px;">
+    <div class="modal-box" style="max-width: 400px; padding: 16px;">
       <div class="modal-header">
-        <h3 style="color: var(--accent-color); font-size: 18px;">➕ Agregar Nuevo Deporte</h3>
+        <h3 style="color: var(--accent-color); font-size: 16px;">➕ Agregar Nuevo Deporte</h3>
         <button class="close-btn" onclick="closeNewSportModal()">✕</button>
       </div>
       <form id="newSportForm" onsubmit="saveNewSport(event)">
-        <div class="form-group">
-          <label>Nombre del Deporte *</label>
-          <input type="text" id="newSportName" class="form-control" required placeholder="Ej. Tenis / Pádel / MMA">
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label style="font-size: 11px;">Nombre del Deporte *</label>
+          <input type="text" id="newSportName" class="form-control" required placeholder="Ej. Tenis / Pádel / MMA" style="padding: 6px;">
         </div>
-        <div class="form-group">
-          <label>Ícono / Emoji (Opcional)</label>
-          <input type="text" id="newSportIcon" class="form-control" placeholder="Ej. 🎾, 🥊, 🚴">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label style="font-size: 11px;">Ícono / Emoji (Opcional)</label>
+          <input type="text" id="newSportIcon" class="form-control" placeholder="Ej. 🎾, 🥊, 🚴" style="padding: 6px;">
         </div>
-        <button type="submit" class="btn" style="width: 100%;">💾 Guardar Deporte</button>
+        <button type="submit" class="btn" style="width: 100%; padding: 8px; font-size: 13px;">💾 Guardar Deporte</button>
       </form>
     </div>
   </div>
 
   <!-- MODAL: AGREGAR NUEVA LIGA -->
   <div class="modal-overlay" id="newLeagueModal">
-    <div class="modal-box" style="max-width: 450px;">
+    <div class="modal-box" style="max-width: 400px; padding: 16px;">
       <div class="modal-header">
-        <h3 style="color: var(--accent-color); font-size: 18px;">➕ Agregar Nueva Liga / Torneo</h3>
+        <h3 style="color: var(--accent-color); font-size: 16px;">➕ Agregar Nueva Liga / Torneo</h3>
         <button class="close-btn" onclick="closeNewLeagueModal()">✕</button>
       </div>
       <form id="newLeagueForm" onsubmit="saveNewLeague(event)">
-        <div class="form-group">
-          <label>Nombre de la Liga *</label>
-          <input type="text" id="newLeagueName" class="form-control" required placeholder="Ej. ATP Tour / UFC / Champions League">
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label style="font-size: 11px;">Nombre de la Liga *</label>
+          <input type="text" id="newLeagueName" class="form-control" required placeholder="Ej. ATP Tour / UFC / Champions League" style="padding: 6px;">
         </div>
-        <div class="form-group">
-          <label>Logo de la Liga (URL Opcional)</label>
-          <input type="url" id="newLeagueLogo" class="form-control" placeholder="https://...">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label style="font-size: 11px;">Logo de la Liga (URL Opcional)</label>
+          <input type="url" id="newLeagueLogo" class="form-control" placeholder="https://..." style="padding: 6px;">
         </div>
-        <button type="submit" class="btn" style="width: 100%;">💾 Guardar Liga</button>
+        <button type="submit" class="btn" style="width: 100%; padding: 8px; font-size: 13px;">💾 Guardar Liga</button>
       </form>
     </div>
   </div>
 
   <!-- MODAL: AGREGAR NUEVO EQUIPO -->
   <div class="modal-overlay" id="newTeamModal">
-    <div class="modal-box" style="max-width: 450px;">
+    <div class="modal-box" style="max-width: 400px; padding: 16px;">
       <div class="modal-header">
-        <h3 style="color: var(--accent-color); font-size: 18px;">➕ Agregar Nuevo Equipo / Franquicia</h3>
+        <h3 style="color: var(--accent-color); font-size: 16px;">➕ Agregar Nuevo Equipo / Franquicia</h3>
         <button class="close-btn" onclick="closeNewTeamModal()">✕</button>
       </div>
       <form id="newTeamForm" onsubmit="saveNewTeam(event)">
-        <div class="form-group">
-          <label>Nombre del Equipo *</label>
-          <input type="text" id="newTeamName" class="form-control" required placeholder="Ej. Red Bull Racing / Al Nassr / Boston Red Sox">
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label style="font-size: 11px;">Nombre del Equipo *</label>
+          <input type="text" id="newTeamName" class="form-control" required placeholder="Ej. Red Bull Racing / Al Nassr / Boston Red Sox" style="padding: 6px;">
         </div>
-        <div class="form-group">
-          <label>Logo del Equipo (URL Opcional)</label>
-          <input type="url" id="newTeamLogo" class="form-control" placeholder="https://...">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label style="font-size: 11px;">Logo del Equipo (URL Opcional)</label>
+          <input type="url" id="newTeamLogo" class="form-control" placeholder="https://..." style="padding: 6px;">
         </div>
-        <button type="submit" class="btn" style="width: 100%;">💾 Guardar Equipo</button>
+        <button type="submit" class="btn" style="width: 100%; padding: 8px; font-size: 13px;">💾 Guardar Equipo</button>
       </form>
     </div>
   </div>
@@ -382,8 +386,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   
-  <script src="js/firebase-config.js?v=5.0"></script>
-  <script src="js/teams.js?v=5.0"></script>
-  <script src="js/admin.js?v=5.0"></script>
+  <script src="js/firebase-config.js?v=6.0"></script>
+  <script src="js/teams.js?v=6.0"></script>
+  <script src="js/admin.js?v=6.0"></script>
 </body>
 </html>
