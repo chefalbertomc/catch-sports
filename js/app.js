@@ -137,7 +137,8 @@ function updateStoreHeader() {
     storeSubtitle.textContent = `Catálogo especializado de tallas para ${gLabel}`;
   } else if (activeTeamFilter !== 'all') {
     const tax = typeof getFullTaxonomy !== 'undefined' ? getFullTaxonomy(activeTeamFilter) : { team: activeTeamFilter };
-    storeTitle.innerHTML = `COLECCIÓN <span style="color: var(--accent-color);">${tax.team.toUpperCase()}</span>`;
+    const logoImg = tax.teamLogo ? `<img src="${tax.teamLogo}" style="height: 38px; vertical-align: middle; margin-right: 8px; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8));"/>` : '';
+    storeTitle.innerHTML = `${logoImg}COLECCIÓN <span style="color: var(--accent-color);">${tax.team.toUpperCase()}</span>`;
     storeSubtitle.textContent = `${tax.icon} ${tax.sport} — Liga ${tax.league}`;
   } else if (activeSportFilter !== 'all') {
     storeTitle.innerHTML = `DEPORTE <span style="color: var(--accent-color);">${activeSportFilter.toUpperCase()}</span>`;
@@ -155,12 +156,12 @@ function updateStoreHeader() {
   }
 }
 
-// Render Product Card with Taxonomy Breadcrumbs
+// Render Product Card with Taxonomy Breadcrumbs & Official Team Logo Badge
 function createProductCard(product, id) {
   const card = document.createElement('div');
   card.className = 'product-card';
   
-  const tax = typeof getFullTaxonomy !== 'undefined' ? getFullTaxonomy(product.team) : { sport: 'Deportes', icon: '🏆', league: 'Oficial', team: product.team };
+  const tax = typeof getFullTaxonomy !== 'undefined' ? getFullTaxonomy(product.team) : { sport: 'Deportes', icon: '🏆', league: 'Oficial', team: product.team, teamLogo: 'assets/catch_sports_logo.png' };
   const genderLabel = typeof getGenderLabel !== 'undefined' ? getGenderLabel(product.gender) : '👨 Caballero';
   const categoryLabel = typeof getCategoryLabel !== 'undefined' ? getCategoryLabel(product.category) : '👕 Artículo';
   
@@ -185,6 +186,10 @@ function createProductCard(product, id) {
   
   const originalPriceHtml = product.originalPrice ? `<div class="original-price">${formatPrice(product.originalPrice)}</div>` : '';
 
+  const teamLogoHtml = tax.teamLogo 
+    ? `<img src="${tax.teamLogo}" style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle; margin-right: 4px;" onerror="this.style.display='none'"/>` 
+    : '';
+
   card.innerHTML = `
     ${badgeHtml}
     ${discountHtml}
@@ -193,13 +198,13 @@ function createProductCard(product, id) {
     </div>
     <div class="product-info">
       
-      <!-- Taxonomy Breadcrumb Header: Deporte > Liga > Equipo -->
-      <div class="product-taxonomy">
+      <!-- Taxonomy Breadcrumb Header: Deporte > Liga > Equipo (with official logo) -->
+      <div class="product-taxonomy" style="display: flex; align-items: center; gap: 4px;">
         <span class="tax-sport">${tax.icon} ${tax.sport}</span>
         <span class="tax-sep">›</span>
         <span class="tax-league">${tax.league}</span>
         <span class="tax-sep">›</span>
-        <span class="tax-team">${tax.team}</span>
+        <span class="tax-team" style="display: inline-flex; align-items: center;">${teamLogoHtml}${tax.team}</span>
       </div>
 
       <h3 class="product-title">${product.name}</h3>
