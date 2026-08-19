@@ -916,6 +916,64 @@ window.resetAdminCatalogFilter = function() {
   renderAdminProductsList(currentProducts);
 };
 
+// Admin Catalog Item Stock Tab Selector (Tienda vs Bodega)
+const adminStockViewMap = {}; // productId -> 'tienda' | 'bodega'
+
+window.toggleCardStockView = function(productId, mode) {
+  adminStockViewMap[productId] = mode;
+  const btnTienda = document.getElementById(`btnStockTienda_${productId}`);
+  const btnBodega = document.getElementById(`btnStockBodega_${productId}`);
+  const container = document.getElementById(`stockViewContainer_${productId}`);
+
+  if (btnTienda && btnBodega && container) {
+    if (mode === 'tienda') {
+      btnTienda.style.background = '#22c55e';
+      btnTienda.style.color = '#000';
+      btnBodega.style.background = '#181818';
+      btnBodega.style.color = '#facc15';
+    } else {
+      btnTienda.style.background = '#181818';
+      btnTienda.style.color = '#22c55e';
+      btnBodega.style.background = '#facc15';
+      btnBodega.style.color = '#000';
+    }
+
+    const prod = currentProducts.find(p => p.id === productId);
+    if (prod) {
+      container.innerHTML = getCompactStockPillsHtml(prod, mode);
+    }
+  }
+};
+
+function getCompactStockPillsHtml(product, mode) {
+  const sizeStockMap = product.sizeStockMap || [];
+  
+  if (sizeStockMap.length > 0) {
+    const filteredRows = sizeStockMap.filter(s => {
+      const qty = (mode === 'tienda') ? (s.immediateQty || 0) : (s.warehouseQty || 0);
+      return qty > 0;
+    });
+
+    if (filteredRows.length === 0) {
+      return `<span style="font-size: 11px; color: #888;">Sin piezas registradas en ${mode === 'tienda' ? 'Tienda' : 'Bodega'}.</span>`;
+    }
+
+    return filteredRows.map(s => {
+      const qty = (mode === 'tienda') ? s.immediateQty : s.warehouseQty;
+      const color = (mode === 'tienda') ? '#22c55e' : '#facc15';
+      return `
+        <span style="background: #181818; border: 1px solid #333; border-radius: 4px; padding: 2px 6px; font-size: 11px; font-weight: 800; color: #fff;">
+          ${s.size} <strong style="color: ${color};">${qty}</strong>
+        </span>
+      `;
+    }).join(' ');
+  } else {
+    return (product.sizes || []).map(s => `
+      <span style="background: #181818; border: 1px solid #333; border-radius: 4px; padding: 2px 6px; font-size: 11px; color: #ccc;">${s}</span>
+    `).join(' ');
+  }
+}
+
 function renderAdminProductsList(products) {
   const list = document.getElementById('adminProductList');
   const query = (document.getElementById('adminSearchInput')?.value || '').toLowerCase().trim();
@@ -947,21 +1005,19 @@ function renderAdminProductsList(products) {
   }
   
   if (filtered.length === 0) {
-    list.innerHTML = '<p class="text-secondary" style="padding: 16px; text-align: center;">No hay productos para esta selección. Toca otro equipo o "🌐 Ver Todo el Catálogo".</p>';
+    list.innerHTML = '<p class="text-secondary" style="padding: 16px; text-align: center; font-size: 12px;">No hay productos para esta selección. Toca otro equipo o "🌐 Ver Todo Sin Filtros".</p>';
     return;
   }
   
   list.innerHTML = filtered.map(product => {
-    let sportIcon = '🏆';
-    let sportName = 'DEPORTE';
-    let leagueName = 'LIGA';
+    let sportIcon = '🏈';
+    let leagueName = 'NFL';
     let teamName = typeof getTeamName !== 'undefined' ? getTeamName(product.team) : product.team;
 
     for (const s of catalog) {
       for (const l of s.leagues) {
         if (l.teams.some(t => t.id === product.team)) {
           sportIcon = s.icon || '🏆';
-          sportName = s.sport;
           leagueName = l.league;
           break;
         }
@@ -970,57 +1026,71 @@ function renderAdminProductsList(products) {
 
     const genderLabel = typeof getGenderLabel !== 'undefined' ? getGenderLabel(product.gender) : '👨 Caballero';
     const priceStr = `$${product.price}`;
-    const origPriceHtml = product.originalPrice ? `<span style="text-decoration: line-through; color: #888; font-size: 12px; margin-left: 6px;">$${product.originalPrice}</span>` : '';
-    const sizeStockMap = product.sizeStockMap || [];
+    const origPriceHtml = product.originalPrice ? `<span style="text-decoration: line-through; color: #777; font-size: 11px; margin-left: 4px;">$${product.originalPrice}</span>` : '';
     
-    const stockPillsHtml = sizeStockMap.length > 0 
-      ? sizeStockMap.map(s => `
-          <div style="background: #000; border: 1px solid #333; border-radius: 6px; padding: 3px 8px; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; margin-bottom: 4px;">
-            <span style="font-weight: 900; color: #facc15;">${s.size}</span>
-            <span style="color: #22c55e; font-weight: 800;">⚡ ${s.immediateQty}</span>
-            <span style="color: #666;">|</span>
-            <span style="color: #eab308; font-weight: 800;">🏢 ${s.warehouseQty}</span>
-          </div>
-        `).join('')
-      : (product.sizes || []).map(s => `
-          <span style="background: #111; border: 1px solid #444; border-radius: 4px; padding: 2px 6px; font-size: 11px; color: #ccc;">${s}</span>
-        `).join(' ');
+    const activeViewMode = adminStockViewMap[product.id] || 'tienda';
+    const initialStockHtml = getCompactStockPillsHtml(product, activeViewMode);
 
     return `
-      <div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 12px;">
+      <div style="display: flex; gap: 12px; padding: 12px; background: #121212; border-radius: 12px; border: 1px solid #333; align-items: flex-start; flex-wrap: wrap;">
         
-        <!-- PHOTO & DETAILS -->
-        <div style="display: flex; align-items: flex-start; gap: 14px; flex: 1; min-width: 260px;">
-          <img src="${product.imageUrl}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 2px solid var(--border-gold);" onerror="this.src='https://via.placeholder.com/100'">
-          <div>
-            <!-- 1️⃣ DEPORTE, LIGA & EQUIPO -->
-            <div style="font-size: 11px; font-weight: 800; color: var(--accent-color); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">
-              ${sportIcon} ${sportName} • ${leagueName} • ${teamName}
+        <!-- FOTO DEL PRODUCTO -->
+        <img src="${product.imageUrl}" style="width: 56px; height: 56px; object-fit: cover; border-radius: 8px; border: 1px solid var(--accent-color); flex-shrink: 0;" onerror="this.src='https://via.placeholder.com/100'">
+
+        <div style="flex: 1; min-width: 240px;">
+          
+          <!-- RENGLÓN 1: ÍCONO BALÓN + LIGA • EQUIPO — NOMBRE EN EL MISMO RENGLÓN -->
+          <div style="font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+            <span style="color: var(--accent-color); text-transform: uppercase;">${sportIcon} ${leagueName} • ${teamName}</span>
+            <span style="color: #555;">—</span>
+            <span style="color: #fff; font-weight: 900;">${product.name}</span>
+          </div>
+
+          <!-- RENGLÓN 2: PRECIO + BOTÓN DEPARTAMENTO (CABALLERO / DAMA / NIÑO) -->
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+            <span style="color: #22c55e; font-weight: 900; font-size: 14px;">${priceStr}</span>
+            ${origPriceHtml}
+            <span style="background: rgba(255,255,255,0.08); border: 1px solid #444; border-radius: 14px; padding: 2px 8px; font-size: 11px; color: #ddd; font-weight: 700;">
+              ${genderLabel}
+            </span>
+          </div>
+
+          <!-- RENGLÓN 3: VER EN TIENDA O BODEGA Y TALLAS REDUCIDAS (M 2, L 3, XL 4) -->
+          <div style="background: #000; border: 1px solid #222; border-radius: 8px; padding: 6px 10px;">
+            <div style="display: flex; gap: 6px; margin-bottom: 6px; align-items: center; flex-wrap: wrap;">
+              <span style="font-size: 10px; color: #888; font-weight: 800; text-transform: uppercase;">MOSTRAR STOCK EN:</span>
+              
+              <button type="button" onclick="toggleCardStockView('${product.id}', 'tienda')" id="btnStockTienda_${product.id}" style="padding: 2px 8px; font-size: 10px; font-weight: 800; border-radius: 4px; cursor: pointer; transition: all 0.2s; ${
+                activeViewMode === 'tienda' 
+                  ? 'background: #22c55e; color: #000; border: 1px solid #22c55e;' 
+                  : 'background: #181818; color: #22c55e; border: 1px solid #22c55e;'
+              }">
+                ⚡ Tienda
+              </button>
+
+              <button type="button" onclick="toggleCardStockView('${product.id}', 'bodega')" id="btnStockBodega_${product.id}" style="padding: 2px 8px; font-size: 10px; font-weight: 800; border-radius: 4px; cursor: pointer; transition: all 0.2s; ${
+                activeViewMode === 'bodega' 
+                  ? 'background: #facc15; color: #000; border: 1px solid #facc15;' 
+                  : 'background: #181818; color: #facc15; border: 1px solid #facc15;'
+              }">
+                🏢 Bodega
+              </button>
             </div>
 
-            <!-- 4️⃣ NOMBRE DEL PRODUCTO -->
-            <div style="font-weight: 900; color: #fff; font-size: 16px; margin-bottom: 4px;">
-              ${product.name}
-            </div>
-
-            <!-- 6️⃣ GÉNERO & 9️⃣ PRECIO -->
-            <div style="font-size: 12px; color: #ccc; margin-bottom: 8px;">
-              <span>${genderLabel}</span> | <span style="color: #22c55e; font-weight: 900; font-size: 14px;">${priceStr}</span> ${origPriceHtml}
-            </div>
-
-            <!-- 7️⃣ & 8️⃣ EXISTENCIAS POR TALLA EN PÍLDORAS LIMPIAS -->
-            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px;">
-              ${stockPillsHtml}
+            <!-- TALLAS Y PIEZAS EN 1 RENGLÓN REDUCIDO -->
+            <div id="stockViewContainer_${product.id}" style="display: flex; flex-wrap: wrap; gap: 4px;">
+              ${initialStockHtml}
             </div>
           </div>
+
         </div>
 
-        <!-- ACTIONS -->
-        <div style="display: flex; gap: 8px; flex-shrink: 0;">
-          <button class="btn btn-outline" style="padding: 8px 14px; font-size: 12px; border-color: var(--accent-color); color: var(--accent-color);" onclick="startEditingProduct('${product.id}')">
-            ✏️ Editar en Formulario
+        <!-- ACCIONES -->
+        <div style="display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; align-self: center;">
+          <button class="btn btn-outline" style="padding: 6px 10px; font-size: 11px; border-color: var(--accent-color); color: var(--accent-color);" onclick="startEditingProduct('${product.id}')">
+            ✏️ Editar
           </button>
-          <button class="btn btn-outline" style="border-color: #ef4444; color: #ef4444; padding: 8px 14px; font-size: 12px;" onclick="deleteProduct('${product.id}')">
+          <button class="btn btn-outline" style="border-color: #ef4444; color: #ef4444; padding: 6px 10px; font-size: 11px;" onclick="deleteProduct('${product.id}')">
             🗑️ Eliminar
           </button>
         </div>
