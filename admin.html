@@ -20,7 +20,7 @@
 
   <!-- Ticker Banner -->
   <div class="ticker-banner">
-    ⚡ PANEL DE ADMINISTRACIÓN — INVENTARIO DE EXISTENCIAS EN TIENDA Y BODEGA POR TALLA
+    ⚡ PANEL DE ADMINISTRACIÓN — CARGA DE PRODUCTOS, FOTOS Y STOCK POR TALLA
   </div>
 
   <!-- Navbar -->
@@ -72,7 +72,7 @@
       <div id="singleUploadCard" class="admin-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <h2 style="font-size: 24px; color: var(--accent-color);">➕ Publicar Nuevo Artículo</h2>
-          <span class="badge" style="background: rgba(250, 204, 21, 0.15); color: var(--accent-color); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">STOCK POR TALLA</span>
+          <span class="badge" style="background: rgba(250, 204, 21, 0.15); color: var(--accent-color); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">CATCH SPORTS ADMIN</span>
         </div>
         
         <form id="productForm">
@@ -184,12 +184,15 @@
 
           <!-- 12️⃣ IMAGEN DEL PRODUCTO -->
           <div class="form-group">
-            <label>12️⃣ Imagen del Producto (Subir Foto o URL directa) *</label>
+            <label>12️⃣ Imagen del Producto (Subir Foto desde tu Celular o Dirección de Imagen) *</label>
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
               <input type="file" id="prodImage" class="form-control" accept="image/*" style="padding: 10px; flex: 1;">
               <span style="font-size: 12px; color: #888;">Ó</span>
-              <input type="url" id="prodImageUrlInput" class="form-control" placeholder="URL de imagen https://..." style="flex: 1;">
+              <input type="url" id="prodImageUrlInput" class="form-control" placeholder="URL directa de la imagen (ej. https://...jpg)" style="flex: 1;">
             </div>
+
+            <!-- Smart Amazon / Webpage Tip Banner -->
+            <div id="urlValidationTip" style="display: none;"></div>
             
             <!-- Image Preview -->
             <div style="margin-top: 12px; text-align: center;">
@@ -199,7 +202,7 @@
           
           <div id="uploadStatus" style="font-size: 14px; margin-bottom: 16px; font-weight: bold;"></div>
           
-          <button type="submit" id="btnSubmit" class="btn" style="width: 100%; font-size: 16px; padding: 14px;">🔥 Publicar Producto con Lista de Existencias</button>
+          <button type="submit" id="btnSubmit" class="btn" style="width: 100%; font-size: 16px; padding: 14px;">🔥 Publicar Producto</button>
         </form>
       </div>
 

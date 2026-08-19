@@ -383,12 +383,37 @@ document.getElementById('prodImage')?.addEventListener('change', (e) => {
 
 document.getElementById('prodImageUrlInput')?.addEventListener('input', (e) => {
   const url = e.target.value.trim();
+  const tipEl = document.getElementById('urlValidationTip');
+  
   if (url) {
     selectedFile = null;
     imagePreview.src = url;
     imagePreview.style.display = 'inline-block';
+
+    // Detect if user pasted a webpage URL (like Amazon product page) instead of direct image URL
+    if (url.includes('amazon.com') || url.includes('mercadolibre') || url.includes('ebay') || url.includes('/dp/')) {
+      if (tipEl) {
+        tipEl.style.display = 'block';
+        tipEl.innerHTML = `
+          <div style="background: rgba(250, 204, 21, 0.15); border: 1px solid var(--accent-color); padding: 10px 12px; border-radius: 8px; font-size: 12px; margin-top: 8px; color: #fff; line-height: 1.5;">
+            <strong>💡 ATENCIÓN: Pegaste el enlace de la página web de Amazon</strong><br>
+            Las imágenes requieren la <strong>dirección directa de la foto</strong> (no el link de la tienda).<br>
+            <strong>¿Cómo obtener la foto de Amazon?</strong><br>
+            1️⃣ En la página de Amazon, haz <strong>clic derecho sobre la foto</strong> de la camiseta (o mantén presionado en tu celular).<br>
+            2️⃣ Selecciona <strong>"Copiar dirección de la imagen"</strong> (o "Copy image address").<br>
+            3️⃣ Vuelve aquí y pega esa dirección (debe ser de <code>m.media-amazon.com/images/...jpg</code>).
+          </div>
+        `;
+      }
+    } else {
+      if (tipEl) tipEl.style.display = 'none';
+    }
+  } else {
+    imagePreview.style.display = 'none';
+    if (tipEl) tipEl.style.display = 'none';
   }
 });
+
 
 function resizeImage(file, maxWidth, maxHeight) {
   return new Promise((resolve, reject) => {
