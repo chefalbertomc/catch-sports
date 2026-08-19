@@ -9,6 +9,7 @@ const btnLogout = document.getElementById('btnLogout');
 let selectedSizes = [];
 let selectedFile = null;
 let currentProducts = [];
+let bulkItems = []; // Array of { file, base64, name, team, gender, price, stockQty }
 
 // Handle Auth State
 auth.onAuthStateChanged(user => {
@@ -57,6 +58,26 @@ if (btnLogout) {
   });
 }
 
+// Switch Tabs
+window.switchAdminTab = function(tabName) {
+  const singleCard = document.getElementById('singleUploadCard');
+  const bulkCard = document.getElementById('bulkUploadCard');
+  const singleBtn = document.getElementById('tabSingleBtn');
+  const bulkBtn = document.getElementById('tabBulkBtn');
+
+  if (tabName === 'single') {
+    if (singleCard) singleCard.style.display = 'block';
+    if (bulkCard) bulkCard.style.display = 'none';
+    if (singleBtn) { singleBtn.className = 'btn active'; }
+    if (bulkBtn) { bulkBtn.className = 'btn btn-outline'; }
+  } else {
+    if (singleCard) singleCard.style.display = 'none';
+    if (bulkCard) bulkCard.style.display = 'block';
+    if (singleBtn) { singleBtn.className = 'btn btn-outline'; }
+    if (bulkBtn) { bulkBtn.className = 'btn active'; }
+  }
+};
+
 // Populate Admin Cascading Select Inputs (Deporte > Liga > Equipo)
 function initAdminForm() {
   populateAdminSports();
@@ -96,7 +117,6 @@ window.onAdminSportChange = function() {
 
   teamSelect.innerHTML = '<option value="">Selecciona Equipo...</option>';
 
-  // Auto-select league if only 1 exists
   if (sportObj.leagues.length === 1) {
     leagueSelect.value = sportObj.leagues[0].league;
     onAdminLeagueChange();
@@ -283,7 +303,7 @@ window.toggleSize = function(size) {
 };
 
 // Image Preview & Base64 Converter
-document.getElementById('prodImage').addEventListener('change', (e) => {
+document.getElementById('prodImage')?.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (file) {
     selectedFile = file;
@@ -297,7 +317,7 @@ document.getElementById('prodImage').addEventListener('change', (e) => {
   }
 });
 
-document.getElementById('prodImageUrlInput').addEventListener('input', (e) => {
+document.getElementById('prodImageUrlInput')?.addEventListener('input', (e) => {
   const url = e.target.value.trim();
   if (url) {
     selectedFile = null;
@@ -336,6 +356,385 @@ function resizeImage(file, maxWidth, maxHeight) {
     reader.readAsDataURL(file);
   });
 }
+
+// ============================================
+// BULK BATCH IMAGE UPLOAD & INLINE EDITOR
+// ============================================
+const bulkInput = document.getElementById('bulkImagesInput');
+if (bulkInput) {
+  bulkInput.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files || files.length === 0) return;
+
+    const statusEl = document.getElementById('bulkPublishStatus');
+    if (statusEl) {
+      statusEl.style.color = '#fff';
+      statusEl.textContent = 'Procesando imágenes subidas...';
+    }
+
+    bulkItems = [];
+
+    const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+    let allTeams = [];
+    catalog.forEach(s => {
+      s.leagues.forEach(l => {
+        l.teams.forEach(t => allTeams.push({ id: t.id, name: t.name }));
+      });
+    });
+
+    const defaultTeamId = allTeams[0] ? allTeams[0].id : 'steelers';
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const base64 = await resizeImage(file, 800, 800);
+      const cleanName = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+      
+      bulkItems.push({
+        id: 'bulk_' + i,
+        base64: base64,
+        name: cleanName.toUpperCase() || `PRODUCTO ${i + 1}`,
+        team: defaultTeamId,
+        gender: 'caballero',
+        price: 1299,
+        stockQty: 5
+      });
+    }
+
+    renderBulkTable();
+    if (statusEl) statusEl.textContent = '';
+  });
+}
+
+function renderBulkTable() {
+  const container = document.getElementById('bulkTableContainer');
+  const tbody = document.getElementById('bulkTableBody');
+  const countEl = document.getElementById('bulkCount');
+
+  if (!container || !tbody) return;
+
+  if (bulkItems.length === 0) {
+    container.style.display = 'none';
+    return;
+  }
+
+  container.style.display = 'block';
+  if (countEl) countEl.textContent = bulkItems.length;
+
+  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+  let teamsOptionsHtml = '';
+  catalog.forEach(s => {
+    s.leagues.forEach(l => {
+      teamsOptionsHtml += `<optgroup label="${s.icon} ${s.sport} — ${l.league}">`;
+      l.teams.forEach(t => {
+        teamsOptionsHtml += `<option value="${t.id}">${t.name}</option>`;
+      });
+      teamsOptionsHtml += `</optgroup>`;
+    });
+  });
+
+  tbody.innerHTML = bulkItems.map((item, idx) => `
+    <tr style="border-bottom: 1px solid var(--border-color);">
+      <td style="padding: 10px;">
+        <img src="${item.base64}" style="width: 46px; height: 46px; object-fit: cover; border-radius: 6px; border: 1px solid var(--accent-color);">
+      </td>
+      <td style="padding: 10px;">
+        <input type="text" class="form-control" style="padding: 6px; font-size: 12px;" value="${item.name}" onchange="updateBulkItem(${idx}, 'name', this.value)">
+      </td>
+      <td style="padding: 10px;">
+        <select class="form-control" style="padding: 6px; font-size: 12px;" onchange="updateBulkItem(${idx}, 'team', this.value)">
+          ${teamsOptionsHtml}
+        </select>
+      </td>
+      <td style="padding: 10px;">
+        <select class="form-control" style="padding: 6px; font-size: 12px;" onchange="updateBulkItem(${idx}, 'gender', this.value)">
+          <option value="caballero" ${item.gender === 'caballero' ? 'selected' : ''}>👨 Caballero</option>
+          <option value="dama" ${item.gender === 'dama' ? 'selected' : ''}>👩 Dama</option>
+          <option value="nino" ${item.gender === 'nino' ? 'selected' : ''}>🧒 Niño</option>
+          <option value="unisex" ${item.gender === 'unisex' ? 'selected' : ''}>🧢 Unisex</option>
+        </select>
+      </td>
+      <td style="padding: 10px;">
+        <input type="number" class="form-control" style="padding: 6px; font-size: 12px; width: 90px;" value="${item.price}" onchange="updateBulkItem(${idx}, 'price', parseFloat(this.value))">
+      </td>
+      <td style="padding: 10px;">
+        <input type="number" class="form-control" style="padding: 6px; font-size: 12px; width: 70px;" value="${item.stockQty}" onchange="updateBulkItem(${idx}, 'stockQty', parseInt(this.value))">
+      </td>
+      <td style="padding: 10px; text-align: center;">
+        <button type="button" onclick="removeBulkItem(${idx})" style="background: transparent; border: none; color: #ef4444; font-size: 16px; cursor: pointer;">✕</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+window.updateBulkItem = function(idx, field, value) {
+  if (bulkItems[idx]) {
+    bulkItems[idx][field] = value;
+  }
+};
+
+window.removeBulkItem = function(idx) {
+  if (bulkItems[idx]) {
+    bulkItems.splice(idx, 1);
+    renderBulkTable();
+  }
+};
+
+window.publishAllBulkProducts = async function() {
+  if (bulkItems.length === 0) return;
+
+  const btnPublish = document.getElementById('btnPublishBulk');
+  const statusEl = document.getElementById('bulkPublishStatus');
+  
+  if (btnPublish) btnPublish.disabled = true;
+  if (statusEl) {
+    statusEl.style.color = '#fff';
+    statusEl.textContent = `⏳ Publicando ${bulkItems.length} productos en lote...`;
+  }
+
+  try {
+    const batch = db.batch();
+    
+    for (const item of bulkItems) {
+      const docRef = db.collection('products').doc();
+      const gObj = GENDER_DEPARTMENTS.find(g => g.id === item.gender);
+      const defaultSizes = gObj ? gObj.sizes.slice(0, 3) : ["M", "L"];
+
+      batch.set(docRef, {
+        name: item.name,
+        team: item.team,
+        gender: item.gender,
+        category: 'jerseys',
+        badge: 'ninguno',
+        price: item.price,
+        originalPrice: null,
+        stockQty: item.stockQty,
+        deliveryType: 'inmediata',
+        sizes: defaultSizes,
+        description: 'Artículo deportivo oficial de alta calidad.',
+        imageUrl: item.base64,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    await batch.commit();
+
+    if (statusEl) {
+      statusEl.style.color = '#4ade80';
+      statusEl.textContent = `✅ ¡${bulkItems.length} productos publicados exitosamente!`;
+    }
+
+    bulkItems = [];
+    renderBulkTable();
+    if (document.getElementById('bulkImagesInput')) document.getElementById('bulkImagesInput').value = '';
+
+    setTimeout(() => {
+      if (btnPublish) btnPublish.disabled = false;
+      if (statusEl) statusEl.textContent = '';
+      switchAdminTab('single');
+    }, 2500);
+
+  } catch(e) {
+    console.error('Error in bulk publish:', e);
+    if (statusEl) {
+      statusEl.style.color = '#ff6b6b';
+      statusEl.textContent = '❌ Error al publicar en lote: ' + e.message;
+    }
+    if (btnPublish) btnPublish.disabled = false;
+  }
+};
+
+// ============================================
+// SEED DEMO CATALOG (12 REAL SAMPLE PRODUCTS)
+// ============================================
+window.seedDemoCatalog = async function() {
+  if (!confirm("¿Deseas inyectar 12 productos reales de muestra (NFL, NBA, MLB, Soccer, F1) a la base de datos?")) return;
+
+  const demoProducts = [
+    {
+      name: "Jersey Pittsburgh Steelers Home Oficial 2026",
+      team: "steelers",
+      gender: "caballero",
+      category: "jerseys",
+      badge: "exclusivo",
+      price: 1899,
+      originalPrice: 2299,
+      stockQty: 8,
+      deliveryType: "inmediata",
+      sizes: ["S / CH", "M", "L / G", "XL"],
+      description: "Jersey oficial de utilería con bordados premium en oro y negro de los Pittsburgh Steelers.",
+      imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/pit.png"
+    },
+    {
+      name: "Gorra New Era 59FIFTY Dallas Cowboys Star",
+      team: "nfl-cowboys",
+      gender: "unisex",
+      category: "gorras",
+      badge: "oferta",
+      price: 899,
+      originalPrice: 1199,
+      stockQty: 15,
+      deliveryType: "inmediata",
+      sizes: ["7 1/8", "7 1/4", "7 3/8", "7 1/2"],
+      description: "Gorra oficial New Era 59FIFTY cerrada de los Dallas Cowboys con visera plana.",
+      imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png"
+    },
+    {
+      name: "Chamarra San Francisco 49ers Sideline Heavy Hoodie",
+      team: "nfl-49ers",
+      gender: "caballero",
+      category: "chamarras",
+      badge: "nuevo",
+      price: 2199,
+      originalPrice: 2699,
+      stockQty: 4,
+      deliveryType: "inmediata",
+      sizes: ["M", "L / G", "XL", "XXL"],
+      description: "Chamarra rompevientos térmica oficial Nike Sideline de los San Francisco 49ers.",
+      imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/sf.png"
+    },
+    {
+      name: "Jersey Kansas City Chiefs Dama Patrick Mahomes #15",
+      team: "nfl-chiefs",
+      gender: "dama",
+      category: "jerseys",
+      badge: "exclusivo",
+      price: 1799,
+      originalPrice: 2099,
+      stockQty: 6,
+      deliveryType: "inmediata",
+      sizes: ["S Dama", "M Dama", "L Dama"],
+      description: "Jersey de damas corte entallado oficial de Patrick Mahomes con logo de los Campeones Chiefs.",
+      imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/kc.png"
+    },
+    {
+      name: "Jersey Los Angeles Lakers LeBron James #23 Icon Edition",
+      team: "nba-lakers",
+      gender: "caballero",
+      category: "jerseys",
+      badge: "oferta",
+      price: 1699,
+      originalPrice: 1999,
+      stockQty: 10,
+      deliveryType: "inmediata",
+      sizes: ["M", "L / G", "XL"],
+      description: "Jersey oficial Nike Dri-FIT de LeBron James Icon Edition en color púrpura y oro.",
+      imageUrl: "https://a.espncdn.com/i/teamlogos/nba/500/lal.png"
+    },
+    {
+      name: "Playera Chicago Bulls Michael Jordan #23 Retro",
+      team: "nba-bulls",
+      gender: "caballero",
+      category: "jerseys",
+      badge: "edicion-limitada",
+      price: 1599,
+      originalPrice: 1999,
+      stockQty: 3,
+      deliveryType: "inmediata",
+      sizes: ["S / CH", "M", "L / G"],
+      description: "Edición conmemorativa Mitchell & Ness de Michael Jordan 1998 Finals.",
+      imageUrl: "https://a.espncdn.com/i/teamlogos/nba/500/chi.png"
+    },
+    {
+      name: "Gorra New York Yankees New Era 9FIFTY Snapback Navy",
+      team: "mlb-yankees",
+      gender: "unisex",
+      category: "gorras",
+      badge: "nuevo",
+      price: 799,
+      originalPrice: 999,
+      stockQty: 20,
+      deliveryType: "inmediata",
+      sizes: ["Ajustable / Unitalla"],
+      description: "Gorra clásica ajustable 9FIFTY con logo bordado 3D de los NY Yankees.",
+      imageUrl: "https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png"
+    },
+    {
+      name: "Chamarra Los Angeles Dodgers World Series Champions",
+      team: "mlb-dodgers",
+      gender: "caballero",
+      category: "chamarras",
+      badge: "edicion-limitada",
+      price: 2499,
+      originalPrice: 2999,
+      stockQty: 2,
+      deliveryType: "inmediata",
+      sizes: ["M", "L / G", "XL"],
+      description: "Chamarra tipo varsity de satin con bordados de Campeones MLB Dodgers.",
+      imageUrl: "https://a.espncdn.com/i/teamlogos/mlb/500/lad.png"
+    },
+    {
+      name: "Jersey Real Madrid Local 2026/27 Adidas Champions",
+      team: "soc-realmadrid",
+      gender: "caballero",
+      category: "jerseys",
+      badge: "nuevo",
+      price: 1999,
+      originalPrice: 2399,
+      stockQty: 12,
+      deliveryType: "inmediata",
+      sizes: ["S / CH", "M", "L / G", "XL"],
+      description: "Jersey oficial de local en blanco puro con detalles dorados y parche de 15 Champions League.",
+      imageUrl: "https://a.espncdn.com/i/teamlogos/soccer/500/83.png"
+    },
+    {
+      name: "Jersey Club América Local Campeón Liga MX 2026",
+      team: "soc-america",
+      gender: "caballero",
+      category: "jerseys",
+      badge: "oferta",
+      price: 1699,
+      originalPrice: 1999,
+      stockQty: 7,
+      deliveryType: "inmediata",
+      sizes: ["S / CH", "M", "L / G", "XL"],
+      description: "Jersey oficial Nike del Club América en crema azul con parche de Campeón.",
+      imageUrl: "https://a.espncdn.com/i/teamlogos/soccer/500/227.png"
+    },
+    {
+      name: "Chamarra Red Bull Racing F1 Checo Pérez #11 Official",
+      team: "f1-redbull",
+      gender: "caballero",
+      category: "chamarras",
+      badge: "exclusivo",
+      price: 2899,
+      originalPrice: 3499,
+      stockQty: 5,
+      deliveryType: "inmediata",
+      sizes: ["M", "L / G", "XL"],
+      description: "Chamarra softshell oficial Castore de Red Bull Racing y Checo Pérez #11.",
+      imageUrl: "https://a.espncdn.com/i/teamlogos/leagues/500/f1.png"
+    },
+    {
+      name: "Gorra Puma Scuderia Ferrari F1 Special Edition",
+      team: "f1-ferrari",
+      gender: "unisex",
+      category: "gorras",
+      badge: "nuevo",
+      price: 1099,
+      originalPrice: 1399,
+      stockQty: 9,
+      deliveryType: "inmediata",
+      sizes: ["Ajustable / Unitalla"],
+      description: "Gorra oficial Puma Scuderia Ferrari con el Cavallino Rampante bordado.",
+      imageUrl: "https://a.espncdn.com/i/teamlogos/leagues/500/f1.png"
+    }
+  ];
+
+  try {
+    const batch = db.batch();
+    for (const prod of demoProducts) {
+      const ref = db.collection('products').doc();
+      batch.set(ref, {
+        ...prod,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    await batch.commit();
+    alert("✅ ¡12 Productos de muestra inyectados exitosamente en la tienda!");
+  } catch(e) {
+    alert("Error al inyectar catálogo: " + e.message);
+  }
+};
 
 // Load & Search Products
 function loadAdminProducts() {
@@ -421,7 +820,7 @@ window.closeEditModal = function() {
   document.getElementById('editProductModal').classList.remove('active');
 };
 
-document.getElementById('editProductForm').addEventListener('submit', async (e) => {
+document.getElementById('editProductForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = document.getElementById('editProdId').value;
   const name = document.getElementById('editProdName').value.trim();
@@ -456,7 +855,7 @@ window.deleteProduct = async function(id) {
 };
 
 // Submit Product Form
-document.getElementById('productForm').addEventListener('submit', async (e) => {
+document.getElementById('productForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   
   const urlInput = document.getElementById('prodImageUrlInput').value.trim();
