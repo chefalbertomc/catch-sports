@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Admin - Catch Sports</title>
-  <link rel="stylesheet" href="css/styles.css?v=3.0">
+  <link rel="stylesheet" href="css/styles.css?v=5.0">
   
   <script>
     if ('serviceWorker' in navigator) {
@@ -23,7 +23,7 @@
 
   <!-- Ticker Banner -->
   <div class="ticker-banner">
-    ⚡ PANEL DE ADMINISTRACIÓN — CARGA Y EDICIÓN COMPLETA DE PRODUCTOS
+    ⚡ PANEL DE ADMINISTRACIÓN — CATCH SPORTS
   </div>
 
   <!-- Navbar -->
@@ -46,7 +46,7 @@
     <!-- Admin Login Section -->
     <div id="loginSection" class="admin-card" style="display: block;">
       <h2 style="font-size: 26px; color: var(--accent-color);">🔐 Acceso Administrador</h2>
-      <p class="text-secondary" style="margin-bottom: 24px; font-size: 14px;">Ingresa tus credenciales para gestionar productos y stock por talla.</p>
+      <p class="text-secondary" style="margin-bottom: 24px; font-size: 14px;">Ingresa tus credenciales para gestionar productos y existencias.</p>
       
       <div class="form-group">
         <label>Correo Electrónico</label>
@@ -71,7 +71,7 @@
         <button type="button" class="btn btn-outline" id="tabSeedBtn" onclick="seedDemoCatalog()" style="border-color: var(--accent-color); color: var(--accent-color);">🌱 Inyectar Catálogo de Muestra</button>
       </div>
 
-      <!-- FORMULARIO PRINCIPAL: PUBLICACIÓN Y EDICIÓN COMPLETA -->
+      <!-- FORMULARIO PRINCIPAL: CASCADA LIMPIA DE ARRIBA HACIA ABAJO -->
       <div id="singleUploadCard" class="admin-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <h2 id="formTitle" style="font-size: 24px; color: var(--accent-color);">➕ Publicar Nuevo Artículo</h2>
@@ -81,55 +81,55 @@
         <form id="productForm">
           <input type="hidden" id="editingProductId" value="">
           
-          <!-- 1️⃣ DEPORTE -->
-          <div class="form-group">
-            <label>1️⃣ Deporte *</label>
+          <!-- DEPORTE -->
+          <div class="form-group" id="sportGroup">
+            <label>Deporte *</label>
             <div style="display: flex; gap: 8px;">
               <select id="prodSport" class="form-control" required onchange="onAdminSportChange()">
                 <!-- Populated dynamically -->
               </select>
-              <button type="button" class="btn btn-outline" style="white-space: nowrap; font-size: 12px;" onclick="openNewSportModal()">➕ Nuevo Deporte</button>
+              <button type="button" class="btn btn-outline" style="white-space: nowrap; font-size: 12px;" onclick="openNewSportModal()">➕ Agregar Deporte</button>
             </div>
           </div>
 
-          <!-- 2️⃣ LIGA -->
-          <div class="form-group">
-            <label>2️⃣ Liga / Torneo *</label>
+          <!-- LIGA (SE DESPLIEGA AL ELEGIR DEPORTE) -->
+          <div class="form-group" id="leagueGroup" style="display: none;">
+            <label>Liga / Torneo *</label>
             <div style="display: flex; gap: 8px;">
-              <select id="prodLeague" class="form-control" required onchange="onAdminLeagueChange()">
-                <!-- Populated dynamically based on sport -->
+              <select id="prodLeague" class="form-control" onchange="onAdminLeagueChange()">
+                <!-- Populated dynamically -->
               </select>
-              <button type="button" class="btn btn-outline" style="white-space: nowrap; font-size: 12px;" onclick="openNewLeagueModal()">➕ Nueva Liga</button>
+              <button type="button" class="btn btn-outline" style="white-space: nowrap; font-size: 12px;" onclick="openNewLeagueModal()">➕ Agregar Liga</button>
             </div>
           </div>
 
-          <!-- 3️⃣ EQUIPO -->
-          <div class="form-group">
-            <label>3️⃣ Equipo / Franquicia *</label>
+          <!-- EQUIPO (SE DESPLIEGA AL ELEGIR LIGA) -->
+          <div class="form-group" id="teamGroup" style="display: none;">
+            <label>Equipo / Franquicia *</label>
             <div style="display: flex; gap: 8px;">
-              <select id="prodTeam" class="form-control" required>
-                <!-- Populated dynamically based on league -->
+              <select id="prodTeam" class="form-control">
+                <!-- Populated dynamically -->
               </select>
-              <button type="button" class="btn btn-outline" style="white-space: nowrap; font-size: 12px;" onclick="openNewTeamModal()">➕ Nuevo Equipo</button>
+              <button type="button" class="btn btn-outline" style="white-space: nowrap; font-size: 12px;" onclick="openNewTeamModal()">➕ Agregar Equipo</button>
             </div>
           </div>
 
-          <!-- 4️⃣ NOMBRE DEL PRODUCTO -->
+          <!-- NOMBRE DEL PRODUCTO -->
           <div class="form-group">
-            <label>4️⃣ Nombre del Producto *</label>
+            <label>Nombre del Producto *</label>
             <input type="text" id="prodName" class="form-control" required placeholder="Ej. Jersey Steelers Oficial Temporada 2026">
           </div>
 
-          <!-- 5️⃣ DESCRIPCIÓN DEL ARTÍCULO -->
+          <!-- DESCRIPCIÓN DEL ARTÍCULO -->
           <div class="form-group">
-            <label>5️⃣ Descripción del Artículo *</label>
+            <label>Descripción del Artículo *</label>
             <textarea id="prodDesc" class="form-control" required placeholder="Detalles de tela, ajuste, edición y bordados..."></textarea>
           </div>
 
-          <!-- 6️⃣ GÉNERO / DEPARTAMENTO -->
+          <!-- GÉNERO / DEPARTAMENTO Y TIPO DE ARTÍCULO -->
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
             <div class="form-group">
-              <label>6️⃣ Género / Departamento *</label>
+              <label>Género / Departamento *</label>
               <select id="prodGender" class="form-control" required onchange="onGenderSelectChange()">
                 <option value="caballero">👨 Caballero</option>
                 <option value="dama">👩 Dama</option>
@@ -146,49 +146,49 @@
             </div>
           </div>
 
-          <!-- 7️⃣ & 8️⃣ EXISTENCIA EN BODEGA Y TIENDA POR TALLA -->
-          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-gold); padding: 18px; border-radius: 12px; margin-bottom: 18px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <!-- TALLAS Y EXISTENCIAS EN STOCK (RENGLEONES HORIZONTALES ULTRA-COMPACTOS DE 1 LÍNEA) -->
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-gold); padding: 16px; border-radius: 12px; margin-bottom: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
               <label style="margin-bottom: 0; color: var(--accent-color); font-weight: 800; font-size: 14px;">
-                7️⃣ & 8️⃣ LISTA DE TALLAS Y EXISTENCIAS (TIENDA VS BODEGA) *
+                Tallas y Existencias en Stock (Tienda vs Bodega) *
               </label>
-              <button type="button" class="btn" style="font-size: 12px; padding: 6px 12px;" onclick="addSizeStockRow()">
+              <button type="button" class="btn" style="font-size: 12px; padding: 4px 10px;" onclick="addSizeStockRow()">
                 ➕ Agregar Talla
               </button>
             </div>
-            <p class="text-secondary" style="font-size: 12px; margin-bottom: 14px;">
-              Ingresa cada talla y sus existencias físicas en <strong>⚡ Tienda</strong> y <strong>🏢 Bodega</strong>.
+            <p class="text-secondary" style="font-size: 12px; margin-bottom: 12px;">
+              Ingresa cada talla y sus existencias en <strong>⚡ Tienda</strong> y <strong>🏢 Bodega</strong>.
             </p>
 
-            <!-- Dynamic Size Stock Rows (Horizontal Single-Line Rows) -->
-            <div id="sizeStockRows" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Dynamic Size Stock Rows -->
+            <div id="sizeStockRows" style="display: flex; flex-direction: column; gap: 6px;">
               <!-- Dynamic rows injected via JS -->
             </div>
           </div>
 
-          <!-- 9️⃣ PRECIO DE VENTA, 🔟 PRECIO REGULAR Y 11️⃣ INSIGNIA O BADGE -->
+          <!-- PRECIOS E INSIGNIA -->
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
             <div class="form-group">
-              <label>9️⃣ Precio de Venta ($ MXN) *</label>
+              <label>Precio de Venta ($ MXN) *</label>
               <input type="number" id="prodPrice" class="form-control" required placeholder="Ej. 1499" min="0" step="0.01">
             </div>
             
             <div class="form-group">
-              <label>🔟 Precio Regular / Lista ($ MXN)</label>
+              <label>Precio Regular / Lista ($ MXN)</label>
               <input type="number" id="prodOriginalPrice" class="form-control" placeholder="Ej. 1999 (Opcional)" min="0" step="0.01">
             </div>
 
             <div class="form-group">
-              <label>11️⃣ Insignia o Badge Especial</label>
+              <label>Insignia / Badge Especial</label>
               <select id="prodBadge" class="form-control">
                 <!-- Populated dynamically -->
               </select>
             </div>
           </div>
 
-          <!-- 12️⃣ IMAGEN DEL PRODUCTO -->
+          <!-- IMAGEN DEL PRODUCTO -->
           <div class="form-group">
-            <label>12️⃣ Imagen del Producto (Subir Foto o Dirección de Imagen) *</label>
+            <label>Imagen del Producto (Subir Foto o Dirección de Imagen) *</label>
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
               <input type="file" id="prodImage" class="form-control" accept="image/*" style="padding: 10px; flex: 1;">
               <span style="font-size: 12px; color: #888;">Ó</span>
@@ -260,7 +260,7 @@
           📦 Catálogo Publicado (<span id="adminProdCount">0</span>)
         </h2>
         <p class="text-secondary" style="font-size: 13px;">
-          Navegación por Secuencia: Toca Deporte ➔ Liga ➔ Equipo para ver sus productos y existencias exactas.
+          Selecciona Deporte ➔ Liga ➔ Equipo para ver sus productos y existencias exactas.
         </p>
       </div>
 
@@ -270,7 +270,7 @@
         <!-- STEP 1: DEPORTE -->
         <div style="margin-bottom: 12px;">
           <div style="font-size: 12px; font-weight: 800; color: var(--accent-color); margin-bottom: 6px; text-transform: uppercase;">
-            1️⃣ Deporte:
+            Deporte:
           </div>
           <div id="adminSportChips" style="display: flex; flex-wrap: wrap; gap: 8px;">
             <!-- Dynamic Sport Chips -->
@@ -280,7 +280,7 @@
         <!-- STEP 2: LIGA -->
         <div id="adminLeagueStep" style="display: none; margin-bottom: 12px;">
           <div style="font-size: 12px; font-weight: 800; color: #38bdf8; margin-bottom: 6px; text-transform: uppercase;">
-            2️⃣ Liga / Torneo:
+            Liga / Torneo:
           </div>
           <div id="adminLeagueChips" style="display: flex; flex-wrap: wrap; gap: 8px;">
             <!-- Dynamic League Chips -->
@@ -290,7 +290,7 @@
         <!-- STEP 3: EQUIPO -->
         <div id="adminTeamStep" style="display: none; margin-bottom: 12px;">
           <div style="font-size: 12px; font-weight: 800; color: #facc15; margin-bottom: 6px; text-transform: uppercase;">
-            3️⃣ Equipo / Franquicia:
+            Equipo / Franquicia:
           </div>
           <div id="adminTeamChips" style="display: flex; flex-wrap: wrap; gap: 8px;">
             <!-- Dynamic Team Chips -->
@@ -382,8 +382,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   
-  <script src="js/firebase-config.js?v=4.0"></script>
-  <script src="js/teams.js?v=4.0"></script>
-  <script src="js/admin.js?v=4.0"></script>
+  <script src="js/firebase-config.js?v=5.0"></script>
+  <script src="js/teams.js?v=5.0"></script>
+  <script src="js/admin.js?v=5.0"></script>
 </body>
 </html>
