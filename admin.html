@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Admin - Catch Sports</title>
-  <link rel="stylesheet" href="css/styles.css?v=6.0">
+  <link rel="stylesheet" href="css/styles.css?v=8.0">
   
   <script>
     if ('serviceWorker' in navigator) {
@@ -71,7 +71,7 @@
         <button type="button" class="btn btn-outline" id="tabSeedBtn" onclick="seedDemoCatalog()" style="border-color: var(--accent-color); color: var(--accent-color); padding: 6px 14px; font-size: 12px;">🌱 Inyectar Muestra</button>
       </div>
 
-      <!-- FORMULARIO PRINCIPAL: ULTRA-COMPACTO (AHORRO MÁXIMO DE ESPACIO) -->
+      <!-- FORMULARIO PRINCIPAL: ULTRA-COMPACTO -->
       <div id="singleUploadCard" class="admin-card" style="padding: 16px; margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
           <h2 id="formTitle" style="font-size: 18px; color: var(--accent-color); margin: 0;">➕ Publicar Nuevo Artículo</h2>
@@ -257,24 +257,24 @@
       </div>
     </div>
     
-    <!-- PRODUCT CATALOG MANAGEMENT WITH CASCADING SEQUENCE SELECTOR -->
+    <!-- PRODUCT CATALOG MANAGEMENT WITH 5-STEP CASCADING SEQUENCE SELECTOR -->
     <div id="manageSection" class="admin-card" style="display: none; margin-top: 16px; padding: 16px;">
       <div style="margin-bottom: 12px;">
         <h2 style="font-size: 18px; color: var(--accent-color); margin-bottom: 4px;">
           📦 Catálogo Publicado (<span id="adminProdCount">0</span>)
         </h2>
         <p class="text-secondary" style="font-size: 12px; margin-bottom: 0;">
-          Filtra por Deporte ➔ Liga ➔ Equipo para ver sus productos y existencias.
+          Secuencia: Deporte ➔ Liga ➔ Equipo ➔ Tipo ➔ Género para desplegar productos.
         </p>
       </div>
 
-      <!-- CASCADING SEQUENCE NAVIGATOR IN ADMIN CATALOG -->
+      <!-- CASCADING 5-STEP SEQUENCE NAVIGATOR IN ADMIN CATALOG -->
       <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--accent-color); border-radius: 10px; padding: 10px; margin-bottom: 14px;">
         
         <!-- STEP 1: DEPORTE -->
         <div style="margin-bottom: 8px;">
           <div style="font-size: 11px; font-weight: 800; color: var(--accent-color); margin-bottom: 4px; text-transform: uppercase;">
-            Deporte:
+            1️⃣ Deporte:
           </div>
           <div id="adminSportChips" style="display: flex; flex-wrap: wrap; gap: 4px;">
             <!-- Dynamic Sport Chips -->
@@ -284,7 +284,7 @@
         <!-- STEP 2: LIGA -->
         <div id="adminLeagueStep" style="display: none; margin-bottom: 8px;">
           <div style="font-size: 11px; font-weight: 800; color: #38bdf8; margin-bottom: 4px; text-transform: uppercase;">
-            Liga / Torneo:
+            2️⃣ Liga / Torneo:
           </div>
           <div id="adminLeagueChips" style="display: flex; flex-wrap: wrap; gap: 4px;">
             <!-- Dynamic League Chips -->
@@ -294,10 +294,30 @@
         <!-- STEP 3: EQUIPO -->
         <div id="adminTeamStep" style="display: none; margin-bottom: 8px;">
           <div style="font-size: 11px; font-weight: 800; color: #facc15; margin-bottom: 4px; text-transform: uppercase;">
-            Equipo / Franquicia:
+            3️⃣ Equipo / Franquicia:
           </div>
           <div id="adminTeamChips" style="display: flex; flex-wrap: wrap; gap: 4px;">
             <!-- Dynamic Team Chips -->
+          </div>
+        </div>
+
+        <!-- STEP 4: CATEGORÍA / TIPO -->
+        <div id="adminCategoryStep" style="display: none; margin-bottom: 8px;">
+          <div style="font-size: 11px; font-weight: 800; color: #a855f7; margin-bottom: 4px; text-transform: uppercase;">
+            4️⃣ Tipo de Artículo:
+          </div>
+          <div id="adminCategoryChips" style="display: flex; flex-wrap: wrap; gap: 4px;">
+            <!-- Dynamic Category Chips -->
+          </div>
+        </div>
+
+        <!-- STEP 5: GÉNERO / DEPARTAMENTO -->
+        <div id="adminGenderStep" style="display: none; margin-bottom: 8px;">
+          <div style="font-size: 11px; font-weight: 800; color: #22c55e; margin-bottom: 4px; text-transform: uppercase;">
+            5️⃣ Género / Departamento:
+          </div>
+          <div id="adminGenderChips" style="display: flex; flex-wrap: wrap; gap: 4px;">
+            <!-- Dynamic Gender Chips -->
           </div>
         </div>
 
@@ -386,8 +406,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   
-  <script src="js/firebase-config.js?v=7.0"></script>
-  <script src="js/teams.js?v=7.0"></script>
-  <script src="js/admin.js?v=7.0"></script>
+  <script src="js/firebase-config.js?v=8.0"></script>
+  <script src="js/teams.js?v=8.0"></script>
+  <script src="js/admin.js?v=8.0"></script>
 </body>
 </html>

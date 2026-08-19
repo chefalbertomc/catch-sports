@@ -804,8 +804,15 @@ function loadAdminProducts() {
   });
 }
 
+// Admin Catalog 5-Step Sequence Filter State
+let adminFilterSportKey = null;
+let adminFilterLeagueName = null;
+let adminFilterTeamId = null;
+let adminFilterCategoryId = null;
+let adminFilterGenderId = null;
+
 // ============================================
-// ADMIN CATALOG CASCADING SEQUENCE NAVIGATOR
+// ADMIN CATALOG 5-STEP SEQUENCE NAVIGATOR
 // ============================================
 function renderAdminCatalogSequenceNav() {
   const sportContainer = document.getElementById('adminSportChips');
@@ -813,15 +820,19 @@ function renderAdminCatalogSequenceNav() {
   const leagueContainer = document.getElementById('adminLeagueChips');
   const teamStep = document.getElementById('adminTeamStep');
   const teamContainer = document.getElementById('adminTeamChips');
+  const categoryStep = document.getElementById('adminCategoryStep');
+  const categoryContainer = document.getElementById('adminCategoryChips');
+  const genderStep = document.getElementById('adminGenderStep');
+  const genderContainer = document.getElementById('adminGenderChips');
 
   if (!sportContainer) return;
   const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
 
-  // Render Step 1: Sports Chips
+  // STEP 1: DEPORTE
   sportContainer.innerHTML = catalog.map(s => {
     const isActive = adminFilterSportKey === s.sportKey;
     return `
-      <button type="button" onclick="selectAdminFilterSport('${s.sportKey}')" style="padding: 6px 12px; font-size: 12px; font-weight: 800; border-radius: 6px; cursor: pointer; transition: all 0.2s; ${
+      <button type="button" onclick="selectAdminFilterSport('${s.sportKey}')" style="padding: 4px 10px; font-size: 11px; font-weight: 800; border-radius: 6px; cursor: pointer; transition: all 0.2s; ${
         isActive 
           ? 'background: var(--accent-color) !important; color: #000 !important; border: 1px solid var(--accent-color) !important;' 
           : 'background: #181818; color: #fff; border: 1px solid #444;'
@@ -831,7 +842,7 @@ function renderAdminCatalogSequenceNav() {
     `;
   }).join('');
 
-  // Render Step 2: Leagues Chips
+  // STEP 2: LIGA
   if (adminFilterSportKey) {
     const sportObj = catalog.find(s => s.sportKey === adminFilterSportKey);
     if (sportObj && sportObj.leagues.length > 0) {
@@ -840,7 +851,7 @@ function renderAdminCatalogSequenceNav() {
         leagueContainer.innerHTML = sportObj.leagues.map(l => {
           const isActive = adminFilterLeagueName === l.league;
           return `
-            <button type="button" onclick="selectAdminFilterLeague('${l.league}')" style="padding: 6px 12px; font-size: 12px; font-weight: 800; border-radius: 6px; cursor: pointer; transition: all 0.2s; ${
+            <button type="button" onclick="selectAdminFilterLeague('${l.league}')" style="padding: 4px 10px; font-size: 11px; font-weight: 800; border-radius: 6px; cursor: pointer; transition: all 0.2s; ${
               isActive 
                 ? 'background: #38bdf8 !important; color: #000 !important; border: 1px solid #38bdf8 !important;' 
                 : 'background: #181818; color: #38bdf8; border: 1px solid #38bdf8;'
@@ -857,7 +868,7 @@ function renderAdminCatalogSequenceNav() {
     if (leagueStep) leagueStep.style.display = 'none';
   }
 
-  // Render Step 3: Teams Chips
+  // STEP 3: EQUIPO
   if (adminFilterSportKey && adminFilterLeagueName) {
     const sportObj = catalog.find(s => s.sportKey === adminFilterSportKey);
     const leagueObj = sportObj ? sportObj.leagues.find(l => l.league === adminFilterLeagueName) : null;
@@ -868,7 +879,7 @@ function renderAdminCatalogSequenceNav() {
         teamContainer.innerHTML = leagueObj.teams.map(t => {
           const isActive = adminFilterTeamId === t.id;
           return `
-            <button type="button" onclick="selectAdminFilterTeam('${t.id}')" style="padding: 6px 12px; font-size: 12px; font-weight: 800; border-radius: 6px; cursor: pointer; transition: all 0.2s; ${
+            <button type="button" onclick="selectAdminFilterTeam('${t.id}')" style="padding: 4px 10px; font-size: 11px; font-weight: 800; border-radius: 6px; cursor: pointer; transition: all 0.2s; ${
               isActive 
                 ? 'background: #facc15 !important; color: #000 !important; border: 1px solid #facc15 !important; box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);' 
                 : 'background: #181818; color: #facc15; border: 1px solid #facc15;'
@@ -884,12 +895,70 @@ function renderAdminCatalogSequenceNav() {
   } else {
     if (teamStep) teamStep.style.display = 'none';
   }
+
+  // STEP 4: CATEGORÍA / TIPO DE ARTÍCULO
+  if (adminFilterTeamId) {
+    const categories = (typeof PRODUCT_CATEGORIES !== 'undefined') ? PRODUCT_CATEGORIES : [
+      { id: "jerseys", label: "👕 Jerseys / Camisetas" },
+      { id: "gorras", label: "🧢 Gorras / Caps" },
+      { id: "chamarras", label: "🧥 Chamarras / Sudaderas" },
+      { id: "balones", label: "🏈 Balones / Coleccionables" }
+    ];
+
+    if (categoryStep) categoryStep.style.display = 'block';
+    if (categoryContainer) {
+      categoryContainer.innerHTML = categories.map(c => {
+        const isActive = adminFilterCategoryId === c.id;
+        return `
+          <button type="button" onclick="selectAdminFilterCategory('${c.id}')" style="padding: 4px 10px; font-size: 11px; font-weight: 800; border-radius: 6px; cursor: pointer; transition: all 0.2s; ${
+            isActive 
+              ? 'background: #a855f7 !important; color: #fff !important; border: 1px solid #a855f7 !important;' 
+              : 'background: #181818; color: #c084fc; border: 1px solid #a855f7;'
+          }">
+            ${c.label}
+          </button>
+        `;
+      }).join('');
+    }
+  } else {
+    if (categoryStep) categoryStep.style.display = 'none';
+  }
+
+  // STEP 5: GÉNERO / DEPARTAMENTO
+  if (adminFilterCategoryId) {
+    const genders = [
+      { id: "caballero", label: "👨 Caballero" },
+      { id: "dama", label: "👩 Dama" },
+      { id: "nino", label: "🧒 Niño" },
+      { id: "unisex", label: "🧢 Unisex" }
+    ];
+
+    if (genderStep) genderStep.style.display = 'block';
+    if (genderContainer) {
+      genderContainer.innerHTML = genders.map(g => {
+        const isActive = adminFilterGenderId === g.id;
+        return `
+          <button type="button" onclick="selectAdminFilterGender('${g.id}')" style="padding: 4px 10px; font-size: 11px; font-weight: 800; border-radius: 6px; cursor: pointer; transition: all 0.2s; ${
+            isActive 
+              ? 'background: #22c55e !important; color: #000 !important; border: 1px solid #22c55e !important;' 
+              : 'background: #181818; color: #22c55e; border: 1px solid #22c55e;'
+          }">
+            ${g.label}
+          </button>
+        `;
+      }).join('');
+    }
+  } else {
+    if (genderStep) genderStep.style.display = 'none';
+  }
 }
 
 window.selectAdminFilterSport = function(sportKey) {
   adminFilterSportKey = (adminFilterSportKey === sportKey) ? null : sportKey;
   adminFilterLeagueName = null;
   adminFilterTeamId = null;
+  adminFilterCategoryId = null;
+  adminFilterGenderId = null;
   renderAdminCatalogSequenceNav();
   renderAdminProductsList(currentProducts);
 };
@@ -897,12 +966,29 @@ window.selectAdminFilterSport = function(sportKey) {
 window.selectAdminFilterLeague = function(leagueName) {
   adminFilterLeagueName = (adminFilterLeagueName === leagueName) ? null : leagueName;
   adminFilterTeamId = null;
+  adminFilterCategoryId = null;
+  adminFilterGenderId = null;
   renderAdminCatalogSequenceNav();
   renderAdminProductsList(currentProducts);
 };
 
 window.selectAdminFilterTeam = function(teamId) {
   adminFilterTeamId = (adminFilterTeamId === teamId) ? null : teamId;
+  adminFilterCategoryId = null;
+  adminFilterGenderId = null;
+  renderAdminCatalogSequenceNav();
+  renderAdminProductsList(currentProducts);
+};
+
+window.selectAdminFilterCategory = function(catId) {
+  adminFilterCategoryId = (adminFilterCategoryId === catId) ? null : catId;
+  adminFilterGenderId = null;
+  renderAdminCatalogSequenceNav();
+  renderAdminProductsList(currentProducts);
+};
+
+window.selectAdminFilterGender = function(genderId) {
+  adminFilterGenderId = (adminFilterGenderId === genderId) ? null : genderId;
   renderAdminCatalogSequenceNav();
   renderAdminProductsList(currentProducts);
 };
@@ -911,6 +997,8 @@ window.resetAdminCatalogFilter = function() {
   adminFilterSportKey = null;
   adminFilterLeagueName = null;
   adminFilterTeamId = null;
+  adminFilterCategoryId = null;
+  adminFilterGenderId = null;
   if (document.getElementById('adminSearchInput')) document.getElementById('adminSearchInput').value = '';
   renderAdminCatalogSequenceNav();
   renderAdminProductsList(currentProducts);
@@ -981,8 +1069,12 @@ function renderAdminProductsList(products) {
   
   let filtered = products;
 
-  // Filter by Admin Sequence Selector
-  if (adminFilterTeamId) {
+  // Filter by Admin 5-Step Sequence Selector
+  if (adminFilterGenderId) {
+    filtered = filtered.filter(p => p.team === adminFilterTeamId && (p.category === adminFilterCategoryId || !adminFilterCategoryId) && p.gender === adminFilterGenderId);
+  } else if (adminFilterCategoryId) {
+    filtered = filtered.filter(p => p.team === adminFilterTeamId && p.category === adminFilterCategoryId);
+  } else if (adminFilterTeamId) {
     filtered = filtered.filter(p => p.team === adminFilterTeamId);
   } else if (adminFilterLeagueName) {
     const teamsInLeague = [];
