@@ -3,30 +3,75 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catch Sports</title>
+  <title>Catch Sports — Tienda de Deportes Oficial</title>
   <link rel="stylesheet" href="css/styles.css">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
+
+  <!-- Ticker Promo Banner -->
+  <div class="ticker-banner">
+    🔥 ¡ENVÍOS GRATIS A TODO MÉXICO EN COMPRAS MAYORES A $1,500! 🚚 | ⚡ HASTA 30% OFF EN EDICIONES ESPECIALES
+  </div>
 
   <!-- Navbar -->
   <nav class="navbar">
     <a href="index.html" class="logo-container">
       <div class="logo-icon">
-        <img src="assets/catch_sports_logo.png" alt="Catch Sports Logo" style="height: 32px; width: 32px; border-radius: 50%; object-fit: cover;">
+        <img src="assets/catch_sports_logo.png" alt="Catch Sports Logo" style="height: 34px; width: 34px; border-radius: 50%; object-fit: cover;">
       </div>
       <div class="logo-text">CATCH <span>SPORTS</span></div>
     </a>
-    <a href="admin.html" class="btn btn-outline" style="font-size: 12px; padding: 8px 16px;">Admin</a>
+
+    <div class="nav-actions">
+      <button class="cart-btn" onclick="toggleCartDrawer()">
+        🛒 Carrito <span id="cartBadge" class="cart-badge">0</span>
+      </button>
+      <a href="admin.html" class="btn btn-outline" style="font-size: 12px; padding: 8px 14px;">Admin</a>
+    </div>
   </nav>
+
+  <!-- Sports Filter Navigation Strip -->
+  <div class="sports-nav-strip">
+    <button class="filter-pill active" onclick="setSportFilter('all', this)">🔥 TODOS</button>
+    <button class="filter-pill" onclick="setSportFilter('nfl', this)">🏈 NFL</button>
+    <button class="filter-pill" onclick="setSportFilter('nba', this)">🏀 NBA</button>
+    <button class="filter-pill" onclick="setSportFilter('mlb', this)">⚾ MLB</button>
+    <button class="filter-pill" onclick="setSportFilter('soccer', this)">⚽ FÚTBOL</button>
+    <button class="filter-pill" onclick="setSportFilter('f1', this)">🏎️ F1</button>
+    <button class="filter-pill" onclick="setCategoryFilter('gorras', this)">🧢 GORRAS</button>
+    <button class="filter-pill" onclick="setCategoryFilter('jerseys', this)">👕 JERSEYS</button>
+    <button class="filter-pill" onclick="setCategoryFilter('chamarras', this)">🧥 CHAMARRAS</button>
+    <button class="filter-pill" onclick="setPromoFilter('oferta', this)">⚡ OFERTAS</button>
+  </div>
 
   <!-- Main Content -->
   <main class="container">
-    <h1 class="page-title" id="storeTitle">Colección Oficial</h1>
-    <p class="page-subtitle" id="storeSubtitle">Los mejores artículos deportivos con diseño premium</p>
+    
+    <!-- Search & Team Selector Toolbar -->
+    <div class="toolbar-container">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar por producto, equipo o marca... (ej. Steelers, Gorra, Jersey)">
+      </div>
+      
+      <div class="select-box">
+        <select id="teamFilterSelect" class="form-control" onchange="onTeamSelectChange()">
+          <!-- Populated dynamically from teams.js -->
+        </select>
+      </div>
+    </div>
+
+    <!-- Dynamic Titles -->
+    <h1 class="page-title" id="storeTitle">Colección <span style="color: var(--accent-color);">Oficial</span></h1>
+    <p class="page-subtitle" id="storeSubtitle">Los mejores artículos deportivos premium en México</p>
 
     <!-- Product Grid -->
     <div id="productGrid" class="product-grid">
-      <!-- Products will be injected here via JS -->
+      <!-- Products injected via JS -->
     </div>
     
     <div id="loader" class="loader-container">
@@ -34,11 +79,106 @@
     </div>
   </main>
 
-  <!-- Firebase & App Logic -->
+  <!-- CARRITO DESPLEGABLE (SLIDE-OVER DRAWER) -->
+  <div class="cart-drawer-overlay" id="cartDrawerOverlay">
+    <div class="cart-drawer">
+      <div class="drawer-header">
+        <h3 style="font-size: 20px; color: var(--accent-color);">🛒 Mi Carrito</h3>
+        <button class="close-btn" onclick="toggleCartDrawer()">✕</button>
+      </div>
+
+      <div id="cartItemsContainer" class="cart-items-list">
+        <!-- Cart items injected via JS -->
+      </div>
+
+      <div style="border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <span style="font-size: 16px; color: #aaa;">Total a Pagar:</span>
+          <span id="cartTotalPrice" style="font-size: 24px; font-weight: 900; color: var(--accent-color); font-family: var(--font-display);">$0.00 MXN</span>
+        </div>
+
+        <button onclick="openCheckoutModal()" class="btn btn-whatsapp" style="width: 100%; font-size: 15px; padding: 14px;">
+          💳 Procesar Compra / WhatsApp →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE PAGO Y CONFIRMACIÓN POR WHATSAPP -->
+  <div class="modal-overlay" id="checkoutModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="color: var(--accent-color); font-size: 20px;">💳 Finalizar Compra por Transferencia SPEI</h3>
+        <button class="close-btn" onclick="closeCheckoutModal()">✕</button>
+      </div>
+
+      <!-- Formulario de Envío & Transferencia -->
+      <form id="checkoutForm" onsubmit="submitCheckoutOrder(event)">
+        
+        <div class="form-group">
+          <label>Nombre Completo *</label>
+          <input type="text" id="custName" class="form-control" required placeholder="Ej. Raúl Alberto Muñoz">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label>Teléfono WhatsApp *</label>
+            <input type="tel" id="custPhone" class="form-control" required placeholder="Ej. 4421234567">
+          </div>
+
+          <div class="form-group">
+            <label>Método de Entrega *</label>
+            <select id="custDeliveryMethod" class="form-control" required>
+              <option value="domicilio">🚚 Envío a Domicilio</option>
+              <option value="sucursal">🏪 Entrega en Sucursal QRO</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Dirección de Envío / Notas *</label>
+          <textarea id="custAddress" class="form-control" required placeholder="Calle, Número, Colonia, Ciudad, Código Postal..."></textarea>
+        </div>
+
+        <!-- Datos de Transferencia Bancaria SPEI -->
+        <div style="background: #1a1914; border: 1px solid var(--border-gold); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+          <div style="font-weight: 800; color: var(--accent-color); font-size: 14px; margin-bottom: 8px;">
+            🏦 DATOS PARA TRANSFERENCIA SPEI
+          </div>
+          <div style="font-size: 13px; color: #ddd; line-height: 1.6;">
+            <div><strong>Banco:</strong> <span id="bankNameDisplay">BBVA Bancomer</span></div>
+            <div><strong>Beneficiario:</strong> <span id="bankOwnerDisplay">Catch Sports QRO</span></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+              <div><strong>CLABE:</strong> <span id="bankClabeDisplay" style="color: var(--accent-color); font-family: monospace; font-size: 14px; font-weight: bold;">012680015948392019</span></div>
+              <button type="button" onclick="copyClabeToClipboard()" style="background: var(--accent-color); color: #000; border: none; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 11px; cursor: pointer;">📋 Copiar CLABE</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Adjuntar Comprobante de Transferencia -->
+        <div class="form-group">
+          <label>Adjuntar Foto / Captura del Comprobante de Pago (Opcional)</label>
+          <input type="file" id="transferProofFile" class="form-control" accept="image/*" style="padding: 10px;">
+          <div id="transferProofPreview" style="margin-top: 8px; text-align: center; display: none;">
+            <img id="proofPreviewImg" src="" style="max-width: 150px; border-radius: 6px; border: 1px solid var(--accent-color);">
+            <div style="font-size: 11px; color: var(--accent-green); margin-top: 4px;">✅ Comprobante adjuntado</div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-whatsapp" style="width: 100%; font-size: 16px; padding: 14px;">
+          🟢 Confirmar y Enviar Pedido por WhatsApp →
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  
   <script src="js/firebase-config.js"></script>
+  <script src="js/teams.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
