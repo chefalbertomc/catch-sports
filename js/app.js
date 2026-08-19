@@ -321,7 +321,7 @@ function updateStoreHeader() {
   }
 }
 
-// Render Product Card with Dynamic Size Stock Availability
+// Render Product Card with Clean List Breakdown of Sizes and Stock
 function createProductCard(product, id) {
   const card = document.createElement('div');
   card.className = 'product-card';
@@ -356,6 +356,35 @@ function createProductCard(product, id) {
     ? `<img src="${tax.teamLogo}" style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle; margin-right: 4px;" onerror="this.style.display='none'"/>` 
     : '';
 
+  // Generate Clean Vertical List Breakdown of Sizes and Stock
+  let sizeStockListHtml = '';
+  if (sizeStockMap.length > 0) {
+    sizeStockListHtml = sizeStockMap.map(item => {
+      const imm = item.immediateQty || 0;
+      const wh = item.warehouseQty || 0;
+      
+      const immTag = imm > 0 ? `<span style="color: #22c55e; font-weight: 800;">⚡ ${imm} en Tienda</span>` : '';
+      const whTag = wh > 0 ? `<span style="color: #facc15; font-weight: bold;">🏢 ${wh} en Bodega</span>` : '';
+      const sep = (imm > 0 && wh > 0) ? ' | ' : '';
+      
+      const stockStr = (imm > 0 || wh > 0) ? `${immTag}${sep}${whTag}` : `<span style="color: #888;">Bajo Pedido</span>`;
+
+      return `
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.08); font-size: 11px;">
+          <span style="font-weight: 800; color: var(--accent-color); min-width: 65px;">Talla ${item.size}:</span>
+          <span>${stockStr}</span>
+        </div>
+      `;
+    }).join('');
+  } else {
+    sizeStockListHtml = (product.sizes || []).map(s => `
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.08); font-size: 11px;">
+        <span style="font-weight: 800; color: var(--accent-color);">Talla ${s}:</span>
+        <span style="color: #22c55e; font-weight: bold;">🏢 Stock Disponible en Bodega</span>
+      </div>
+    `).join('');
+  }
+
   card.innerHTML = `
     ${badgeHtml}
     ${discountHtml}
@@ -382,17 +411,20 @@ function createProductCard(product, id) {
 
       <p class="product-desc">${product.description || 'Artículo deportivo oficial de alta calidad.'}</p>
       
-      <!-- Size chips -->
-      <div style="font-size: 11px; color: #888; margin-bottom: 4px; font-weight: bold;">SELECCIONA TALLA:</div>
+      <!-- Size selection chips -->
+      <div style="font-size: 11px; color: #888; margin-bottom: 4px; font-weight: bold;">SELECCIONA TU TALLA:</div>
       <div class="sizes-container" id="sizesFor_${id}">
         ${sizes.map((s, idx) => `
           <button type="button" class="size-chip ${idx === 0 ? 'selected' : ''}" onclick="selectCardSize('${id}', '${s}', this)">${s}</button>
         `).join('')}
       </div>
 
-      <!-- Real-Time Size Availability Box -->
-      <div id="sizeStockStatus_${id}" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 8px 10px; border-radius: 6px; margin-bottom: 14px; font-size: 11px; line-height: 1.5;">
-        <!-- Stock details injected dynamically via selectCardSize -->
+      <!-- Clean Vertical List of Stock per Size -->
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 10px; margin-bottom: 14px;">
+        <div style="font-size: 10px; font-weight: 800; color: #aaa; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">
+          📊 EXISTENCIAS DISPONIBLES EN TIENDA / BODEGA:
+        </div>
+        ${sizeStockListHtml}
       </div>
 
       <div class="product-footer">
@@ -406,11 +438,6 @@ function createProductCard(product, id) {
       </div>
     </div>
   `;
-
-  // Initialize size stock box for default size
-  setTimeout(() => {
-    selectCardSize(id, defaultSize, null);
-  }, 50);
 
   return card;
 }
@@ -428,37 +455,6 @@ window.selectCardSize = function(productId, size, btnEl) {
   const btnCart = document.getElementById(`btnCart_${productId}`);
   if (btnCart) {
     btnCart.setAttribute('onclick', `addToCartFromCard('${productId}', '${size}')`);
-  }
-
-  // Update Size Stock Availability Display Box
-  const statusBox = document.getElementById(`sizeStockStatus_${productId}`);
-  const prod = allProducts.find(p => p.id === productId);
-  
-  if (statusBox && prod) {
-    const map = prod.sizeStockMap || [];
-    const sizeData = map.find(s => s.size === size);
-    
-    if (sizeData) {
-      const imm = sizeData.immediateQty || 0;
-      const wh = sizeData.warehouseQty || 0;
-      
-      let immHtml = imm > 0 
-        ? `<span style="color: #22c55e; font-weight: 800;">⚡ Entrega Inmediata: ${imm} disponible(s) en tienda QRO</span>`
-        : `<span style="color: #ef4444; font-weight: bold;">⚡ Entrega Inmediata: Agotada en tienda</span>`;
-        
-      let whHtml = wh > 0
-        ? `<span style="color: #facc15; font-weight: bold;">🏢 En Bodega: ${wh} pieza(s)</span>`
-        : `<span style="color: #888;">🏢 En Bodega: Sin stock</span>`;
-
-      statusBox.innerHTML = `
-        <div>Talla <strong>${size}</strong>: ${immHtml}</div>
-        <div>${whHtml} | <span style="color: #aaa;">🤝 Entrega a acordar con el vendedor</span></div>
-      `;
-    } else {
-      statusBox.innerHTML = `
-        <div>Talla <strong>${size}</strong>: <span style="color: #22c55e; font-weight: bold;">⚡ Disponible</span> | <span style="color: #aaa;">🤝 Entrega a acordar con el vendedor</span></div>
-      `;
-    }
   }
 };
 
@@ -731,9 +727,7 @@ ${itemsListText}
 💳 *MÉTODO DE PAGO:* Transferencia SPEI (${STORE_BANK_DETAILS.bank})
 📸 *Comprobante Adjunto:* ${transferProofBase64 ? 'Si (Captura lista)' : 'Pendiente por WhatsApp'}
 ----------------------------------
-🤝 *Tiempo de Entrega:* A convenir con el vendedor por WhatsApp
-----------------------------------
-¡Hola! Ya envié mi orden de compra. Quedo atento para acordar la entrega. 🏈🔥`;
+¡Hola! Ya envié mi orden de compra. Quedo atento a la entrega. 🏈🔥`;
 
   // Try saving order doc to Firestore `orders` collection
   try {

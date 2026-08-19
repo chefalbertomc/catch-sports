@@ -20,7 +20,7 @@
 
   <!-- Ticker Banner -->
   <div class="ticker-banner">
-    ⚡ PANEL DE ADMINISTRACIÓN — CONTROL DE INVENTARIO INDEPENDIENTE POR TALLA (TIENDA VS BODEGA)
+    ⚡ PANEL DE ADMINISTRACIÓN — INVENTARIO DE EXISTENCIAS EN TIENDA Y BODEGA POR TALLA
   </div>
 
   <!-- Navbar -->
@@ -68,7 +68,7 @@
         <button type="button" class="btn btn-outline" id="tabSeedBtn" onclick="seedDemoCatalog()" style="border-color: var(--accent-color); color: var(--accent-color);">🌱 Inyectar Catálogo de Muestra</button>
       </div>
 
-      <!-- FORM 1: PUBLICACIÓN INDIVIDUAL CON CONTROL DE STOCK POR TALLA -->
+      <!-- FORM 1: PUBLICACIÓN INDIVIDUAL CON LISTA DE EXISTENCIAS POR TALLA -->
       <div id="singleUploadCard" class="admin-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <h2 style="font-size: 24px; color: var(--accent-color);">➕ Publicar Nuevo Artículo</h2>
@@ -142,19 +142,18 @@
             </div>
           </div>
 
-          <!-- 7️⃣ & 8️⃣ CONTROL DE INVENTARIO Y STOCK POR TALLA (ENTREGA INMEDIATA VS BODEGA) -->
+          <!-- 7️⃣ & 8️⃣ EXISTENCIA EN BODEGA Y TIENDA POR TALLA -->
           <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-gold); padding: 18px; border-radius: 12px; margin-bottom: 18px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
               <label style="margin-bottom: 0; color: var(--accent-color); font-weight: 800; font-size: 14px;">
-                7️⃣ & 8️⃣ TALLAS Y CONTROL DE EXISTENCIAS (TIENDA VS BODEGA) *
+                7️⃣ & 8️⃣ LISTA DE TALLAS Y EXISTENCIAS (TIENDA VS BODEGA) *
               </label>
               <button type="button" class="btn" style="font-size: 12px; padding: 6px 12px;" onclick="addSizeStockRow()">
-                ➕ Agregar Talla con Stock
+                ➕ Agregar Talla
               </button>
             </div>
             <p class="text-secondary" style="font-size: 12px; margin-bottom: 14px;">
-              Configura cuántas piezas tienes para <strong>⚡ Entrega Inmediata (en tienda)</strong> y cuántas en <strong>🏢 Bodega</strong> para cada talla. 
-              <br><span style="color: var(--accent-color);">* El tiempo de entrega se acuerda directamente con el vendedor por WhatsApp.</span>
+              Ingresa cada talla y sus existencias físicas en <strong>⚡ Tienda</strong> y <strong>🏢 Bodega</strong>.
             </p>
 
             <!-- Dynamic Size Stock Rows -->
@@ -200,7 +199,7 @@
           
           <div id="uploadStatus" style="font-size: 14px; margin-bottom: 16px; font-weight: bold;"></div>
           
-          <button type="submit" id="btnSubmit" class="btn" style="width: 100%; font-size: 16px; padding: 14px;">🔥 Publicar Producto con Stock por Talla</button>
+          <button type="submit" id="btnSubmit" class="btn" style="width: 100%; font-size: 16px; padding: 14px;">🔥 Publicar Producto con Lista de Existencias</button>
         </form>
       </div>
 
@@ -323,7 +322,7 @@
     </div>
   </div>
 
-  <!-- MODAL DE EDICIÓN DE PRODUCTO CON STOCK POR TALLA -->
+  <!-- MODAL DE EDICIÓN DE PRODUCTO -->
   <div class="modal-overlay" id="editProductModal">
     <div class="modal-box" style="max-width: 600px;">
       <div class="modal-header">
