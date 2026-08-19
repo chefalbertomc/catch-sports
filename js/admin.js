@@ -907,6 +907,7 @@ function renderAdminCatalogSequenceNav() {
 }
 
 window.onAdminFilterSportChange = function() {
+  adminFilterShowAll = false;
   const val = document.getElementById('filterSportSelect')?.value;
   adminFilterSportKey = val || null;
   adminFilterLeagueName = null;
@@ -949,6 +950,7 @@ window.onAdminFilterGenderChange = function() {
 };
 
 window.resetAdminCatalogFilter = function() {
+  adminFilterShowAll = true;
   adminFilterSportKey = null;
   adminFilterLeagueName = null;
   adminFilterTeamId = null;
@@ -1017,18 +1019,36 @@ function getCompactStockPillsHtml(product, mode) {
   }
 }
 
+let adminFilterShowAll = false;
+
 function renderAdminProductsList(products) {
   const list = document.getElementById('adminProductList');
+  if (!list) return;
+
   const query = (document.getElementById('adminSearchInput')?.value || '').toLowerCase().trim();
   const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
   
+  // IF NO SPORT IS SELECTED, NO SEARCH QUERY ENTERED AND SHOW ALL IS FALSE: DISPLAY ZERO PRODUCTS!
+  if (!adminFilterSportKey && !query && !adminFilterShowAll) {
+    list.innerHTML = `
+      <div style="padding: 24px; text-align: center; background: rgba(250, 204, 21, 0.04); border: 1px dashed var(--accent-color); border-radius: 12px; margin-top: 8px;">
+        <div style="font-size: 28px; margin-bottom: 6px;">🎯</div>
+        <div style="font-weight: 800; color: var(--accent-color); font-size: 14px;">Selecciona el Deporte en la lista desplegable de arriba</div>
+        <p style="color: #aaa; font-size: 12px; margin-top: 4px; margin-bottom: 0;">
+          Elige Deporte ➔ Liga ➔ Equipo para desplegar los artículos correspondientes.
+        </p>
+      </div>
+    `;
+    return;
+  }
+
   let filtered = products;
 
   // Filter by Admin 5-Step Sequence Selector
   if (adminFilterGenderId) {
-    filtered = filtered.filter(p => p.team === adminFilterTeamId && (p.category === adminFilterCategoryId || !adminFilterCategoryId) && p.gender === adminFilterGenderId);
+    filtered = filtered.filter(p => (p.team === adminFilterTeamId || !adminFilterTeamId) && (p.category === adminFilterCategoryId || !adminFilterCategoryId) && p.gender === adminFilterGenderId);
   } else if (adminFilterCategoryId) {
-    filtered = filtered.filter(p => p.team === adminFilterTeamId && p.category === adminFilterCategoryId);
+    filtered = filtered.filter(p => (p.team === adminFilterTeamId || !adminFilterTeamId) && p.category === adminFilterCategoryId);
   } else if (adminFilterTeamId) {
     filtered = filtered.filter(p => p.team === adminFilterTeamId);
   } else if (adminFilterLeagueName) {
