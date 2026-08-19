@@ -20,7 +20,7 @@
 
   <!-- Ticker Banner -->
   <div class="ticker-banner">
-    ⚡ PANEL DE ADMINISTRACIÓN — PUBLICACIÓN POR DEPORTE, LIGA, EQUIPO Y DEPARTAMENTO (CABALLERO, DAMA, NIÑO)
+    ⚡ PANEL DE ADMINISTRACIÓN — GESTIÓN COMPLETA DE DEPORTES, LIGAS, EQUIPOS Y PRODUCTOS
   </div>
 
   <!-- Navbar -->
@@ -43,7 +43,7 @@
     <!-- Admin Login Section -->
     <div id="loginSection" class="admin-card" style="display: block;">
       <h2 style="font-size: 26px; color: var(--accent-color);">🔐 Acceso Administrador</h2>
-      <p class="text-secondary" style="margin-bottom: 24px; font-size: 14px;">Ingresa tus credenciales para gestionar productos y ofertas.</p>
+      <p class="text-secondary" style="margin-bottom: 24px; font-size: 14px;">Ingresa tus credenciales para gestionar productos y catálogo.</p>
       
       <div class="form-group">
         <label>Correo Electrónico</label>
@@ -62,7 +62,7 @@
     <div id="adminSection" class="admin-card" style="display: none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2 style="font-size: 24px; color: var(--accent-color);">➕ Publicar Nuevo Artículo</h2>
-        <span class="badge" style="background: rgba(250, 204, 21, 0.15); color: var(--accent-color); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">CATÁLOGO OFICIAL</span>
+        <span class="badge" style="background: rgba(250, 204, 21, 0.15); color: var(--accent-color); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">ADMIN STORE</span>
       </div>
       
       <form id="productForm">
@@ -73,34 +73,54 @@
           <input type="text" id="prodName" class="form-control" required placeholder="Ej. Jersey Steelers Caballero Temporada 2026">
         </div>
 
-        <!-- 3-Level Hierarchy: Deporte > Liga > Equipo -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
-          <div class="form-group">
-            <label>Deporte ➔ Liga ➔ Equipo *</label>
-            <select id="prodTeam" class="form-control" required>
-              <!-- Populated dynamically from teams.js -->
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Departamento / Género *</label>
-            <select id="prodGender" class="form-control" required onchange="onGenderSelectChange()">
+        <!-- PASO 1: DEPORTE -->
+        <div class="form-group">
+          <label>1️⃣ Deporte *</label>
+          <div style="display: flex; gap: 8px;">
+            <select id="prodSport" class="form-control" required onchange="onAdminSportChange()">
               <!-- Populated dynamically -->
             </select>
+            <button type="button" class="btn btn-outline" style="white-space: nowrap; font-size: 12px;" onclick="openNewSportModal()">➕ Nuevo Deporte</button>
           </div>
         </div>
 
+        <!-- PASO 2: LIGA -->
+        <div class="form-group">
+          <label>2️⃣ Liga / Torneo *</label>
+          <div style="display: flex; gap: 8px;">
+            <select id="prodLeague" class="form-control" required onchange="onAdminLeagueChange()">
+              <!-- Populated dynamically based on sport -->
+            </select>
+            <button type="button" class="btn btn-outline" style="white-space: nowrap; font-size: 12px;" onclick="openNewLeagueModal()">➕ Nueva Liga</button>
+          </div>
+        </div>
+
+        <!-- PASO 3: EQUIPO -->
+        <div class="form-group">
+          <label>3️⃣ Equipo / Franquicia *</label>
+          <div style="display: flex; gap: 8px;">
+            <select id="prodTeam" class="form-control" required>
+              <!-- Populated dynamically based on league -->
+            </select>
+            <button type="button" class="btn btn-outline" style="white-space: nowrap; font-size: 12px;" onclick="openNewTeamModal()">➕ Nuevo Equipo</button>
+          </div>
+        </div>
+
+        <!-- PASO 4: DEPARTAMENTO Y CATEGORÍA -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
           <div class="form-group">
-            <label>Tipo de Artículo *</label>
-            <select id="prodCategory" class="form-control" required>
-              <!-- Populated dynamically -->
+            <label>4️⃣ Departamento / Género *</label>
+            <select id="prodGender" class="form-control" required onchange="onGenderSelectChange()">
+              <option value="caballero">👨 Caballero</option>
+              <option value="dama">👩 Dama</option>
+              <option value="nino">🧒 Niño / Infantil</option>
+              <option value="unisex">🧢 Unisex / Gorras / Calzado</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label>Insignia / Badge Especial</label>
-            <select id="prodBadge" class="form-control">
+            <label>Tipo de Artículo *</label>
+            <select id="prodCategory" class="form-control" required>
               <!-- Populated dynamically -->
             </select>
           </div>
@@ -115,6 +135,13 @@
           <div class="form-group">
             <label>Precio Regular / Lista ($ MXN)</label>
             <input type="number" id="prodOriginalPrice" class="form-control" placeholder="Ej. 1999 (Opcional)" min="0" step="0.01">
+          </div>
+
+          <div class="form-group">
+            <label>Insignia / Badge Especial</label>
+            <select id="prodBadge" class="form-control">
+              <!-- Populated dynamically -->
+            </select>
           </div>
         </div>
 
@@ -164,6 +191,69 @@
     </div>
   </main>
 
+  <!-- MODAL: AGREGAR NUEVO DEPORTE -->
+  <div class="modal-overlay" id="newSportModal">
+    <div class="modal-box" style="max-width: 450px;">
+      <div class="modal-header">
+        <h3 style="color: var(--accent-color); font-size: 18px;">➕ Agregar Nuevo Deporte</h3>
+        <button class="close-btn" onclick="closeNewSportModal()">✕</button>
+      </div>
+      <form id="newSportForm" onsubmit="saveNewSport(event)">
+        <div class="form-group">
+          <label>Nombre del Deporte *</label>
+          <input type="text" id="newSportName" class="form-control" required placeholder="Ej. Tenis / Pádel / MMA">
+        </div>
+        <div class="form-group">
+          <label>Ícono / Emoji (Opcional)</label>
+          <input type="text" id="newSportIcon" class="form-control" placeholder="Ej. 🎾, 🥊, 🚴">
+        </div>
+        <button type="submit" class="btn" style="width: 100%;">💾 Guardar Deporte</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: AGREGAR NUEVA LIGA -->
+  <div class="modal-overlay" id="newLeagueModal">
+    <div class="modal-box" style="max-width: 450px;">
+      <div class="modal-header">
+        <h3 style="color: var(--accent-color); font-size: 18px;">➕ Agregar Nueva Liga / Torneo</h3>
+        <button class="close-btn" onclick="closeNewLeagueModal()">✕</button>
+      </div>
+      <form id="newLeagueForm" onsubmit="saveNewLeague(event)">
+        <div class="form-group">
+          <label>Nombre de la Liga *</label>
+          <input type="text" id="newLeagueName" class="form-control" required placeholder="Ej. ATP Tour / UFC / Champions League">
+        </div>
+        <div class="form-group">
+          <label>Logo de la Liga (URL Opcional)</label>
+          <input type="url" id="newLeagueLogo" class="form-control" placeholder="https://...">
+        </div>
+        <button type="submit" class="btn" style="width: 100%;">💾 Guardar Liga</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: AGREGAR NUEVO EQUIPO -->
+  <div class="modal-overlay" id="newTeamModal">
+    <div class="modal-box" style="max-width: 450px;">
+      <div class="modal-header">
+        <h3 style="color: var(--accent-color); font-size: 18px;">➕ Agregar Nuevo Equipo / Franquicia</h3>
+        <button class="close-btn" onclick="closeNewTeamModal()">✕</button>
+      </div>
+      <form id="newTeamForm" onsubmit="saveNewTeam(event)">
+        <div class="form-group">
+          <label>Nombre del Equipo *</label>
+          <input type="text" id="newTeamName" class="form-control" required placeholder="Ej. Red Bull Racing / Al Nassr / Boston Red Sox">
+        </div>
+        <div class="form-group">
+          <label>Logo del Equipo (URL Opcional)</label>
+          <input type="url" id="newTeamLogo" class="form-control" placeholder="https://...">
+        </div>
+        <button type="submit" class="btn" style="width: 100%;">💾 Guardar Equipo</button>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL DE EDICIÓN DE PRODUCTO -->
   <div class="modal-overlay" id="editProductModal">
     <div class="modal-box" style="max-width: 600px;">
@@ -180,7 +270,12 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div class="form-group">
             <label>Departamento / Género</label>
-            <select id="editProdGender" class="form-control"></select>
+            <select id="editProdGender" class="form-control">
+              <option value="caballero">👨 Caballero</option>
+              <option value="dama">👩 Dama</option>
+              <option value="nino">🧒 Niño / Infantil</option>
+              <option value="unisex">🧢 Unisex / Gorras / Calzado</option>
+            </select>
           </div>
           <div class="form-group">
             <label>Insignia Especial</label>
@@ -210,7 +305,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
   
   <script src="js/firebase-config.js"></script>
   <script src="js/teams.js"></script>

@@ -57,46 +57,182 @@ if (btnLogout) {
   });
 }
 
-// Populate Admin Select Inputs
+// Populate Admin Cascading Select Inputs (Deporte > Liga > Equipo)
 function initAdminForm() {
-  populateTeamsSelect();
-  populateGenderSelect();
+  populateAdminSports();
   populateCategoriesSelect();
   populateBadgesSelect();
   onGenderSelectChange();
 }
 
-function populateTeamsSelect() {
-  const select = document.getElementById('prodTeam');
-  if (!select || typeof SPORTS_CATALOG === 'undefined') return;
-  select.innerHTML = '<option value="">Selecciona Deporte / Liga / Equipo...</option>';
+function populateAdminSports() {
+  const sportSelect = document.getElementById('prodSport');
+  if (!sportSelect) return;
+  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
   
-  SPORTS_CATALOG.forEach(s => {
-    s.leagues.forEach(l => {
-      const group = document.createElement('optgroup');
-      group.label = `${s.icon} ${s.sport} — ${l.league}`;
-      
-      l.teams.forEach(team => {
-        const option = document.createElement('option');
-        option.value = team.id;
-        option.textContent = team.name;
-        group.appendChild(option);
-      });
-      
-      select.appendChild(group);
-    });
-  });
+  sportSelect.innerHTML = '<option value="">Selecciona Deporte...</option>' + 
+    catalog.map(s => `<option value="${s.sportKey}">${s.icon} ${s.sport}</option>`).join('');
 }
 
-function populateGenderSelect() {
-  const select = document.getElementById('prodGender');
-  const editSelect = document.getElementById('editProdGender');
-  if (typeof GENDER_DEPARTMENTS === 'undefined') return;
+window.onAdminSportChange = function() {
+  const sportKey = document.getElementById('prodSport')?.value;
+  const leagueSelect = document.getElementById('prodLeague');
+  const teamSelect = document.getElementById('prodTeam');
+  if (!leagueSelect || !teamSelect) return;
   
-  const optionsHtml = GENDER_DEPARTMENTS.map(g => `<option value="${g.id}">${g.label}</option>`).join('');
-  if (select) select.innerHTML = optionsHtml;
-  if (editSelect) editSelect.innerHTML = optionsHtml;
-}
+  if (!sportKey) {
+    leagueSelect.innerHTML = '<option value="">Selecciona Liga...</option>';
+    teamSelect.innerHTML = '<option value="">Selecciona Equipo...</option>';
+    return;
+  }
+
+  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+  const sportObj = catalog.find(s => s.sportKey === sportKey);
+
+  if (!sportObj) return;
+
+  leagueSelect.innerHTML = '<option value="">Selecciona Liga...</option>' + 
+    sportObj.leagues.map(l => `<option value="${l.league}">${l.league}</option>`).join('');
+
+  teamSelect.innerHTML = '<option value="">Selecciona Equipo...</option>';
+
+  // Auto-select league if only 1 exists
+  if (sportObj.leagues.length === 1) {
+    leagueSelect.value = sportObj.leagues[0].league;
+    onAdminLeagueChange();
+  }
+};
+
+window.onAdminLeagueChange = function() {
+  const sportKey = document.getElementById('prodSport')?.value;
+  const leagueName = document.getElementById('prodLeague')?.value;
+  const teamSelect = document.getElementById('prodTeam');
+  if (!teamSelect) return;
+
+  if (!sportKey || !leagueName) {
+    teamSelect.innerHTML = '<option value="">Selecciona Equipo...</option>';
+    return;
+  }
+
+  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+  const sportObj = catalog.find(s => s.sportKey === sportKey);
+  const leagueObj = sportObj ? sportObj.leagues.find(l => l.league === leagueName) : null;
+
+  if (!leagueObj) return;
+
+  teamSelect.innerHTML = '<option value="">Selecciona Equipo...</option>' + 
+    leagueObj.teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+};
+
+// Modals: Create New Sport / League / Team
+window.openNewSportModal = () => document.getElementById('newSportModal').classList.add('active');
+window.closeNewSportModal = () => document.getElementById('newSportModal').classList.remove('active');
+
+window.saveNewSport = function(e) {
+  e.preventDefault();
+  const name = document.getElementById('newSportName').value.trim();
+  const icon = document.getElementById('newSportIcon').value.trim() || '🏆';
+  if (!name) return;
+
+  const key = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+  
+  if (!catalog.some(s => s.sportKey === key)) {
+    catalog.push({
+      sport: name,
+      sportKey: key,
+      icon: icon,
+      leagueLogo: "assets/catch_sports_logo.png",
+      leagues: []
+    });
+  }
+
+  populateAdminSports();
+  document.getElementById('prodSport').value = key;
+  onAdminSportChange();
+  closeNewSportModal();
+  document.getElementById('newSportForm').reset();
+  alert(`✅ Deporte "${name}" creado exitosamente.`);
+};
+
+window.openNewLeagueModal = () => {
+  const sportKey = document.getElementById('prodSport')?.value;
+  if (!sportKey) {
+    alert("Por favor selecciona primero un Deporte.");
+    return;
+  }
+  document.getElementById('newLeagueModal').classList.add('active');
+};
+window.closeNewLeagueModal = () => document.getElementById('newLeagueModal').classList.remove('active');
+
+window.saveNewLeague = function(e) {
+  e.preventDefault();
+  const sportKey = document.getElementById('prodSport')?.value;
+  const leagueName = document.getElementById('newLeagueName').value.trim();
+  const logo = document.getElementById('newLeagueLogo').value.trim() || 'assets/catch_sports_logo.png';
+
+  if (!sportKey || !leagueName) return;
+
+  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+  const sportObj = catalog.find(s => s.sportKey === sportKey);
+  if (sportObj) {
+    if (!sportObj.leagues.some(l => l.league.toLowerCase() === leagueName.toLowerCase())) {
+      sportObj.leagues.push({
+        league: leagueName,
+        leagueLogo: logo,
+        teams: []
+      });
+    }
+  }
+
+  onAdminSportChange();
+  document.getElementById('prodLeague').value = leagueName;
+  onAdminLeagueChange();
+  closeNewLeagueModal();
+  document.getElementById('newLeagueForm').reset();
+  alert(`✅ Liga "${leagueName}" agregada exitosamente.`);
+};
+
+window.openNewTeamModal = () => {
+  const leagueName = document.getElementById('prodLeague')?.value;
+  if (!leagueName) {
+    alert("Por favor selecciona primero una Liga.");
+    return;
+  }
+  document.getElementById('newTeamModal').classList.add('active');
+};
+window.closeNewTeamModal = () => document.getElementById('newTeamModal').classList.remove('active');
+
+window.saveNewTeam = function(e) {
+  e.preventDefault();
+  const sportKey = document.getElementById('prodSport')?.value;
+  const leagueName = document.getElementById('prodLeague')?.value;
+  const teamName = document.getElementById('newTeamName').value.trim();
+  const logo = document.getElementById('newTeamLogo').value.trim() || 'assets/catch_sports_logo.png';
+
+  if (!sportKey || !leagueName || !teamName) return;
+
+  const teamId = teamName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+  const sportObj = catalog.find(s => s.sportKey === sportKey);
+  const leagueObj = sportObj ? sportObj.leagues.find(l => l.league === leagueName) : null;
+
+  if (leagueObj) {
+    if (!leagueObj.teams.some(t => t.id === teamId)) {
+      leagueObj.teams.push({
+        id: teamId,
+        name: teamName,
+        logo: logo
+      });
+    }
+  }
+
+  onAdminLeagueChange();
+  document.getElementById('prodTeam').value = teamId;
+  closeNewTeamModal();
+  document.getElementById('newTeamForm').reset();
+  alert(`✅ Equipo "${teamName}" registrado exitosamente.`);
+};
 
 function populateCategoriesSelect() {
   const select = document.getElementById('prodCategory');

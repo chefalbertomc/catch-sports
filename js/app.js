@@ -19,12 +19,16 @@ let cart = JSON.parse(localStorage.getItem('catch_sports_cart') || '[]');
 let allProducts = [];
 
 // DOM References
-const productGrid = document.getElementById('productGrid');
-const loader = document.getElementById('loader');
-const storeTitle = document.getElementById('storeTitle');
-const storeSubtitle = document.getElementById('storeSubtitle');
-const searchInput = document.getElementById('searchInput');
-const teamFilterSelect = document.getElementById('teamFilterSelect');
+let productGrid, loader, storeTitle, storeSubtitle, searchInput, teamFilterSelect;
+
+function initDOMReferences() {
+  productGrid = document.getElementById('productGrid');
+  loader = document.getElementById('loader');
+  storeTitle = document.getElementById('storeTitle');
+  storeSubtitle = document.getElementById('storeSubtitle');
+  searchInput = document.getElementById('searchInput');
+  teamFilterSelect = document.getElementById('teamFilterSelect');
+}
 
 // Format price to currency
 function formatPrice(price) {
@@ -36,6 +40,8 @@ function formatPrice(price) {
 // STEP-BY-STEP GUIDED WIZARD NAVIGATION FLOW
 // ============================================
 function initWizardNavigation() {
+  initDOMReferences();
+  
   if (urlParams.get('team')) {
     const teamId = urlParams.get('team');
     for (const s of SPORTS_CATALOG) {
@@ -56,7 +62,6 @@ function initWizardNavigation() {
 }
 
 function renderWizardStep() {
-  const container = document.getElementById('flowWizardContainer');
   const cardsGrid = document.getElementById('wizardCardsGrid');
   const titleEl = document.getElementById('wizardTitle');
   const subTitleEl = document.getElementById('wizardSubtitle');
@@ -65,25 +70,32 @@ function renderWizardStep() {
   const pill3 = document.getElementById('pillStep3');
   const btnReset = document.getElementById('btnResetWizard');
 
-  if (!cardsGrid || typeof SPORTS_CATALOG === 'undefined') return;
+  if (!cardsGrid) return;
+  
+  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+  if (!catalog || catalog.length === 0) return;
 
   // Update Breadcrumb Pills
-  pill1.className = `wizard-step-pill ${currentWizardStep === 1 ? 'active' : (wizardSportObj ? 'completed' : '')}`;
-  pill2.className = `wizard-step-pill ${currentWizardStep === 2 ? 'active' : (wizardLeagueObj ? 'completed' : '')}`;
-  pill3.className = `wizard-step-pill ${currentWizardStep === 3 ? 'active' : (wizardTeamObj ? 'completed' : '')}`;
+  if (pill1) pill1.className = `wizard-step-pill ${currentWizardStep === 1 ? 'active' : (wizardSportObj ? 'completed' : '')}`;
+  if (pill2) pill2.className = `wizard-step-pill ${currentWizardStep === 2 ? 'active' : (wizardLeagueObj ? 'completed' : '')}`;
+  if (pill3) pill3.className = `wizard-step-pill ${currentWizardStep === 3 ? 'active' : (wizardTeamObj ? 'completed' : '')}`;
 
-  document.getElementById('selectedSportLabel').textContent = wizardSportObj ? `: ${wizardSportObj.sport}` : '';
-  document.getElementById('selectedLeagueLabel').textContent = wizardLeagueObj ? `: ${wizardLeagueObj.league}` : '';
-  document.getElementById('selectedTeamLabel').textContent = wizardTeamObj ? `: ${wizardTeamObj.name}` : '';
+  const labelSport = document.getElementById('selectedSportLabel');
+  const labelLeague = document.getElementById('selectedLeagueLabel');
+  const labelTeam = document.getElementById('selectedTeamLabel');
+
+  if (labelSport) labelSport.textContent = wizardSportObj ? `: ${wizardSportObj.sport}` : '';
+  if (labelLeague) labelLeague.textContent = wizardLeagueObj ? `: ${wizardLeagueObj.league}` : '';
+  if (labelTeam) labelTeam.textContent = wizardTeamObj ? `: ${wizardTeamObj.name}` : '';
 
   if (btnReset) btnReset.style.display = (wizardSportObj || wizardLeagueObj || wizardTeamObj) ? 'inline-block' : 'none';
 
   // STEP 1: SELECT SPORT
   if (currentWizardStep === 1) {
-    titleEl.textContent = 'PASO 1: SELECCIONA EL DEPORTE';
-    subTitleEl.textContent = 'Elige la disciplina deportiva que deseas explorar';
+    if (titleEl) titleEl.textContent = 'PASO 1: SELECCIONA EL DEPORTE';
+    if (subTitleEl) subTitleEl.textContent = 'Elige la disciplina deportiva que deseas explorar';
 
-    cardsGrid.innerHTML = SPORTS_CATALOG.map(s => `
+    cardsGrid.innerHTML = catalog.map(s => `
       <div class="wizard-card" onclick="selectWizardSport('${s.sportKey}')">
         <div class="wizard-card-icon">${s.icon}</div>
         <div class="wizard-card-label">${s.sport}</div>
@@ -93,9 +105,9 @@ function renderWizardStep() {
   }
   
   // STEP 2: SELECT LEAGUE
-  else if (currentWizardStep === 2) {
-    titleEl.textContent = `PASO 2: SELECCIONA LA LIGA (${wizardSportObj.sport.toUpperCase()})`;
-    subTitleEl.textContent = `Haz clic en la liga o torneo de ${wizardSportObj.sport}`;
+  else if (currentWizardStep === 2 && wizardSportObj) {
+    if (titleEl) titleEl.textContent = `PASO 2: SELECCIONA LA LIGA (${wizardSportObj.sport.toUpperCase()})`;
+    if (subTitleEl) subTitleEl.textContent = `Haz clic en la liga o torneo de ${wizardSportObj.sport}`;
 
     cardsGrid.innerHTML = wizardSportObj.leagues.map(l => {
       const totalTeams = l.teams.length;
@@ -111,15 +123,15 @@ function renderWizardStep() {
   }
 
   // STEP 3: SELECT TEAM
-  else if (currentWizardStep === 3) {
-    titleEl.textContent = `PASO 3: SELECCIONA TU EQUIPO (${wizardLeagueObj.league})`;
-    subTitleEl.textContent = `Explora los artículos oficiales de tu franquicia favorita`;
+  else if (currentWizardStep === 3 && wizardLeagueObj) {
+    if (titleEl) titleEl.textContent = `PASO 3: SELECCIONA TU EQUIPO (${wizardLeagueObj.league})`;
+    if (subTitleEl) subTitleEl.textContent = `Explora los artículos oficiales de tu franquicia favorita`;
 
     cardsGrid.innerHTML = wizardLeagueObj.teams.map(t => {
       const logoHtml = t.logo ? `<img src="${t.logo}" class="wizard-card-img" onerror="this.src='assets/catch_sports_logo.png'"/>` : `<div class="wizard-card-icon">🛡️</div>`;
       const isSelected = wizardTeamObj && wizardTeamObj.id === t.id;
       return `
-        <div class="wizard-card ${isSelected ? 'selected-card' : ''}" style="${isSelected ? 'border-color: var(--accent-color); background: #222;' : ''}" onclick="selectWizardTeam('${t.id}')">
+        <div class="wizard-card ${isSelected ? 'selected-card' : ''}" style="${isSelected ? 'border-color: var(--accent-color); background: #242424;' : ''}" onclick="selectWizardTeam('${t.id}')">
           ${logoHtml}
           <div class="wizard-card-label">${t.name}</div>
           <div class="wizard-card-sublabel">Ver Colección →</div>
@@ -143,7 +155,8 @@ window.goToWizardStep = function(step) {
 };
 
 window.selectWizardSport = function(sportKey) {
-  wizardSportObj = SPORTS_CATALOG.find(s => s.sportKey === sportKey);
+  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+  wizardSportObj = catalog.find(s => s.sportKey === sportKey);
   wizardLeagueObj = null;
   wizardTeamObj = null;
   
@@ -176,7 +189,8 @@ window.selectWizardLeague = function(leagueName) {
 };
 
 window.selectWizardTeam = function(teamId) {
-  for (const s of SPORTS_CATALOG) {
+  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+  for (const s of catalog) {
     for (const l of s.leagues) {
       const t = l.teams.find(item => item.id === teamId);
       if (t) {
@@ -197,7 +211,6 @@ window.selectWizardTeam = function(teamId) {
   updateStoreHeader();
   renderProducts();
   
-  // Smooth scroll to product catalog
   document.getElementById('catalogToolbar')?.scrollIntoView({ behavior: 'smooth' });
 };
 
@@ -231,11 +244,14 @@ window.showAllProductsDirectly = function() {
 
 // Setup Team Dropdown Select (Structured by Sport > League > Team)
 function populateTeamFilterSelect() {
-  if (!teamFilterSelect || typeof SPORTS_CATALOG === 'undefined') return;
+  initDOMReferences();
+  if (!teamFilterSelect) return;
+  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+  if (!catalog) return;
   
   teamFilterSelect.innerHTML = '<option value="all">🏆 Todos los Deportes y Equipos</option>';
   
-  SPORTS_CATALOG.forEach(s => {
+  catalog.forEach(s => {
     s.leagues.forEach(l => {
       const group = document.createElement('optgroup');
       group.label = `${s.icon} ${s.sport} — ${l.league}`;
@@ -273,30 +289,36 @@ window.setGenderFilter = function(genderKey, btnEl) {
 };
 
 // Search Listener
-if (searchInput) {
-  searchInput.addEventListener('input', (e) => {
-    searchQuery = e.target.value.toLowerCase().trim();
-    renderProducts();
-  });
-}
+document.addEventListener('DOMContentLoaded', () => {
+  initDOMReferences();
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value.toLowerCase().trim();
+      renderProducts();
+    });
+  }
+});
 
 // Store Title Header Updates
 function updateStoreHeader() {
+  initDOMReferences();
+  if (!storeTitle) return;
+  
   if (wizardTeamObj) {
     const tax = typeof getFullTaxonomy !== 'undefined' ? getFullTaxonomy(wizardTeamObj.id) : { team: wizardTeamObj.name };
     const logoImg = tax.teamLogo ? `<img src="${tax.teamLogo}" style="height: 38px; vertical-align: middle; margin-right: 8px; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8));"/>` : '';
     storeTitle.innerHTML = `${logoImg}COLECCIÓN <span style="color: var(--accent-color);">${tax.team.toUpperCase()}</span>`;
-    storeSubtitle.textContent = `${tax.icon} ${tax.sport} — Liga ${tax.league}`;
+    if (storeSubtitle) storeSubtitle.textContent = `${tax.icon} ${tax.sport} — Liga ${tax.league}`;
   } else if (wizardSportObj) {
     storeTitle.innerHTML = `DEPORTE <span style="color: var(--accent-color);">${wizardSportObj.sport.toUpperCase()}</span>`;
-    storeSubtitle.textContent = `Catálogo especializado de ${wizardSportObj.sport}`;
+    if (storeSubtitle) storeSubtitle.textContent = `Catálogo especializado de ${wizardSportObj.sport}`;
   } else if (activeGenderFilter !== 'all') {
     const gLabel = typeof getGenderLabel !== 'undefined' ? getGenderLabel(activeGenderFilter) : activeGenderFilter;
     storeTitle.innerHTML = `DEPARTAMENTO <span style="color: var(--accent-color);">${gLabel.toUpperCase()}</span>`;
-    storeSubtitle.textContent = `Catálogo especializado de tallas para ${gLabel}`;
+    if (storeSubtitle) storeSubtitle.textContent = `Catálogo especializado de tallas para ${gLabel}`;
   } else {
     storeTitle.innerHTML = `CATÁLOGO <span style="color: var(--accent-color);">OFICIAL</span>`;
-    storeSubtitle.textContent = `Artículos deportivos clasificados por Deporte, Liga, Equipo y Departamento`;
+    if (storeSubtitle) storeSubtitle.textContent = `Artículos deportivos clasificados por Deporte, Liga, Equipo y Departamento`;
   }
 }
 
@@ -408,6 +430,7 @@ window.addToCartFromCard = function(productId, defaultSize) {
 
 // Filter & Render Products
 function renderProducts() {
+  initDOMReferences();
   if (!productGrid) return;
   productGrid.innerHTML = '';
   
@@ -462,6 +485,7 @@ function renderProducts() {
 
 // Fetch products from Firebase Firestore
 async function loadProducts() {
+  initDOMReferences();
   try {
     const snapshot = await db.collection('products').get();
     if (loader) loader.style.display = 'none';
@@ -607,23 +631,25 @@ window.copyClabeToClipboard = function() {
 
 // Screenshot Preview Converter
 let transferProofBase64 = null;
-const proofInput = document.getElementById('transferProofFile');
-if (proofInput) {
-  proofInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        transferProofBase64 = e.target.result;
-        const previewImg = document.getElementById('proofPreviewImg');
-        const previewBox = document.getElementById('transferProofPreview');
-        if (previewImg) previewImg.src = e.target.result;
-        if (previewBox) previewBox.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-}
+document.addEventListener('DOMContentLoaded', () => {
+  const proofInput = document.getElementById('transferProofFile');
+  if (proofInput) {
+    proofInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          transferProofBase64 = e.target.result;
+          const previewImg = document.getElementById('proofPreviewImg');
+          const previewBox = document.getElementById('transferProofPreview');
+          if (previewImg) previewImg.src = e.target.result;
+          if (previewBox) previewBox.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+});
 
 window.submitCheckoutOrder = async function(event) {
   event.preventDefault();
@@ -693,7 +719,15 @@ ${itemsListText}
   window.open(waUrl, '_blank');
 };
 
-// Initialize
+// DOMReady & Execution Trigger
+document.addEventListener('DOMContentLoaded', () => {
+  initWizardNavigation();
+  populateTeamFilterSelect();
+  updateCartUI();
+  loadProducts();
+});
+
+// Immediate execution fallback
 initWizardNavigation();
 populateTeamFilterSelect();
 updateCartUI();

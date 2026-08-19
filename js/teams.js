@@ -246,3 +246,15 @@ function getCategoryLabel(catId) {
   const c = PRODUCT_CATEGORIES.find(cat => cat.id === catId);
   return c ? c.label : "👕 Artículo Deportivo";
 }
+
+// Explicit Window Export
+window.SPORTS_CATALOG = SPORTS_CATALOG;
+window.GENDER_DEPARTMENTS = GENDER_DEPARTMENTS;
+window.PRODUCT_CATEGORIES = PRODUCT_CATEGORIES;
+window.PROMO_BADGES = PROMO_BADGES;
+window.STORE_BANK_DETAILS = STORE_BANK_DETAILS;
+window.getFullTaxonomy = getFullTaxonomy;
+window.getTeamName = getTeamName;
+window.getLeagueByTeam = getLeagueByTeam;
+window.getGenderLabel = getGenderLabel;
+window.getCategoryLabel = getCategoryLabel;
