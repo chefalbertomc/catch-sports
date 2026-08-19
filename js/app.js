@@ -162,10 +162,9 @@ window.selectWizardSport = function(sportKey) {
   
   if (!wizardSportObj) return;
 
-  // If sport has only 1 league (e.g. NFL, NBA, MLB), automatically select it for user ease!
   if (wizardSportObj.leagues.length === 1) {
     wizardLeagueObj = wizardSportObj.leagues[0];
-    currentWizardStep = 3; // Go directly to teams!
+    currentWizardStep = 3;
   } else {
     currentWizardStep = 2;
   }
@@ -322,7 +321,7 @@ function updateStoreHeader() {
   }
 }
 
-// Render Product Card with Taxonomy Breadcrumbs & Official Team Logo Badge
+// Render Product Card with Stock Availability Status & Delivery Type
 function createProductCard(product, id) {
   const card = document.createElement('div');
   card.className = 'product-card';
@@ -333,6 +332,13 @@ function createProductCard(product, id) {
   
   const sizes = product.sizes || ["M", "L"];
   const defaultSize = sizes[0] || 'M';
+  const stockQty = product.stockQty !== undefined ? product.stockQty : 5;
+  const isImmediate = (product.deliveryType !== 'pedido') && (stockQty > 0);
+
+  // Delivery Availability Tag
+  const deliveryBadgeHtml = isImmediate 
+    ? `<div style="font-size: 11px; background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); padding: 3px 8px; border-radius: 6px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">⚡ Entrega Inmediata (${stockQty} pzs)</div>`
+    : `<div style="font-size: 11px; background: rgba(250, 204, 21, 0.15); color: #facc15; border: 1px solid rgba(250, 204, 21, 0.4); padding: 3px 8px; border-radius: 6px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">📦 Bajo Pedido (3-5 días)</div>`;
   
   // Custom Badge HTML
   let badgeHtml = '';
@@ -378,6 +384,7 @@ function createProductCard(product, id) {
       <div class="product-meta-row">
         <span class="tag-department">${genderLabel}</span>
         <span class="tag-category">${categoryLabel}</span>
+        ${deliveryBadgeHtml}
       </div>
 
       <p class="product-desc">${product.description || 'Artículo deportivo oficial de alta calidad.'}</p>

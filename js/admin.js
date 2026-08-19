@@ -370,8 +370,9 @@ function renderAdminProductsList(products) {
   list.innerHTML = filtered.map(product => {
     const teamName = typeof getTeamName !== 'undefined' ? getTeamName(product.team) : product.team;
     const genderLabel = typeof getGenderLabel !== 'undefined' ? getGenderLabel(product.gender) : '👨 Caballero';
+    const stockQty = product.stockQty || 5;
+    const deliveryType = product.deliveryType === 'pedido' ? '📦 Bajo Pedido (3-5 días)' : '⚡ Entrega Inmediata';
     const priceStr = `$${product.price}`;
-    const origPriceStr = product.originalPrice ? `<span style="text-decoration: line-through; color: #888; margin-left: 6px; font-size: 11px;">$${product.originalPrice}</span>` : '';
     
     return `
       <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(255,255,255,0.04); border-radius: 10px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 10px;">
@@ -380,10 +381,10 @@ function renderAdminProductsList(products) {
           <div>
             <div style="font-weight: bold; color: #fff; font-size: 15px;">${product.name}</div>
             <div style="font-size: 12px; color: var(--accent-color); font-weight: 700;">
-              ${genderLabel} — ${teamName} — ${priceStr} ${origPriceStr}
+              ${genderLabel} — ${teamName} — ${priceStr}
             </div>
             <div style="font-size: 11px; color: #aaa; margin-top: 2px;">
-              Tallas: ${(product.sizes || []).join(', ') || 'N/A'}
+              Bodega: <strong>${stockQty} pzs</strong> | Status: <span style="color: ${product.deliveryType === 'pedido' ? '#facc15' : '#22c55e'}; font-weight: bold;">${deliveryType}</span>
             </div>
           </div>
         </div>
@@ -407,10 +408,10 @@ window.openEditModal = function(id) {
   
   document.getElementById('editProdId').value = prod.id;
   document.getElementById('editProdName').value = prod.name || '';
-  document.getElementById('editProdGender').value = prod.gender || 'caballero';
+  document.getElementById('editProdStockQty').value = prod.stockQty || 5;
+  document.getElementById('editProdDeliveryType').value = prod.deliveryType || 'inmediata';
   document.getElementById('editProdPrice').value = prod.price || '';
   document.getElementById('editProdOriginalPrice').value = prod.originalPrice || '';
-  document.getElementById('editProdBadge').value = prod.badge || 'ninguno';
   document.getElementById('editProdDesc').value = prod.description || '';
   
   document.getElementById('editProductModal').classList.add('active');
@@ -424,18 +425,18 @@ document.getElementById('editProductForm').addEventListener('submit', async (e) 
   e.preventDefault();
   const id = document.getElementById('editProdId').value;
   const name = document.getElementById('editProdName').value.trim();
-  const gender = document.getElementById('editProdGender').value;
+  const stockQty = parseInt(document.getElementById('editProdStockQty').value) || 0;
+  const deliveryType = document.getElementById('editProdDeliveryType').value;
   const price = parseFloat(document.getElementById('editProdPrice').value);
   const origPriceVal = document.getElementById('editProdOriginalPrice').value;
   const originalPrice = origPriceVal ? parseFloat(origPriceVal) : null;
-  const badge = document.getElementById('editProdBadge').value;
   const desc = document.getElementById('editProdDesc').value.trim();
   
   try {
     await db.collection('products').doc(id).update({
-      name, gender, price, originalPrice, badge, description: desc
+      name, stockQty, deliveryType, price, originalPrice, description: desc
     });
-    alert('✅ Producto actualizado exitosamente');
+    alert('✅ Producto e Inventario actualizados exitosamente');
     closeEditModal();
   } catch(e) {
     alert('Error al actualizar: ' + e.message);
@@ -482,6 +483,8 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
     const price = parseFloat(document.getElementById('prodPrice').value);
     const origPriceVal = document.getElementById('prodOriginalPrice').value;
     const originalPrice = origPriceVal ? parseFloat(origPriceVal) : null;
+    const stockQty = parseInt(document.getElementById('prodStockQty').value) || 0;
+    const deliveryType = document.getElementById('prodDeliveryType').value;
     const desc = document.getElementById('prodDesc').value.trim();
     
     let imageUrl = urlInput;
@@ -500,6 +503,8 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
       badge,
       price,
       originalPrice,
+      stockQty,
+      deliveryType,
       sizes: selectedSizes,
       description: desc,
       imageUrl,
@@ -507,7 +512,7 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
     });
     
     uploadStatus.style.color = '#4ade80';
-    uploadStatus.textContent = '✅ ¡Producto publicado exitosamente!';
+    uploadStatus.textContent = '✅ ¡Producto publicado exitosamente con control de inventario!';
     
     // Reset Form
     document.getElementById('productForm').reset();
