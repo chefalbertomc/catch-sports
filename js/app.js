@@ -321,7 +321,7 @@ function updateStoreHeader() {
   }
 }
 
-// Render Product Card with Stock Availability Status & Delivery Type
+// Render Product Card with Dynamic Size Stock Availability
 function createProductCard(product, id) {
   const card = document.createElement('div');
   card.className = 'product-card';
@@ -330,15 +330,9 @@ function createProductCard(product, id) {
   const genderLabel = typeof getGenderLabel !== 'undefined' ? getGenderLabel(product.gender) : '👨 Caballero';
   const categoryLabel = typeof getCategoryLabel !== 'undefined' ? getCategoryLabel(product.category) : '👕 Artículo';
   
-  const sizes = product.sizes || ["M", "L"];
+  const sizeStockMap = product.sizeStockMap || [];
+  const sizes = (sizeStockMap.length > 0) ? sizeStockMap.map(s => s.size) : (product.sizes || ["M", "L"]);
   const defaultSize = sizes[0] || 'M';
-  const stockQty = product.stockQty !== undefined ? product.stockQty : 5;
-  const isImmediate = (product.deliveryType !== 'pedido') && (stockQty > 0);
-
-  // Delivery Availability Tag
-  const deliveryBadgeHtml = isImmediate 
-    ? `<div style="font-size: 11px; background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); padding: 3px 8px; border-radius: 6px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">⚡ Entrega Inmediata (${stockQty} pzs)</div>`
-    : `<div style="font-size: 11px; background: rgba(250, 204, 21, 0.15); color: #facc15; border: 1px solid rgba(250, 204, 21, 0.4); padding: 3px 8px; border-radius: 6px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">📦 Bajo Pedido (3-5 días)</div>`;
   
   // Custom Badge HTML
   let badgeHtml = '';
@@ -384,17 +378,21 @@ function createProductCard(product, id) {
       <div class="product-meta-row">
         <span class="tag-department">${genderLabel}</span>
         <span class="tag-category">${categoryLabel}</span>
-        ${deliveryBadgeHtml}
       </div>
 
       <p class="product-desc">${product.description || 'Artículo deportivo oficial de alta calidad.'}</p>
       
       <!-- Size chips -->
-      <div style="font-size: 11px; color: #888; margin-bottom: 4px; font-weight: bold;">TALLA SELECCIONADA:</div>
+      <div style="font-size: 11px; color: #888; margin-bottom: 4px; font-weight: bold;">SELECCIONA TALLA:</div>
       <div class="sizes-container" id="sizesFor_${id}">
         ${sizes.map((s, idx) => `
           <button type="button" class="size-chip ${idx === 0 ? 'selected' : ''}" onclick="selectCardSize('${id}', '${s}', this)">${s}</button>
         `).join('')}
+      </div>
+
+      <!-- Real-Time Size Availability Box -->
+      <div id="sizeStockStatus_${id}" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 8px 10px; border-radius: 6px; margin-bottom: 14px; font-size: 11px; line-height: 1.5;">
+        <!-- Stock details injected dynamically via selectCardSize -->
       </div>
 
       <div class="product-footer">
@@ -408,6 +406,12 @@ function createProductCard(product, id) {
       </div>
     </div>
   `;
+
+  // Initialize size stock box for default size
+  setTimeout(() => {
+    selectCardSize(id, defaultSize, null);
+  }, 50);
+
   return card;
 }
 
@@ -416,14 +420,45 @@ window.selectedSizesState = {};
 window.selectCardSize = function(productId, size, btnEl) {
   window.selectedSizesState[productId] = size;
   const container = document.getElementById(`sizesFor_${productId}`);
-  if (container) {
+  if (container && btnEl) {
     container.querySelectorAll('.size-chip').forEach(c => c.classList.remove('selected'));
-    if (btnEl) btnEl.classList.add('selected');
+    btnEl.classList.add('selected');
   }
   
   const btnCart = document.getElementById(`btnCart_${productId}`);
   if (btnCart) {
     btnCart.setAttribute('onclick', `addToCartFromCard('${productId}', '${size}')`);
+  }
+
+  // Update Size Stock Availability Display Box
+  const statusBox = document.getElementById(`sizeStockStatus_${productId}`);
+  const prod = allProducts.find(p => p.id === productId);
+  
+  if (statusBox && prod) {
+    const map = prod.sizeStockMap || [];
+    const sizeData = map.find(s => s.size === size);
+    
+    if (sizeData) {
+      const imm = sizeData.immediateQty || 0;
+      const wh = sizeData.warehouseQty || 0;
+      
+      let immHtml = imm > 0 
+        ? `<span style="color: #22c55e; font-weight: 800;">⚡ Entrega Inmediata: ${imm} disponible(s) en tienda QRO</span>`
+        : `<span style="color: #ef4444; font-weight: bold;">⚡ Entrega Inmediata: Agotada en tienda</span>`;
+        
+      let whHtml = wh > 0
+        ? `<span style="color: #facc15; font-weight: bold;">🏢 En Bodega: ${wh} pieza(s)</span>`
+        : `<span style="color: #888;">🏢 En Bodega: Sin stock</span>`;
+
+      statusBox.innerHTML = `
+        <div>Talla <strong>${size}</strong>: ${immHtml}</div>
+        <div>${whHtml} | <span style="color: #aaa;">🤝 Entrega a acordar con el vendedor</span></div>
+      `;
+    } else {
+      statusBox.innerHTML = `
+        <div>Talla <strong>${size}</strong>: <span style="color: #22c55e; font-weight: bold;">⚡ Disponible</span> | <span style="color: #aaa;">🤝 Entrega a acordar con el vendedor</span></div>
+      `;
+    }
   }
 };
 
@@ -696,7 +731,9 @@ ${itemsListText}
 💳 *MÉTODO DE PAGO:* Transferencia SPEI (${STORE_BANK_DETAILS.bank})
 📸 *Comprobante Adjunto:* ${transferProofBase64 ? 'Si (Captura lista)' : 'Pendiente por WhatsApp'}
 ----------------------------------
-¡Hola! Ya envié mi orden de compra. Quedo atento a la confirmación de envío. 🏈🔥`;
+🤝 *Tiempo de Entrega:* A convenir con el vendedor por WhatsApp
+----------------------------------
+¡Hola! Ya envié mi orden de compra. Quedo atento para acordar la entrega. 🏈🔥`;
 
   // Try saving order doc to Firestore `orders` collection
   try {

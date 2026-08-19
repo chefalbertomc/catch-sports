@@ -20,7 +20,7 @@
 
   <!-- Ticker Banner -->
   <div class="ticker-banner">
-    ⚡ PANEL DE ADMINISTRACIÓN — SECUENCIA EXACTA DE PUBLICACIÓN E INVENTARIO
+    ⚡ PANEL DE ADMINISTRACIÓN — CONTROL DE INVENTARIO INDEPENDIENTE POR TALLA (TIENDA VS BODEGA)
   </div>
 
   <!-- Navbar -->
@@ -43,7 +43,7 @@
     <!-- Admin Login Section -->
     <div id="loginSection" class="admin-card" style="display: block;">
       <h2 style="font-size: 26px; color: var(--accent-color);">🔐 Acceso Administrador</h2>
-      <p class="text-secondary" style="margin-bottom: 24px; font-size: 14px;">Ingresa tus credenciales para gestionar productos y stock.</p>
+      <p class="text-secondary" style="margin-bottom: 24px; font-size: 14px;">Ingresa tus credenciales para gestionar productos y stock por talla.</p>
       
       <div class="form-group">
         <label>Correo Electrónico</label>
@@ -68,11 +68,11 @@
         <button type="button" class="btn btn-outline" id="tabSeedBtn" onclick="seedDemoCatalog()" style="border-color: var(--accent-color); color: var(--accent-color);">🌱 Inyectar Catálogo de Muestra</button>
       </div>
 
-      <!-- FORM 1: PUBLICACIÓN INDIVIDUAL CON SECUENCIA EXACTA -->
+      <!-- FORM 1: PUBLICACIÓN INDIVIDUAL CON CONTROL DE STOCK POR TALLA -->
       <div id="singleUploadCard" class="admin-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <h2 style="font-size: 24px; color: var(--accent-color);">➕ Publicar Nuevo Artículo</h2>
-          <span class="badge" style="background: rgba(250, 204, 21, 0.15); color: var(--accent-color); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">SECUENCIA OFICIAL</span>
+          <span class="badge" style="background: rgba(250, 204, 21, 0.15); color: var(--accent-color); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">STOCK POR TALLA</span>
         </div>
         
         <form id="productForm">
@@ -123,42 +123,43 @@
           </div>
 
           <!-- 6️⃣ GÉNERO / DEPARTAMENTO -->
-          <div class="form-group">
-            <label>6️⃣ Género / Departamento *</label>
-            <select id="prodGender" class="form-control" required onchange="onGenderSelectChange()">
-              <option value="caballero">👨 Caballero</option>
-              <option value="dama">👩 Dama</option>
-              <option value="nino">🧒 Niño / Infantil</option>
-              <option value="unisex">🧢 Unisex / Gorras / Calzado</option>
-            </select>
-          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div class="form-group">
+              <label>6️⃣ Género / Departamento *</label>
+              <select id="prodGender" class="form-control" required onchange="onGenderSelectChange()">
+                <option value="caballero">👨 Caballero</option>
+                <option value="dama">👩 Dama</option>
+                <option value="nino">🧒 Niño / Infantil</option>
+                <option value="unisex">🧢 Unisex / Gorras / Calzado</option>
+              </select>
+            </div>
 
-          <!-- 7️⃣ TALLA(S) -->
-          <div class="form-group">
-            <label>7️⃣ Tallas Disponibles (Selecciona varias con clic)</label>
-            <div id="sizeChipsContainer" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
-              <!-- Populated dynamically based on selected gender -->
+            <div class="form-group">
+              <label>Tipo de Artículo *</label>
+              <select id="prodCategory" class="form-control" required>
+                <!-- Populated dynamically -->
+              </select>
             </div>
           </div>
 
-          <!-- 8️⃣ EXISTENCIA EN STOCK / BODEGA & TIEMPO DE ENTREGA -->
-          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-gold); padding: 16px; border-radius: 10px; margin-bottom: 18px;">
-            <div style="font-weight: 800; color: var(--accent-color); font-size: 13px; margin-bottom: 12px; text-transform: uppercase;">
-              8️⃣ Existencia en Stock / Bodega & Tiempo de Entrega
+          <!-- 7️⃣ & 8️⃣ CONTROL DE INVENTARIO Y STOCK POR TALLA (ENTREGA INMEDIATA VS BODEGA) -->
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-gold); padding: 18px; border-radius: 12px; margin-bottom: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+              <label style="margin-bottom: 0; color: var(--accent-color); font-weight: 800; font-size: 14px;">
+                7️⃣ & 8️⃣ TALLAS Y CONTROL DE EXISTENCIAS (TIENDA VS BODEGA) *
+              </label>
+              <button type="button" class="btn" style="font-size: 12px; padding: 6px 12px;" onclick="addSizeStockRow()">
+                ➕ Agregar Talla con Stock
+              </button>
             </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-              <div class="form-group" style="margin-bottom: 0;">
-                <label>Piezas en Bodega/Tienda *</label>
-                <input type="number" id="prodStockQty" class="form-control" required min="0" value="5" placeholder="Ej. 10">
-              </div>
+            <p class="text-secondary" style="font-size: 12px; margin-bottom: 14px;">
+              Configura cuántas piezas tienes para <strong>⚡ Entrega Inmediata (en tienda)</strong> y cuántas en <strong>🏢 Bodega</strong> para cada talla. 
+              <br><span style="color: var(--accent-color);">* El tiempo de entrega se acuerda directamente con el vendedor por WhatsApp.</span>
+            </p>
 
-              <div class="form-group" style="margin-bottom: 0;">
-                <label>Tiempo de Entrega / Disponibilidad *</label>
-                <select id="prodDeliveryType" class="form-control" required>
-                  <option value="inmediata">⚡ Entrega Inmediata (Stock en Tienda QRO)</option>
-                  <option value="pedido">📦 Bajo Pedido (Tarda de 3 a 5 días hábiles)</option>
-                </select>
-              </div>
+            <!-- Dynamic Size Stock Rows -->
+            <div id="sizeStockRows" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Dynamic rows injected via JS -->
             </div>
           </div>
 
@@ -199,7 +200,7 @@
           
           <div id="uploadStatus" style="font-size: 14px; margin-bottom: 16px; font-weight: bold;"></div>
           
-          <button type="submit" id="btnSubmit" class="btn" style="width: 100%; font-size: 16px; padding: 14px;">🔥 Publicar Producto con Secuencia Exacta</button>
+          <button type="submit" id="btnSubmit" class="btn" style="width: 100%; font-size: 16px; padding: 14px;">🔥 Publicar Producto con Stock por Talla</button>
         </form>
       </div>
 
@@ -322,11 +323,11 @@
     </div>
   </div>
 
-  <!-- MODAL DE EDICIÓN DE PRODUCTO -->
+  <!-- MODAL DE EDICIÓN DE PRODUCTO CON STOCK POR TALLA -->
   <div class="modal-overlay" id="editProductModal">
     <div class="modal-box" style="max-width: 600px;">
       <div class="modal-header">
-        <h3 style="color: var(--accent-color); font-size: 20px;">✏️ Editar Producto & Stock</h3>
+        <h3 style="color: var(--accent-color); font-size: 20px;">✏️ Editar Producto & Inventario</h3>
         <button class="close-btn" onclick="closeEditModal()">✕</button>
       </div>
       <form id="editProductForm">
@@ -334,19 +335,6 @@
         <div class="form-group">
           <label>Nombre del Producto</label>
           <input type="text" id="editProdName" class="form-control" required>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-          <div class="form-group">
-            <label>Piezas en Bodega/Tienda</label>
-            <input type="number" id="editProdStockQty" class="form-control" required min="0">
-          </div>
-          <div class="form-group">
-            <label>Tiempo de Entrega</label>
-            <select id="editProdDeliveryType" class="form-control" required>
-              <option value="inmediata">⚡ Entrega Inmediata (Stock Tienda)</option>
-              <option value="pedido">📦 Bajo Pedido (3 a 5 días)</option>
-            </select>
-          </div>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div class="form-group">

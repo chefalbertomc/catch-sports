@@ -6,10 +6,10 @@ const uploadStatus = document.getElementById('uploadStatus');
 const imagePreview = document.getElementById('imagePreview');
 const btnLogout = document.getElementById('btnLogout');
 
-let selectedSizes = [];
+let currentSizeStockRows = []; // Array of { size: "M", immediateQty: 2, warehouseQty: 5 }
 let selectedFile = null;
 let currentProducts = [];
-let bulkItems = []; // Array of { file, base64, name, team, gender, price, stockQty }
+let bulkItems = [];
 
 // Handle Auth State
 auth.onAuthStateChanged(user => {
@@ -68,13 +68,13 @@ window.switchAdminTab = function(tabName) {
   if (tabName === 'single') {
     if (singleCard) singleCard.style.display = 'block';
     if (bulkCard) bulkCard.style.display = 'none';
-    if (singleBtn) { singleBtn.className = 'btn active'; }
-    if (bulkBtn) { bulkBtn.className = 'btn btn-outline'; }
+    if (singleBtn) singleBtn.className = 'btn active';
+    if (bulkBtn) bulkBtn.className = 'btn btn-outline';
   } else {
     if (singleCard) singleCard.style.display = 'none';
     if (bulkCard) bulkCard.style.display = 'block';
-    if (singleBtn) { singleBtn.className = 'btn btn-outline'; }
-    if (bulkBtn) { bulkBtn.className = 'btn active'; }
+    if (singleBtn) singleBtn.className = 'btn btn-outline';
+    if (bulkBtn) bulkBtn.className = 'btn active';
   }
 };
 
@@ -270,36 +270,71 @@ function populateBadgesSelect() {
   if (editSelect) editSelect.innerHTML = optionsHtml;
 }
 
+// ============================================
+// DYNAMIC SIZE STOCK BUILDER (ENTREGA INMEDIATA VS BODEGA)
+// ============================================
 window.onGenderSelectChange = function() {
   const genderId = document.getElementById('prodGender')?.value || 'caballero';
   const gObj = (typeof GENDER_DEPARTMENTS !== 'undefined') ? GENDER_DEPARTMENTS.find(g => g.id === genderId) : null;
   
-  const sizesToRender = gObj ? gObj.sizes : ["S", "M", "L", "XL"];
-  selectedSizes = [sizesToRender[1] || sizesToRender[0]];
+  const defaultSizes = gObj ? gObj.sizes : ["S", "M", "L", "XL"];
   
-  renderSizeChips(sizesToRender);
+  currentSizeStockRows = defaultSizes.map(size => ({
+    size: size,
+    immediateQty: 2,
+    warehouseQty: 5
+  }));
+  
+  renderSizeStockRows();
 };
 
-function renderSizeChips(sizesToRender) {
-  const container = document.getElementById('sizeChipsContainer');
+function renderSizeStockRows() {
+  const container = document.getElementById('sizeStockRows');
   if (!container) return;
   
-  container.innerHTML = sizesToRender.map(size => {
-    const isSelected = selectedSizes.includes(size);
-    return `<button type="button" class="size-chip ${isSelected ? 'selected' : ''}" onclick="toggleSize('${size}')">${size}</button>`;
-  }).join('');
-}
-
-window.toggleSize = function(size) {
-  if (selectedSizes.includes(size)) {
-    selectedSizes = selectedSizes.filter(s => s !== size);
-  } else {
-    selectedSizes.push(size);
+  if (currentSizeStockRows.length === 0) {
+    container.innerHTML = `<p class="text-secondary" style="font-size: 12px;">No hay tallas configuradas. Presiona "➕ Agregar Talla con Stock".</p>`;
+    return;
   }
   
-  const genderId = document.getElementById('prodGender')?.value || 'caballero';
-  const gObj = GENDER_DEPARTMENTS.find(g => g.id === genderId);
-  renderSizeChips(gObj ? gObj.sizes : []);
+  container.innerHTML = currentSizeStockRows.map((row, idx) => `
+    <div style="display: flex; gap: 10px; align-items: center; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #333; flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 110px;">
+        <label style="font-size: 11px; color: var(--accent-color); font-weight: bold;">TALLA *</label>
+        <input type="text" class="form-control" style="padding: 6px 10px; font-size: 13px;" value="${row.size}" onchange="updateSizeRow(${idx}, 'size', this.value)">
+      </div>
+      
+      <div style="flex: 1; min-width: 140px;">
+        <label style="font-size: 11px; color: #22c55e; font-weight: bold;">⚡ INMEDIATA (TIENDA)</label>
+        <input type="number" class="form-control" style="padding: 6px 10px; font-size: 13px;" min="0" value="${row.immediateQty}" onchange="updateSizeRow(${idx}, 'immediateQty', parseInt(this.value) || 0)">
+      </div>
+
+      <div style="flex: 1; min-width: 130px;">
+        <label style="font-size: 11px; color: #facc15; font-weight: bold;">🏢 BODEGA</label>
+        <input type="number" class="form-control" style="padding: 6px 10px; font-size: 13px;" min="0" value="${row.warehouseQty}" onchange="updateSizeRow(${idx}, 'warehouseQty', parseInt(this.value) || 0)">
+      </div>
+
+      <button type="button" onclick="removeSizeStockRow(${idx})" style="background: transparent; border: none; color: #ef4444; font-size: 18px; cursor: pointer; padding: 4px; margin-top: 14px;">✕</button>
+    </div>
+  `).join('');
+}
+
+window.addSizeStockRow = function() {
+  currentSizeStockRows.push({ size: "NUEVA TALLA", immediateQty: 1, warehouseQty: 3 });
+  renderSizeStockRows();
+};
+
+window.updateSizeRow = function(idx, field, value) {
+  if (currentSizeStockRows[idx]) {
+    currentSizeStockRows[idx][field] = value;
+  }
+};
+
+window.removeSizeStockRow = function(idx) {
+  if (currentSizeStockRows[idx]) {
+    currentSizeStockRows.splice(idx, 1);
+    renderSizeStockRows();
+  }
 };
 
 // Image Preview & Base64 Converter
@@ -357,9 +392,7 @@ function resizeImage(file, maxWidth, maxHeight) {
   });
 }
 
-// ============================================
-// BULK BATCH IMAGE UPLOAD & INLINE EDITOR
-// ============================================
+// Bulk Upload Logic
 const bulkInput = document.getElementById('bulkImagesInput');
 if (bulkInput) {
   bulkInput.addEventListener('change', async (e) => {
@@ -373,7 +406,6 @@ if (bulkInput) {
     }
 
     bulkItems = [];
-
     const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
     let allTeams = [];
     catalog.forEach(s => {
@@ -381,7 +413,6 @@ if (bulkInput) {
         l.teams.forEach(t => allTeams.push({ id: t.id, name: t.name }));
       });
     });
-
     const defaultTeamId = allTeams[0] ? allTeams[0].id : 'steelers';
 
     for (let i = 0; i < files.length; i++) {
@@ -496,8 +527,11 @@ window.publishAllBulkProducts = async function() {
     
     for (const item of bulkItems) {
       const docRef = db.collection('products').doc();
-      const gObj = GENDER_DEPARTMENTS.find(g => g.id === item.gender);
-      const defaultSizes = gObj ? gObj.sizes.slice(0, 3) : ["M", "L"];
+      const defaultSizeStock = [
+        { size: "S", immediateQty: 1, warehouseQty: 2 },
+        { size: "M", immediateQty: 2, warehouseQty: 3 },
+        { size: "L", immediateQty: 1, warehouseQty: 2 }
+      ];
 
       batch.set(docRef, {
         name: item.name,
@@ -507,9 +541,8 @@ window.publishAllBulkProducts = async function() {
         badge: 'ninguno',
         price: item.price,
         originalPrice: null,
-        stockQty: item.stockQty,
-        deliveryType: 'inmediata',
-        sizes: defaultSizes,
+        sizeStockMap: defaultSizeStock,
+        sizes: defaultSizeStock.map(s => s.size),
         description: 'Artículo deportivo oficial de alta calidad.',
         imageUrl: item.base64,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -543,11 +576,9 @@ window.publishAllBulkProducts = async function() {
   }
 };
 
-// ============================================
-// SEED DEMO CATALOG (12 REAL SAMPLE PRODUCTS)
-// ============================================
+// Seed Demo Catalog
 window.seedDemoCatalog = async function() {
-  if (!confirm("¿Deseas inyectar 12 productos reales de muestra (NFL, NBA, MLB, Soccer, F1) a la base de datos?")) return;
+  if (!confirm("¿Deseas inyectar 12 productos reales con inventario por talla (Tienda vs Bodega) a la base de datos?")) return;
 
   const demoProducts = [
     {
@@ -558,9 +589,12 @@ window.seedDemoCatalog = async function() {
       badge: "exclusivo",
       price: 1899,
       originalPrice: 2299,
-      stockQty: 8,
-      deliveryType: "inmediata",
-      sizes: ["S / CH", "M", "L / G", "XL"],
+      sizeStockMap: [
+        { size: "CH / S", immediateQty: 2, warehouseQty: 5 },
+        { size: "M", immediateQty: 4, warehouseQty: 8 },
+        { size: "G / L", immediateQty: 3, warehouseQty: 4 },
+        { size: "XL", immediateQty: 0, warehouseQty: 2 }
+      ],
       description: "Jersey oficial de utilería con bordados premium en oro y negro de los Pittsburgh Steelers.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/pit.png"
     },
@@ -572,9 +606,12 @@ window.seedDemoCatalog = async function() {
       badge: "oferta",
       price: 899,
       originalPrice: 1199,
-      stockQty: 15,
-      deliveryType: "inmediata",
-      sizes: ["7 1/8", "7 1/4", "7 3/8", "7 1/2"],
+      sizeStockMap: [
+        { size: "7 1/8", immediateQty: 3, warehouseQty: 5 },
+        { size: "7 1/4", immediateQty: 5, warehouseQty: 10 },
+        { size: "7 3/8", immediateQty: 2, warehouseQty: 4 },
+        { size: "7 1/2", immediateQty: 0, warehouseQty: 3 }
+      ],
       description: "Gorra oficial New Era 59FIFTY cerrada de los Dallas Cowboys con visera plana.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png"
     },
@@ -586,9 +623,11 @@ window.seedDemoCatalog = async function() {
       badge: "nuevo",
       price: 2199,
       originalPrice: 2699,
-      stockQty: 4,
-      deliveryType: "inmediata",
-      sizes: ["M", "L / G", "XL", "XXL"],
+      sizeStockMap: [
+        { size: "M", immediateQty: 2, warehouseQty: 3 },
+        { size: "L / G", immediateQty: 1, warehouseQty: 4 },
+        { size: "XL", immediateQty: 0, warehouseQty: 2 }
+      ],
       description: "Chamarra rompevientos térmica oficial Nike Sideline de los San Francisco 49ers.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/sf.png"
     },
@@ -600,9 +639,11 @@ window.seedDemoCatalog = async function() {
       badge: "exclusivo",
       price: 1799,
       originalPrice: 2099,
-      stockQty: 6,
-      deliveryType: "inmediata",
-      sizes: ["S Dama", "M Dama", "L Dama"],
+      sizeStockMap: [
+        { size: "S Dama", immediateQty: 3, warehouseQty: 4 },
+        { size: "M Dama", immediateQty: 2, warehouseQty: 5 },
+        { size: "L Dama", immediateQty: 1, warehouseQty: 2 }
+      ],
       description: "Jersey de damas corte entallado oficial de Patrick Mahomes con logo de los Campeones Chiefs.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/kc.png"
     },
@@ -614,25 +655,13 @@ window.seedDemoCatalog = async function() {
       badge: "oferta",
       price: 1699,
       originalPrice: 1999,
-      stockQty: 10,
-      deliveryType: "inmediata",
-      sizes: ["M", "L / G", "XL"],
+      sizeStockMap: [
+        { size: "M", immediateQty: 4, warehouseQty: 6 },
+        { size: "L / G", immediateQty: 3, warehouseQty: 5 },
+        { size: "XL", immediateQty: 1, warehouseQty: 3 }
+      ],
       description: "Jersey oficial Nike Dri-FIT de LeBron James Icon Edition en color púrpura y oro.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/nba/500/lal.png"
-    },
-    {
-      name: "Playera Chicago Bulls Michael Jordan #23 Retro",
-      team: "nba-bulls",
-      gender: "caballero",
-      category: "jerseys",
-      badge: "edicion-limitada",
-      price: 1599,
-      originalPrice: 1999,
-      stockQty: 3,
-      deliveryType: "inmediata",
-      sizes: ["S / CH", "M", "L / G"],
-      description: "Edición conmemorativa Mitchell & Ness de Michael Jordan 1998 Finals.",
-      imageUrl: "https://a.espncdn.com/i/teamlogos/nba/500/chi.png"
     },
     {
       name: "Gorra New York Yankees New Era 9FIFTY Snapback Navy",
@@ -642,25 +671,11 @@ window.seedDemoCatalog = async function() {
       badge: "nuevo",
       price: 799,
       originalPrice: 999,
-      stockQty: 20,
-      deliveryType: "inmediata",
-      sizes: ["Ajustable / Unitalla"],
+      sizeStockMap: [
+        { size: "Ajustable / Unitalla", immediateQty: 10, warehouseQty: 25 }
+      ],
       description: "Gorra clásica ajustable 9FIFTY con logo bordado 3D de los NY Yankees.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png"
-    },
-    {
-      name: "Chamarra Los Angeles Dodgers World Series Champions",
-      team: "mlb-dodgers",
-      gender: "caballero",
-      category: "chamarras",
-      badge: "edicion-limitada",
-      price: 2499,
-      originalPrice: 2999,
-      stockQty: 2,
-      deliveryType: "inmediata",
-      sizes: ["M", "L / G", "XL"],
-      description: "Chamarra tipo varsity de satin con bordados de Campeones MLB Dodgers.",
-      imageUrl: "https://a.espncdn.com/i/teamlogos/mlb/500/lad.png"
     },
     {
       name: "Jersey Real Madrid Local 2026/27 Adidas Champions",
@@ -670,25 +685,14 @@ window.seedDemoCatalog = async function() {
       badge: "nuevo",
       price: 1999,
       originalPrice: 2399,
-      stockQty: 12,
-      deliveryType: "inmediata",
-      sizes: ["S / CH", "M", "L / G", "XL"],
+      sizeStockMap: [
+        { size: "CH / S", immediateQty: 5, warehouseQty: 10 },
+        { size: "M", immediateQty: 6, warehouseQty: 12 },
+        { size: "L / G", immediateQty: 4, warehouseQty: 8 },
+        { size: "XL", immediateQty: 2, warehouseQty: 5 }
+      ],
       description: "Jersey oficial de local en blanco puro con detalles dorados y parche de 15 Champions League.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/soccer/500/83.png"
-    },
-    {
-      name: "Jersey Club América Local Campeón Liga MX 2026",
-      team: "soc-america",
-      gender: "caballero",
-      category: "jerseys",
-      badge: "oferta",
-      price: 1699,
-      originalPrice: 1999,
-      stockQty: 7,
-      deliveryType: "inmediata",
-      sizes: ["S / CH", "M", "L / G", "XL"],
-      description: "Jersey oficial Nike del Club América en crema azul con parche de Campeón.",
-      imageUrl: "https://a.espncdn.com/i/teamlogos/soccer/500/227.png"
     },
     {
       name: "Chamarra Red Bull Racing F1 Checo Pérez #11 Official",
@@ -698,24 +702,11 @@ window.seedDemoCatalog = async function() {
       badge: "exclusivo",
       price: 2899,
       originalPrice: 3499,
-      stockQty: 5,
-      deliveryType: "inmediata",
-      sizes: ["M", "L / G", "XL"],
+      sizeStockMap: [
+        { size: "M", immediateQty: 2, warehouseQty: 4 },
+        { size: "L / G", immediateQty: 2, warehouseQty: 3 }
+      ],
       description: "Chamarra softshell oficial Castore de Red Bull Racing y Checo Pérez #11.",
-      imageUrl: "https://a.espncdn.com/i/teamlogos/leagues/500/f1.png"
-    },
-    {
-      name: "Gorra Puma Scuderia Ferrari F1 Special Edition",
-      team: "f1-ferrari",
-      gender: "unisex",
-      category: "gorras",
-      badge: "nuevo",
-      price: 1099,
-      originalPrice: 1399,
-      stockQty: 9,
-      deliveryType: "inmediata",
-      sizes: ["Ajustable / Unitalla"],
-      description: "Gorra oficial Puma Scuderia Ferrari con el Cavallino Rampante bordado.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/leagues/500/f1.png"
     }
   ];
@@ -724,13 +715,15 @@ window.seedDemoCatalog = async function() {
     const batch = db.batch();
     for (const prod of demoProducts) {
       const ref = db.collection('products').doc();
+      const sizesArray = prod.sizeStockMap.map(s => s.size);
       batch.set(ref, {
         ...prod,
+        sizes: sizesArray,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
     }
     await batch.commit();
-    alert("✅ ¡12 Productos de muestra inyectados exitosamente en la tienda!");
+    alert("✅ ¡8 Productos de muestra inyectados exitosamente con control de existencias por talla!");
   } catch(e) {
     alert("Error al inyectar catálogo: " + e.message);
   }
@@ -769,9 +762,12 @@ function renderAdminProductsList(products) {
   list.innerHTML = filtered.map(product => {
     const teamName = typeof getTeamName !== 'undefined' ? getTeamName(product.team) : product.team;
     const genderLabel = typeof getGenderLabel !== 'undefined' ? getGenderLabel(product.gender) : '👨 Caballero';
-    const stockQty = product.stockQty || 5;
-    const deliveryType = product.deliveryType === 'pedido' ? '📦 Bajo Pedido (3-5 días)' : '⚡ Entrega Inmediata';
     const priceStr = `$${product.price}`;
+    const sizeStockMap = product.sizeStockMap || [];
+    
+    const stockDetailsHtml = sizeStockMap.length > 0 
+      ? sizeStockMap.map(s => `<strong>${s.size}</strong> (⚡${s.immediateQty} / 🏢${s.warehouseQty})`).join(' | ')
+      : `Tallas: ${(product.sizes || []).join(', ')}`;
     
     return `
       <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(255,255,255,0.04); border-radius: 10px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 10px;">
@@ -782,8 +778,8 @@ function renderAdminProductsList(products) {
             <div style="font-size: 12px; color: var(--accent-color); font-weight: 700;">
               ${genderLabel} — ${teamName} — ${priceStr}
             </div>
-            <div style="font-size: 11px; color: #aaa; margin-top: 2px;">
-              Bodega: <strong>${stockQty} pzs</strong> | Status: <span style="color: ${product.deliveryType === 'pedido' ? '#facc15' : '#22c55e'}; font-weight: bold;">${deliveryType}</span>
+            <div style="font-size: 11px; color: #aaa; margin-top: 4px;">
+              ${stockDetailsHtml}
             </div>
           </div>
         </div>
@@ -807,8 +803,6 @@ window.openEditModal = function(id) {
   
   document.getElementById('editProdId').value = prod.id;
   document.getElementById('editProdName').value = prod.name || '';
-  document.getElementById('editProdStockQty').value = prod.stockQty || 5;
-  document.getElementById('editProdDeliveryType').value = prod.deliveryType || 'inmediata';
   document.getElementById('editProdPrice').value = prod.price || '';
   document.getElementById('editProdOriginalPrice').value = prod.originalPrice || '';
   document.getElementById('editProdDesc').value = prod.description || '';
@@ -824,8 +818,6 @@ document.getElementById('editProductForm')?.addEventListener('submit', async (e)
   e.preventDefault();
   const id = document.getElementById('editProdId').value;
   const name = document.getElementById('editProdName').value.trim();
-  const stockQty = parseInt(document.getElementById('editProdStockQty').value) || 0;
-  const deliveryType = document.getElementById('editProdDeliveryType').value;
   const price = parseFloat(document.getElementById('editProdPrice').value);
   const origPriceVal = document.getElementById('editProdOriginalPrice').value;
   const originalPrice = origPriceVal ? parseFloat(origPriceVal) : null;
@@ -833,7 +825,7 @@ document.getElementById('editProductForm')?.addEventListener('submit', async (e)
   
   try {
     await db.collection('products').doc(id).update({
-      name, stockQty, deliveryType, price, originalPrice, description: desc
+      name, price, originalPrice, description: desc
     });
     alert('✅ Producto e Inventario actualizados exitosamente');
     closeEditModal();
@@ -865,6 +857,11 @@ document.getElementById('productForm')?.addEventListener('submit', async (e) => 
     return;
   }
   
+  if (currentSizeStockRows.length === 0) {
+    alert("Por favor agrega al menos 1 talla con su cantidad de inventario.");
+    return;
+  }
+
   const btnSubmit = document.getElementById('btnSubmit');
   const originalText = btnSubmit.textContent;
   
@@ -882,8 +879,6 @@ document.getElementById('productForm')?.addEventListener('submit', async (e) => 
     const price = parseFloat(document.getElementById('prodPrice').value);
     const origPriceVal = document.getElementById('prodOriginalPrice').value;
     const originalPrice = origPriceVal ? parseFloat(origPriceVal) : null;
-    const stockQty = parseInt(document.getElementById('prodStockQty').value) || 0;
-    const deliveryType = document.getElementById('prodDeliveryType').value;
     const desc = document.getElementById('prodDesc').value.trim();
     
     let imageUrl = urlInput;
@@ -894,6 +889,8 @@ document.getElementById('productForm')?.addEventListener('submit', async (e) => 
     
     uploadStatus.textContent = 'Guardando en catálogo...';
     
+    const sizesArray = currentSizeStockRows.map(s => s.size);
+
     await db.collection('products').add({
       name,
       team,
@@ -902,16 +899,15 @@ document.getElementById('productForm')?.addEventListener('submit', async (e) => 
       badge,
       price,
       originalPrice,
-      stockQty,
-      deliveryType,
-      sizes: selectedSizes,
+      sizeStockMap: currentSizeStockRows,
+      sizes: sizesArray,
       description: desc,
       imageUrl,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     
     uploadStatus.style.color = '#4ade80';
-    uploadStatus.textContent = '✅ ¡Producto publicado exitosamente con control de inventario!';
+    uploadStatus.textContent = '✅ ¡Producto publicado exitosamente con existencias por talla!';
     
     // Reset Form
     document.getElementById('productForm').reset();
