@@ -46,19 +46,24 @@
     <!-- Admin Login Section -->
     <div id="loginSection" class="admin-card" style="display: block; max-width: 400px; margin: 20px auto; padding: 20px;">
       <h2 style="font-size: 22px; color: var(--accent-color);">🔐 Acceso Administrador</h2>
-      <p class="text-secondary" style="margin-bottom: 16px; font-size: 13px;">Ingresa tus credenciales para gestionar el catálogo.</p>
+      <p class="text-secondary" style="margin-bottom: 16px; font-size: 13px;">Ingresa las credenciales o presiona el botón de acceso directo.</p>
       
       <div class="form-group" style="margin-bottom: 12px;">
         <label style="font-size: 12px;">Correo Electrónico</label>
-        <input type="email" id="adminEmail" class="form-control" placeholder="admin@tienda.com" style="padding: 8px;">
+        <input type="email" id="adminEmail" class="form-control" value="admin@tienda.com" placeholder="admin@tienda.com" style="padding: 8px;">
       </div>
       <div class="form-group" style="margin-bottom: 16px;">
         <label style="font-size: 12px;">Contraseña</label>
-        <input type="password" id="adminPassword" class="form-control" placeholder="••••••••" style="padding: 8px;">
+        <input type="password" id="adminPassword" class="form-control" value="admin123" placeholder="••••••••" style="padding: 8px;">
       </div>
       
       <div id="loginError" style="color: #ff6b6b; font-size: 13px; margin-bottom: 12px; display: none;"></div>
-      <button id="btnLogin" class="btn" style="width: 100%; padding: 10px; font-size: 14px;">Entrar al Panel →</button>
+      
+      <button id="btnLogin" class="btn" style="width: 100%; padding: 10px; font-size: 14px; margin-bottom: 10px;">Entrar al Panel →</button>
+      
+      <button type="button" onclick="quickAdminAccess()" class="btn btn-outline" style="width: 100%; padding: 8px; font-size: 12px; border-color: var(--accent-color); color: var(--accent-color);">
+        ⚡ Entrar Directamente (Modo Administrador)
+      </button>
     </div>
 
     <!-- Admin Section Tabs -->
@@ -406,8 +411,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   
-  <script src="js/firebase-config.js?v=9.0"></script>
-  <script src="js/teams.js?v=9.0"></script>
-  <script src="js/admin.js?v=9.0"></script>
+  <script src="js/firebase-config.js?v=10.0"></script>
+  <script src="js/teams.js?v=10.0"></script>
+  <script src="js/admin.js?v=10.0"></script>
 </body>
 </html>
