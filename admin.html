@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Admin - Catch Sports</title>
-  <link rel="stylesheet" href="css/styles.css?v=8.0">
+  <link rel="stylesheet" href="css/styles.css?v=11.0">
   
   <script>
     if ('serviceWorker' in navigator) {
@@ -262,72 +262,70 @@
       </div>
     </div>
     
-    <!-- PRODUCT CATALOG MANAGEMENT WITH 5-STEP CASCADING SEQUENCE SELECTOR -->
+    <!-- PRODUCT CATALOG MANAGEMENT WITH 5 CASCADING DROPDOWNS -->
     <div id="manageSection" class="admin-card" style="display: none; margin-top: 16px; padding: 16px;">
       <div style="margin-bottom: 12px;">
         <h2 style="font-size: 18px; color: var(--accent-color); margin-bottom: 4px;">
           📦 Catálogo Publicado (<span id="adminProdCount">0</span>)
         </h2>
         <p class="text-secondary" style="font-size: 12px; margin-bottom: 0;">
-          Secuencia: Deporte ➔ Liga ➔ Equipo ➔ Tipo ➔ Género para desplegar productos.
+          Selecciona las listas desplegables en orden para mostrar los productos correspondientes.
         </p>
       </div>
 
-      <!-- CASCADING 5-STEP SEQUENCE NAVIGATOR IN ADMIN CATALOG -->
-      <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--accent-color); border-radius: 10px; padding: 10px; margin-bottom: 14px;">
+      <!-- CASCADING 5-DROPDOWN SEQUENCE NAVIGATOR IN ADMIN CATALOG -->
+      <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--accent-color); border-radius: 10px; padding: 12px; margin-bottom: 14px;">
         
-        <!-- STEP 1: DEPORTE -->
-        <div style="margin-bottom: 8px;">
-          <div style="font-size: 11px; font-weight: 800; color: var(--accent-color); margin-bottom: 4px; text-transform: uppercase;">
-            1️⃣ Deporte:
-          </div>
-          <div id="adminSportChips" style="display: flex; flex-wrap: wrap; gap: 4px;">
-            <!-- Dynamic Sport Chips -->
-          </div>
+        <div style="font-size: 12px; font-weight: 800; color: var(--accent-color); margin-bottom: 8px; text-transform: uppercase;">
+          🎯 Filtrar Catálogo por Listas Desplegables:
         </div>
 
-        <!-- STEP 2: LIGA -->
-        <div id="adminLeagueStep" style="display: none; margin-bottom: 8px;">
-          <div style="font-size: 11px; font-weight: 800; color: #38bdf8; margin-bottom: 4px; text-transform: uppercase;">
-            2️⃣ Liga / Torneo:
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 10px;">
+          
+          <!-- DROPDOWN 1: DEPORTE -->
+          <div>
+            <label style="font-size: 10px; color: var(--accent-color); font-weight: 800; display: block; margin-bottom: 2px;">1. Deporte:</label>
+            <select id="filterSportSelect" class="form-control" onchange="onAdminFilterSportChange()" style="padding: 6px; font-size: 12px;">
+              <!-- Dynamic options -->
+            </select>
           </div>
-          <div id="adminLeagueChips" style="display: flex; flex-wrap: wrap; gap: 4px;">
-            <!-- Dynamic League Chips -->
+
+          <!-- DROPDOWN 2: LIGA -->
+          <div id="filterLeagueWrapper" style="display: none;">
+            <label style="font-size: 10px; color: #38bdf8; font-weight: 800; display: block; margin-bottom: 2px;">2. Liga / Torneo:</label>
+            <select id="filterLeagueSelect" class="form-control" onchange="onAdminFilterLeagueChange()" style="padding: 6px; font-size: 12px;">
+              <!-- Dynamic options -->
+            </select>
           </div>
+
+          <!-- DROPDOWN 3: EQUIPO -->
+          <div id="filterTeamWrapper" style="display: none;">
+            <label style="font-size: 10px; color: #facc15; font-weight: 800; display: block; margin-bottom: 2px;">3. Equipo:</label>
+            <select id="filterTeamSelect" class="form-control" onchange="onAdminFilterTeamChange()" style="padding: 6px; font-size: 12px;">
+              <!-- Dynamic options -->
+            </select>
+          </div>
+
+          <!-- DROPDOWN 4: TIPO DE ARTÍCULO -->
+          <div id="filterCategoryWrapper" style="display: none;">
+            <label style="font-size: 10px; color: #a855f7; font-weight: 800; display: block; margin-bottom: 2px;">4. Tipo de Artículo:</label>
+            <select id="filterCategorySelect" class="form-control" onchange="onAdminFilterCategoryChange()" style="padding: 6px; font-size: 12px;">
+              <!-- Dynamic options -->
+            </select>
+          </div>
+
+          <!-- DROPDOWN 5: GÉNERO / DEPARTAMENTO -->
+          <div id="filterGenderWrapper" style="display: none;">
+            <label style="font-size: 10px; color: #22c55e; font-weight: 800; display: block; margin-bottom: 2px;">5. Género:</label>
+            <select id="filterGenderSelect" class="form-control" onchange="onAdminFilterGenderChange()" style="padding: 6px; font-size: 12px;">
+              <!-- Dynamic options -->
+            </select>
+          </div>
+
         </div>
 
-        <!-- STEP 3: EQUIPO -->
-        <div id="adminTeamStep" style="display: none; margin-bottom: 8px;">
-          <div style="font-size: 11px; font-weight: 800; color: #facc15; margin-bottom: 4px; text-transform: uppercase;">
-            3️⃣ Equipo / Franquicia:
-          </div>
-          <div id="adminTeamChips" style="display: flex; flex-wrap: wrap; gap: 4px;">
-            <!-- Dynamic Team Chips -->
-          </div>
-        </div>
-
-        <!-- STEP 4: CATEGORÍA / TIPO -->
-        <div id="adminCategoryStep" style="display: none; margin-bottom: 8px;">
-          <div style="font-size: 11px; font-weight: 800; color: #a855f7; margin-bottom: 4px; text-transform: uppercase;">
-            4️⃣ Tipo de Artículo:
-          </div>
-          <div id="adminCategoryChips" style="display: flex; flex-wrap: wrap; gap: 4px;">
-            <!-- Dynamic Category Chips -->
-          </div>
-        </div>
-
-        <!-- STEP 5: GÉNERO / DEPARTAMENTO -->
-        <div id="adminGenderStep" style="display: none; margin-bottom: 8px;">
-          <div style="font-size: 11px; font-weight: 800; color: #22c55e; margin-bottom: 4px; text-transform: uppercase;">
-            5️⃣ Género / Departamento:
-          </div>
-          <div id="adminGenderChips" style="display: flex; flex-wrap: wrap; gap: 4px;">
-            <!-- Dynamic Gender Chips -->
-          </div>
-        </div>
-
-        <!-- TOOLBAR & ALL PRODUCTS BTN -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid #333; flex-wrap: wrap; gap: 8px;">
+        <!-- TOOLBAR & RESET BTN -->
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #333; flex-wrap: wrap; gap: 8px;">
           <input type="text" id="adminSearchInput" class="form-control" placeholder="🔍 O busca por nombre..." style="max-width: 220px; padding: 4px 8px; font-size: 11px;">
           <button type="button" class="btn btn-outline" style="font-size: 10px; padding: 4px 8px;" onclick="resetAdminCatalogFilter()">
             🌐 Ver Todo Sin Filtros
@@ -411,8 +409,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   
-  <script src="js/firebase-config.js?v=10.0"></script>
-  <script src="js/teams.js?v=10.0"></script>
-  <script src="js/admin.js?v=10.0"></script>
+  <script src="js/firebase-config.js?v=11.0"></script>
+  <script src="js/teams.js?v=11.0"></script>
+  <script src="js/admin.js?v=11.0"></script>
 </body>
 </html>

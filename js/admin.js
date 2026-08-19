@@ -815,91 +815,61 @@ function loadAdminProducts() {
 }
 
 // ============================================
-// ADMIN CATALOG 5-STEP SEQUENCE NAVIGATOR
+// ADMIN CATALOG 5-DROPDOWN CASCADING NAVIGATOR
 // ============================================
 function renderAdminCatalogSequenceNav() {
-  const sportContainer = document.getElementById('adminSportChips');
-  const leagueStep = document.getElementById('adminLeagueStep');
-  const leagueContainer = document.getElementById('adminLeagueChips');
-  const teamStep = document.getElementById('adminTeamStep');
-  const teamContainer = document.getElementById('adminTeamChips');
-  const categoryStep = document.getElementById('adminCategoryStep');
-  const categoryContainer = document.getElementById('adminCategoryChips');
-  const genderStep = document.getElementById('adminGenderStep');
-  const genderContainer = document.getElementById('adminGenderChips');
+  const sportSelect = document.getElementById('filterSportSelect');
+  const leagueWrapper = document.getElementById('filterLeagueWrapper');
+  const leagueSelect = document.getElementById('filterLeagueSelect');
+  const teamWrapper = document.getElementById('filterTeamWrapper');
+  const teamSelect = document.getElementById('filterTeamSelect');
+  const categoryWrapper = document.getElementById('filterCategoryWrapper');
+  const categorySelect = document.getElementById('filterCategorySelect');
+  const genderWrapper = document.getElementById('filterGenderWrapper');
+  const genderSelect = document.getElementById('filterGenderSelect');
 
-  if (!sportContainer) return;
+  if (!sportSelect) return;
   const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
 
-  // STEP 1: DEPORTE
-  sportContainer.innerHTML = catalog.map(s => {
-    const isActive = adminFilterSportKey === s.sportKey;
-    return `
-      <button type="button" onclick="selectAdminFilterSport('${s.sportKey}')" style="padding: 4px 10px; font-size: 11px; font-weight: 800; border-radius: 6px; cursor: pointer; transition: all 0.2s; ${
-        isActive 
-          ? 'background: var(--accent-color) !important; color: #000 !important; border: 1px solid var(--accent-color) !important;' 
-          : 'background: #181818; color: #fff; border: 1px solid #444;'
-      }">
-        ${s.icon} ${s.sport}
-      </button>
-    `;
-  }).join('');
+  // 1. DEPORTE DROPDOWN
+  sportSelect.innerHTML = '<option value="">1. Selecciona Deporte...</option>' + 
+    catalog.map(s => `<option value="${s.sportKey}" ${adminFilterSportKey === s.sportKey ? 'selected' : ''}>${s.icon} ${s.sport}</option>`).join('');
 
-  // STEP 2: LIGA
+  // 2. LIGA DROPDOWN
   if (adminFilterSportKey) {
     const sportObj = catalog.find(s => s.sportKey === adminFilterSportKey);
     if (sportObj && sportObj.leagues.length > 0) {
-      if (leagueStep) leagueStep.style.display = 'block';
-      if (leagueContainer) {
-        leagueContainer.innerHTML = sportObj.leagues.map(l => {
-          const isActive = adminFilterLeagueName === l.league;
-          return `
-            <button type="button" onclick="selectAdminFilterLeague('${l.league}')" style="padding: 4px 10px; font-size: 11px; font-weight: 800; border-radius: 6px; cursor: pointer; transition: all 0.2s; ${
-              isActive 
-                ? 'background: #38bdf8 !important; color: #000 !important; border: 1px solid #38bdf8 !important;' 
-                : 'background: #181818; color: #38bdf8; border: 1px solid #38bdf8;'
-            }">
-              🏆 ${l.league}
-            </button>
-          `;
-        }).join('');
+      if (leagueWrapper) leagueWrapper.style.display = 'block';
+      if (leagueSelect) {
+        leagueSelect.innerHTML = '<option value="">2. Selecciona Liga...</option>' + 
+          sportObj.leagues.map(l => `<option value="${l.league}" ${adminFilterLeagueName === l.league ? 'selected' : ''}>🏆 ${l.league}</option>`).join('');
       }
     } else {
-      if (leagueStep) leagueStep.style.display = 'none';
+      if (leagueWrapper) leagueWrapper.style.display = 'none';
     }
   } else {
-    if (leagueStep) leagueStep.style.display = 'none';
+    if (leagueWrapper) leagueWrapper.style.display = 'none';
   }
 
-  // STEP 3: EQUIPO
+  // 3. EQUIPO DROPDOWN
   if (adminFilterSportKey && adminFilterLeagueName) {
     const sportObj = catalog.find(s => s.sportKey === adminFilterSportKey);
     const leagueObj = sportObj ? sportObj.leagues.find(l => l.league === adminFilterLeagueName) : null;
 
     if (leagueObj && leagueObj.teams.length > 0) {
-      if (teamStep) teamStep.style.display = 'block';
-      if (teamContainer) {
-        teamContainer.innerHTML = leagueObj.teams.map(t => {
-          const isActive = adminFilterTeamId === t.id;
-          return `
-            <button type="button" onclick="selectAdminFilterTeam('${t.id}')" style="padding: 4px 10px; font-size: 11px; font-weight: 800; border-radius: 6px; cursor: pointer; transition: all 0.2s; ${
-              isActive 
-                ? 'background: #facc15 !important; color: #000 !important; border: 1px solid #facc15 !important; box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);' 
-                : 'background: #181818; color: #facc15; border: 1px solid #facc15;'
-            }">
-              🛡️ ${t.name}
-            </button>
-          `;
-        }).join('');
+      if (teamWrapper) teamWrapper.style.display = 'block';
+      if (teamSelect) {
+        teamSelect.innerHTML = '<option value="">3. Selecciona Equipo...</option>' + 
+          leagueObj.teams.map(t => `<option value="${t.id}" ${adminFilterTeamId === t.id ? 'selected' : ''}>🛡️ ${t.name}</option>`).join('');
       }
     } else {
-      if (teamStep) teamStep.style.display = 'none';
+      if (teamWrapper) teamWrapper.style.display = 'none';
     }
   } else {
-    if (teamStep) teamStep.style.display = 'none';
+    if (teamWrapper) teamWrapper.style.display = 'none';
   }
 
-  // STEP 4: CATEGORÍA / TIPO DE ARTÍCULO
+  // 4. TIPO DROPDOWN
   if (adminFilterTeamId) {
     const categories = (typeof PRODUCT_CATEGORIES !== 'undefined') ? PRODUCT_CATEGORIES : [
       { id: "jerseys", label: "👕 Jerseys / Camisetas" },
@@ -908,27 +878,17 @@ function renderAdminCatalogSequenceNav() {
       { id: "balones", label: "🏈 Balones / Coleccionables" }
     ];
 
-    if (categoryStep) categoryStep.style.display = 'block';
-    if (categoryContainer) {
-      categoryContainer.innerHTML = categories.map(c => {
-        const isActive = adminFilterCategoryId === c.id;
-        return `
-          <button type="button" onclick="selectAdminFilterCategory('${c.id}')" style="padding: 4px 10px; font-size: 11px; font-weight: 800; border-radius: 6px; cursor: pointer; transition: all 0.2s; ${
-            isActive 
-              ? 'background: #a855f7 !important; color: #fff !important; border: 1px solid #a855f7 !important;' 
-              : 'background: #181818; color: #c084fc; border: 1px solid #a855f7;'
-          }">
-            ${c.label}
-          </button>
-        `;
-      }).join('');
+    if (categoryWrapper) categoryWrapper.style.display = 'block';
+    if (categorySelect) {
+      categorySelect.innerHTML = '<option value="">4. Selecciona Tipo (Todos)...</option>' + 
+        categories.map(c => `<option value="${c.id}" ${adminFilterCategoryId === c.id ? 'selected' : ''}>${c.label}</option>`).join('');
     }
   } else {
-    if (categoryStep) categoryStep.style.display = 'none';
+    if (categoryWrapper) categoryWrapper.style.display = 'none';
   }
 
-  // STEP 5: GÉNERO / DEPARTAMENTO
-  if (adminFilterCategoryId) {
+  // 5. GÉNERO DROPDOWN
+  if (adminFilterCategoryId || adminFilterTeamId) {
     const genders = [
       { id: "caballero", label: "👨 Caballero" },
       { id: "dama", label: "👩 Dama" },
@@ -936,28 +896,19 @@ function renderAdminCatalogSequenceNav() {
       { id: "unisex", label: "🧢 Unisex" }
     ];
 
-    if (genderStep) genderStep.style.display = 'block';
-    if (genderContainer) {
-      genderContainer.innerHTML = genders.map(g => {
-        const isActive = adminFilterGenderId === g.id;
-        return `
-          <button type="button" onclick="selectAdminFilterGender('${g.id}')" style="padding: 4px 10px; font-size: 11px; font-weight: 800; border-radius: 6px; cursor: pointer; transition: all 0.2s; ${
-            isActive 
-              ? 'background: #22c55e !important; color: #000 !important; border: 1px solid #22c55e !important;' 
-              : 'background: #181818; color: #22c55e; border: 1px solid #22c55e;'
-          }">
-            ${g.label}
-          </button>
-        `;
-      }).join('');
+    if (genderWrapper) genderWrapper.style.display = 'block';
+    if (genderSelect) {
+      genderSelect.innerHTML = '<option value="">5. Selecciona Género (Todos)...</option>' + 
+        genders.map(g => `<option value="${g.id}" ${adminFilterGenderId === g.id ? 'selected' : ''}>${g.label}</option>`).join('');
     }
   } else {
-    if (genderStep) genderStep.style.display = 'none';
+    if (genderWrapper) genderWrapper.style.display = 'none';
   }
 }
 
-window.selectAdminFilterSport = function(sportKey) {
-  adminFilterSportKey = (adminFilterSportKey === sportKey) ? null : sportKey;
+window.onAdminFilterSportChange = function() {
+  const val = document.getElementById('filterSportSelect')?.value;
+  adminFilterSportKey = val || null;
   adminFilterLeagueName = null;
   adminFilterTeamId = null;
   adminFilterCategoryId = null;
@@ -966,8 +917,9 @@ window.selectAdminFilterSport = function(sportKey) {
   renderAdminProductsList(currentProducts);
 };
 
-window.selectAdminFilterLeague = function(leagueName) {
-  adminFilterLeagueName = (adminFilterLeagueName === leagueName) ? null : leagueName;
+window.onAdminFilterLeagueChange = function() {
+  const val = document.getElementById('filterLeagueSelect')?.value;
+  adminFilterLeagueName = val || null;
   adminFilterTeamId = null;
   adminFilterCategoryId = null;
   adminFilterGenderId = null;
@@ -975,24 +927,24 @@ window.selectAdminFilterLeague = function(leagueName) {
   renderAdminProductsList(currentProducts);
 };
 
-window.selectAdminFilterTeam = function(teamId) {
-  adminFilterTeamId = (adminFilterTeamId === teamId) ? null : teamId;
+window.onAdminFilterTeamChange = function() {
+  const val = document.getElementById('filterTeamSelect')?.value;
+  adminFilterTeamId = val || null;
   adminFilterCategoryId = null;
   adminFilterGenderId = null;
   renderAdminCatalogSequenceNav();
   renderAdminProductsList(currentProducts);
 };
 
-window.selectAdminFilterCategory = function(catId) {
-  adminFilterCategoryId = (adminFilterCategoryId === catId) ? null : catId;
-  adminFilterGenderId = null;
-  renderAdminCatalogSequenceNav();
+window.onAdminFilterCategoryChange = function() {
+  const val = document.getElementById('filterCategorySelect')?.value;
+  adminFilterCategoryId = val || null;
   renderAdminProductsList(currentProducts);
 };
 
-window.selectAdminFilterGender = function(genderId) {
-  adminFilterGenderId = (adminFilterGenderId === genderId) ? null : genderId;
-  renderAdminCatalogSequenceNav();
+window.onAdminFilterGenderChange = function() {
+  const val = document.getElementById('filterGenderSelect')?.value;
+  adminFilterGenderId = val || null;
   renderAdminProductsList(currentProducts);
 };
 
