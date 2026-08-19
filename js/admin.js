@@ -271,7 +271,7 @@ function populateBadgesSelect() {
 }
 
 // ============================================
-// ULTRA-COMPACT 1-LINE INLINE SIZE STOCK BUILDER FOR MOBILE
+// ULTRA-COMPACT PERFECT 1-LINE SIZE STOCK BUILDER
 // ============================================
 window.onGenderSelectChange = function() {
   const genderId = document.getElementById('prodGender')?.value || 'caballero';
@@ -318,25 +318,25 @@ function renderSizeStockRows() {
     <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; background: #000; padding: 6px 8px; border-radius: 8px; border: 1px solid #333; margin-bottom: 4px;">
       
       <!-- TALLA INPUT -->
-      <div style="display: flex; align-items: center; gap: 3px;">
-        <span style="font-size: 10px; color: var(--accent-color); font-weight: 800;">Talla:</span>
-        <input type="text" value="${row.size}" onchange="updateSizeRow(${idx}, 'size', this.value)" style="width: 55px !important; background: #181818; color: #fff; border: 1px solid #444; border-radius: 4px; padding: 4px; font-size: 11px; font-weight: 800; text-align: center; text-transform: uppercase;">
+      <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
+        <span style="font-size: 10px; color: var(--accent-color); font-weight: 800; white-space: nowrap;">Talla:</span>
+        <input type="text" value="${row.size}" onchange="updateSizeRow(${idx}, 'size', this.value)" style="width: 48px !important; background: #181818; color: #fff; border: 1px solid #444; border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center; text-transform: uppercase;">
       </div>
       
       <!-- TIENDA INPUT -->
-      <div style="display: flex; align-items: center; gap: 3px;">
-        <span style="font-size: 10px; color: #22c55e; font-weight: 800;">⚡Tienda:</span>
-        <input type="number" value="${row.immediateQty}" onchange="updateSizeRow(${idx}, 'immediateQty', parseInt(this.value) || 0)" style="width: 42px !important; background: #181818; color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 4px; padding: 4px; font-size: 11px; font-weight: 800; text-align: center;" min="0" max="99">
+      <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
+        <span style="font-size: 10px; color: #22c55e; font-weight: 800; white-space: nowrap;">⚡Tienda:</span>
+        <input type="number" value="${row.immediateQty}" onchange="updateSizeRow(${idx}, 'immediateQty', parseInt(this.value) || 0)" style="width: 38px !important; background: #181818; color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center;" min="0" max="99">
       </div>
 
-      <!-- BODEGA INPUT -->
-      <div style="display: flex; align-items: center; gap: 3px;">
-        <span style="font-size: 10px; color: #facc15; font-weight: 800;">🏢Bodega:</span>
-        <input type="number" value="${row.warehouseQty}" onchange="updateSizeRow(${idx}, 'warehouseQty', parseInt(this.value) || 0)" style="width: 42px !important; background: #181818; color: #facc15; border: 1px solid rgba(250, 204, 21, 0.4); border-radius: 4px; padding: 4px; font-size: 11px; font-weight: 800; text-align: center;" min="0" max="99">
+      <!-- BODEGA INPUT (INLINE EMOJI & LABEL) -->
+      <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
+        <span style="font-size: 10px; color: #facc15; font-weight: 800; white-space: nowrap;">🏢Bodega:</span>
+        <input type="number" value="${row.warehouseQty}" onchange="updateSizeRow(${idx}, 'warehouseQty', parseInt(this.value) || 0)" style="width: 38px !important; background: #181818; color: #facc15; border: 1px solid rgba(250, 204, 21, 0.4); border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center;" min="0" max="99">
       </div>
 
-      <!-- REMOVE BUTTON -->
-      <button type="button" onclick="removeSizeStockRow(${idx})" style="background: transparent; border: none; color: #ef4444; font-size: 15px; font-weight: bold; cursor: pointer; padding: 0 2px;">✕</button>
+      <!-- VISIBLE RED CIRCULAR X BUTTON -->
+      <button type="button" onclick="removeSizeStockRow(${idx})" style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; cursor: pointer; flex-shrink: 0; padding: 0; margin-left: 2px;" title="Eliminar talla">✕</button>
     </div>
   `).join('');
 }
