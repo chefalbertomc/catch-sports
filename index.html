@@ -14,7 +14,7 @@
 
   <!-- Ticker Promo Banner -->
   <div class="ticker-banner">
-    🔥 ¡ENVÍOS GRATIS A TODO MÉXICO EN COMPRAS MAYORES A $1,500! 🚚 | ⚡ NAVEGACIÓN GUIADA POR DEPORTE ➔ LIGA ➔ EQUIPO
+    🔥 ¡ENVÍOS GRATIS A TODO MÉXICO EN COMPRAS MAYORES A $1,500! 🚚 | ⚡ SECUENCIA: DEPORTE ➔ LIGA ➔ EQUIPO ➔ TALLAS
   </div>
 
   <!-- Navbar -->
@@ -37,8 +37,8 @@
   <!-- Main Content -->
   <main class="container">
     
-    <!-- NAVEGACIÓN GUIADA PASO A PASO (DEPORTE > LIGA > EQUIPO) -->
-    <section class="wizard-container" id="flowWizardContainer">
+    <!-- SECUENCIA GUIADA OBLIGATORIA (DEPORTE > LIGA > EQUIPO) -->
+    <section class="wizard-container" id="flowWizardContainer" style="border: 2px solid var(--accent-color); border-radius: 16px; padding: 20px; background: rgba(250, 204, 21, 0.03); margin-bottom: 24px;">
       
       <!-- Indicator Breadcrumbs Pills -->
       <div class="wizard-steps-header">
@@ -57,7 +57,7 @@
 
       <!-- Step Title & Subtitle -->
       <h2 class="wizard-title" id="wizardTitle">PASO 1: SELECCIONA EL DEPORTE</h2>
-      <p class="wizard-subtitle" id="wizardSubtitle">Elige la disciplina que deseas explorar</p>
+      <p class="wizard-subtitle" id="wizardSubtitle">Elige la disciplina deportiva para comenzar la búsqueda</p>
 
       <!-- Step Dynamic Cards Grid -->
       <div class="wizard-cards-grid" id="wizardCardsGrid">
@@ -65,7 +65,7 @@
       </div>
       
       <!-- Reset/View All Toggle Button -->
-      <div style="text-align: center; margin-top: 20px;">
+      <div style="text-align: center; margin-top: 16px;">
         <button class="btn btn-outline" id="btnResetWizard" onclick="resetWizardToStep1()" style="display: none; font-size: 12px; padding: 8px 16px;">
           🔄 Empezar de nuevo (Cambiar Deporte)
         </button>
@@ -100,120 +100,65 @@
           </select>
         </div>
       </div>
-
-      <!-- Title & Subtitle -->
-      <h1 class="page-title" id="storeTitle">Catálogo <span style="color: var(--accent-color);">Oficial</span></h1>
-      <p class="page-subtitle" id="storeSubtitle">Artículos deportivos en México</p>
     </div>
 
-    <!-- Product Grid -->
-    <div id="productGrid" class="product-grid">
-      <!-- Products injected via JS -->
+    <!-- Section Title Header -->
+    <div class="section-header">
+      <div>
+        <h1 id="storeTitle" class="section-title">CATÁLOGO <span style="color: var(--accent-color);">OFICIAL</span></h1>
+        <p id="storeSubtitle" class="section-subtitle">Artículos deportivos clasificados por Deporte, Liga, Equipo y Departamento</p>
+      </div>
     </div>
-    
+
+    <!-- Loading State -->
     <div id="loader" class="loader-container">
       <div class="spinner"></div>
+      <p style="margin-top: 16px; color: var(--accent-color); font-weight: bold;">Cargando catálogo deportivo en vivo...</p>
     </div>
+
+    <!-- Products Grid -->
+    <div id="productGrid" class="products-grid">
+      <!-- Product Cards dynamically loaded from Firestore -->
+    </div>
+
   </main>
 
-  <!-- CARRITO DESPLEGABLE (SLIDE-OVER DRAWER) -->
-  <div class="cart-drawer-overlay" id="cartDrawerOverlay">
-    <div class="cart-drawer">
-      <div class="drawer-header">
-        <h3 style="font-size: 20px; color: var(--accent-color);">🛒 Mi Carrito</h3>
-        <button class="close-btn" onclick="toggleCartDrawer()">✕</button>
-      </div>
-
-      <div id="cartItemsContainer" class="cart-items-list">
-        <!-- Cart items injected via JS -->
-      </div>
-
-      <div style="border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: auto;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <span style="font-size: 16px; color: #aaa;">Total a Pagar:</span>
-          <span id="cartTotalPrice" style="font-size: 24px; font-weight: 900; color: var(--accent-color); font-family: var(--font-display);">$0.00 MXN</span>
-        </div>
-
-        <button onclick="openCheckoutModal()" class="btn btn-whatsapp" style="width: 100%; font-size: 15px; padding: 14px;">
-          💳 Procesar Compra / WhatsApp →
-        </button>
-      </div>
+  <!-- Slide-Over Shopping Cart Drawer -->
+  <div id="cartOverlay" class="cart-overlay" onclick="toggleCartDrawer()"></div>
+  <aside id="cartDrawer" class="cart-drawer">
+    <div class="cart-header">
+      <h3 style="font-size: 20px; font-weight: 800; color: #fff;">🛍️ Tu Carrito de Compras</h3>
+      <button class="close-btn" onclick="toggleCartDrawer()">✕</button>
     </div>
-  </div>
-
-  <!-- MODAL DE PAGO Y CONFIRMACIÓN POR WHATSAPP -->
-  <div class="modal-overlay" id="checkoutModal">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h3 style="color: var(--accent-color); font-size: 20px;">💳 Finalizar Compra por Transferencia SPEI</h3>
-        <button class="close-btn" onclick="closeCheckoutModal()">✕</button>
-      </div>
-
-      <!-- Formulario de Envío & Transferencia -->
-      <form id="checkoutForm" onsubmit="submitCheckoutOrder(event)">
-        
-        <div class="form-group">
-          <label>Nombre Completo *</label>
-          <input type="text" id="custName" class="form-control" required placeholder="Ej. Raúl Alberto Muñoz">
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-          <div class="form-group">
-            <label>Teléfono WhatsApp *</label>
-            <input type="tel" id="custPhone" class="form-control" required placeholder="Ej. 4421234567">
-          </div>
-
-          <div class="form-group">
-            <label>Método de Entrega *</label>
-            <select id="custDeliveryMethod" class="form-control" required>
-              <option value="domicilio">🚚 Envío a Domicilio</option>
-              <option value="sucursal">🏪 Entrega en Sucursal QRO</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Dirección de Envío / Notas *</label>
-          <textarea id="custAddress" class="form-control" required placeholder="Calle, Número, Colonia, Ciudad, Código Postal..."></textarea>
-        </div>
-
-        <!-- Datos de Transferencia Bancaria SPEI -->
-        <div style="background: #1a1914; border: 1px solid var(--border-gold); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
-          <div style="font-weight: 800; color: var(--accent-color); font-size: 14px; margin-bottom: 8px;">
-            🏦 DATOS PARA TRANSFERENCIA SPEI
-          </div>
-          <div style="font-size: 13px; color: #ddd; line-height: 1.6;">
-            <div><strong>Banco:</strong> <span id="bankNameDisplay">BBVA Bancomer</span></div>
-            <div><strong>Beneficiario:</strong> <span id="bankOwnerDisplay">Catch Sports QRO</span></div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
-              <div><strong>CLABE:</strong> <span id="bankClabeDisplay" style="color: var(--accent-color); font-family: monospace; font-size: 14px; font-weight: bold;">012680015948392019</span></div>
-              <button type="button" onclick="copyClabeToClipboard()" style="background: var(--accent-color); color: #000; border: none; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 11px; cursor: pointer;">📋 Copiar CLABE</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Adjuntar Comprobante de Transferencia -->
-        <div class="form-group">
-          <label>Adjuntar Foto / Captura del Comprobante de Pago (Opcional)</label>
-          <input type="file" id="transferProofFile" class="form-control" accept="image/*" style="padding: 10px;">
-          <div id="transferProofPreview" style="margin-top: 8px; text-align: center; display: none;">
-            <img id="proofPreviewImg" src="" style="max-width: 150px; border-radius: 6px; border: 1px solid var(--accent-color);">
-            <div style="font-size: 11px; color: var(--accent-green); margin-top: 4px;">✅ Comprobante adjuntado</div>
-          </div>
-        </div>
-
-        <button type="submit" class="btn btn-whatsapp" style="width: 100%; font-size: 16px; padding: 14px;">
-          🟢 Confirmar y Enviar Pedido por WhatsApp →
-        </button>
-      </form>
+    
+    <div id="cartItems" class="cart-items">
+      <!-- Cart items injected via JS -->
     </div>
-  </div>
+    
+    <div class="cart-footer">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 18px; font-weight: bold;">
+        <span>Total a Pagar:</span>
+        <span id="cartTotal" style="color: var(--accent-color); font-size: 22px;">$0.00 MXN</span>
+      </div>
+      <button onclick="checkoutWhatsApp()" class="btn btn-whatsapp" style="width: 100%; padding: 14px; font-size: 16px;">
+        📲 Concretar Compra por WhatsApp →
+      </button>
+    </div>
+  </aside>
+
+  <!-- Footer -->
+  <footer style="margin-top: 60px; padding: 40px 0; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 13px;">
+    <div class="container">
+      <div class="logo-text" style="justify-content: center; margin-bottom: 12px;">CATCH <span>SPORTS</span></div>
+      <p>© 2026 Catch Sports — Tienda Oficial de Artículos Deportivos de Utilería y Fanáticos.</p>
+    </div>
+  </footer>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  
+
   <script src="js/firebase-config.js"></script>
   <script src="js/teams.js"></script>
   <script src="js/app.js"></script>
