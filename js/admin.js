@@ -11,10 +11,12 @@ let selectedFile = null;
 let currentProducts = [];
 let bulkItems = [];
 
-// Admin Catalog Cascading Filter State
+// Admin Catalog 5-Step Sequence Filter State
 let adminFilterSportKey = null;
 let adminFilterLeagueName = null;
 let adminFilterTeamId = null;
+let adminFilterCategoryId = null;
+let adminFilterGenderId = null;
 
 // Handle Auth State
 auth.onAuthStateChanged(user => {
@@ -803,13 +805,6 @@ function loadAdminProducts() {
     });
   });
 }
-
-// Admin Catalog 5-Step Sequence Filter State
-let adminFilterSportKey = null;
-let adminFilterLeagueName = null;
-let adminFilterTeamId = null;
-let adminFilterCategoryId = null;
-let adminFilterGenderId = null;
 
 // ============================================
 // ADMIN CATALOG 5-STEP SEQUENCE NAVIGATOR
