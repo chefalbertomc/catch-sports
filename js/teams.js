@@ -129,7 +129,7 @@ const SPORTS_CATALOG = [
     ]
   },
   {
-    sport: "Fitness & General",
+    sport: "Fitness & Casual",
     sportKey: "general",
     icon: "🎒",
     leagues: [
@@ -178,30 +178,42 @@ const STORE_BANK_DETAILS = {
   phoneWhatsApp: "524423376955"
 };
 
-// Helper functions for dynamic UI
-function getTeamName(teamId) {
-  if (!teamId || teamId === 'all') return "Todos los Equipos";
+// Full taxonomy breadcrumb lookup
+function getFullTaxonomy(teamId) {
+  if (!teamId || teamId === 'all') {
+    return { sport: "Deportes", icon: "🏆", league: "Oficial", team: "Catch Sports" };
+  }
   for (const s of SPORTS_CATALOG) {
     for (const l of s.leagues) {
       const team = l.teams.find(t => t.id === teamId);
-      if (team) return team.name;
-    }
-  }
-  return teamId.toUpperCase();
-}
-
-function getLeagueByTeam(teamId) {
-  for (const s of SPORTS_CATALOG) {
-    for (const l of s.leagues) {
-      if (l.teams.some(t => t.id === teamId)) {
-        return `${s.sport} — ${l.league}`;
+      if (team) {
+        return {
+          sport: s.sport,
+          icon: s.icon,
+          league: l.league,
+          team: team.name
+        };
       }
     }
   }
-  return "Tienda de Deportes";
+  return { sport: "Deportes", icon: "🏆", league: "Oficial", team: teamId.toUpperCase() };
+}
+
+function getTeamName(teamId) {
+  return getFullTaxonomy(teamId).team;
+}
+
+function getLeagueByTeam(teamId) {
+  const tax = getFullTaxonomy(teamId);
+  return `${tax.sport} — ${tax.league}`;
 }
 
 function getGenderLabel(genderId) {
   const g = GENDER_DEPARTMENTS.find(dept => dept.id === genderId);
   return g ? g.label : "👨 Caballero";
+}
+
+function getCategoryLabel(catId) {
+  const c = PRODUCT_CATEGORIES.find(cat => cat.id === catId);
+  return c ? c.label : "👕 Artículo Deportivo";
 }

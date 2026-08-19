@@ -136,31 +136,34 @@ function updateStoreHeader() {
     storeTitle.innerHTML = `DEPARTAMENTO <span style="color: var(--accent-color);">${gLabel.toUpperCase()}</span>`;
     storeSubtitle.textContent = `Catálogo especializado de tallas para ${gLabel}`;
   } else if (activeTeamFilter !== 'all') {
-    const teamName = typeof getTeamName !== 'undefined' ? getTeamName(activeTeamFilter) : activeTeamFilter;
-    storeTitle.innerHTML = `COLECCIÓN <span style="color: var(--accent-color);">${teamName.toUpperCase()}</span>`;
-    storeSubtitle.textContent = `${typeof getLeagueByTeam !== 'undefined' ? getLeagueByTeam(activeTeamFilter) : 'Deportes'}`;
+    const tax = typeof getFullTaxonomy !== 'undefined' ? getFullTaxonomy(activeTeamFilter) : { team: activeTeamFilter };
+    storeTitle.innerHTML = `COLECCIÓN <span style="color: var(--accent-color);">${tax.team.toUpperCase()}</span>`;
+    storeSubtitle.textContent = `${tax.icon} ${tax.sport} — Liga ${tax.league}`;
   } else if (activeSportFilter !== 'all') {
     storeTitle.innerHTML = `DEPORTE <span style="color: var(--accent-color);">${activeSportFilter.toUpperCase()}</span>`;
     storeSubtitle.textContent = `Catálogo especializado de ${activeSportFilter.toUpperCase()}`;
   } else if (activeCategoryFilter !== 'all') {
-    storeTitle.innerHTML = `CATEGORÍA <span style="color: var(--accent-color);">${activeCategoryFilter.toUpperCase()}</span>`;
-    storeSubtitle.textContent = `Selección de ${activeCategoryFilter}`;
+    const catLabel = typeof getCategoryLabel !== 'undefined' ? getCategoryLabel(activeCategoryFilter) : activeCategoryFilter;
+    storeTitle.innerHTML = `CATEGORÍA <span style="color: var(--accent-color);">${catLabel.toUpperCase()}</span>`;
+    storeSubtitle.textContent = `Selección exclusiva de ${catLabel}`;
   } else if (activePromoFilter !== 'all') {
     storeTitle.innerHTML = `⚡ <span style="color: var(--accent-color);">OFERTAS Y PROMOCIONES</span> ⚡`;
     storeSubtitle.textContent = `Aprovecha los mejores precios en artículos seleccionados`;
   } else {
     storeTitle.innerHTML = `CATÁLOGO <span style="color: var(--accent-color);">OFICIAL</span>`;
-    storeSubtitle.textContent = `Los mejores artículos deportivos ordenados por Deporte, Liga, Equipo y Departamento`;
+    storeSubtitle.textContent = `Artículos deportivos clasificados por Deporte, Liga, Equipo y Departamento`;
   }
 }
 
-// Render Product Card
+// Render Product Card with Taxonomy Breadcrumbs
 function createProductCard(product, id) {
   const card = document.createElement('div');
   card.className = 'product-card';
   
-  const teamName = typeof getTeamName !== 'undefined' ? getTeamName(product.team) : (product.team || 'Oficial');
+  const tax = typeof getFullTaxonomy !== 'undefined' ? getFullTaxonomy(product.team) : { sport: 'Deportes', icon: '🏆', league: 'Oficial', team: product.team };
   const genderLabel = typeof getGenderLabel !== 'undefined' ? getGenderLabel(product.gender) : '👨 Caballero';
+  const categoryLabel = typeof getCategoryLabel !== 'undefined' ? getCategoryLabel(product.category) : '👕 Artículo';
+  
   const sizes = product.sizes || ["M", "L"];
   const defaultSize = sizes[0] || 'M';
   
@@ -189,12 +192,24 @@ function createProductCard(product, id) {
       <img src="${product.imageUrl}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400?text=Catch+Sports'">
     </div>
     <div class="product-info">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-        <div class="product-team-tag">🛡️ ${teamName}</div>
-        <div style="font-size: 11px; background: rgba(255,255,255,0.08); padding: 2px 7px; border-radius: 4px; font-weight: bold; color: #fff;">${genderLabel}</div>
+      
+      <!-- Taxonomy Breadcrumb Header: Deporte > Liga > Equipo -->
+      <div class="product-taxonomy">
+        <span class="tax-sport">${tax.icon} ${tax.sport}</span>
+        <span class="tax-sep">›</span>
+        <span class="tax-league">${tax.league}</span>
+        <span class="tax-sep">›</span>
+        <span class="tax-team">${tax.team}</span>
       </div>
+
       <h3 class="product-title">${product.name}</h3>
-      <p class="product-desc">${product.description || 'Artículo deportivo de alta calidad oficial.'}</p>
+      
+      <div class="product-meta-row">
+        <span class="tag-department">${genderLabel}</span>
+        <span class="tag-category">${categoryLabel}</span>
+      </div>
+
+      <p class="product-desc">${product.description || 'Artículo deportivo oficial de alta calidad.'}</p>
       
       <!-- Size chips -->
       <div style="font-size: 11px; color: #888; margin-bottom: 4px; font-weight: bold;">TALLA SELECCIONADA:</div>
@@ -248,13 +263,17 @@ function renderProducts() {
   productGrid.innerHTML = '';
   
   const filtered = allProducts.filter(product => {
+    const tax = typeof getFullTaxonomy !== 'undefined' ? getFullTaxonomy(product.team) : {};
+    
     // Search query filter
     if (searchQuery) {
       const nameMatch = (product.name || '').toLowerCase().includes(searchQuery);
-      const teamMatch = (product.team || '').toLowerCase().includes(searchQuery);
+      const teamMatch = (tax.team || '').toLowerCase().includes(searchQuery);
+      const leagueMatch = (tax.league || '').toLowerCase().includes(searchQuery);
+      const sportMatch = (tax.sport || '').toLowerCase().includes(searchQuery);
       const descMatch = (product.description || '').toLowerCase().includes(searchQuery);
       const genderMatch = (product.gender || '').toLowerCase().includes(searchQuery);
-      if (!nameMatch && !teamMatch && !descMatch && !genderMatch) return false;
+      if (!nameMatch && !teamMatch && !leagueMatch && !sportMatch && !descMatch && !genderMatch) return false;
     }
     
     // Gender filter

@@ -152,7 +152,7 @@ body {
   padding: 12px 24px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -185,7 +185,7 @@ body {
 .toolbar-container {
   display: flex;
   gap: 12px;
-  margin: 24px 0;
+  margin: 20px 0;
   flex-wrap: wrap;
 }
 
@@ -223,7 +223,7 @@ body {
 }
 
 .select-box {
-  min-width: 200px;
+  min-width: 220px;
 }
 
 /* Container & Typography */
@@ -236,9 +236,9 @@ body {
 }
 
 .page-title {
-  font-size: clamp(28px, 4vw, 44px);
+  font-size: clamp(26px, 4vw, 40px);
   text-align: center;
-  margin: 20px 0 6px;
+  margin: 16px 0 6px;
   text-transform: uppercase;
   letter-spacing: -0.5px;
 }
@@ -246,7 +246,7 @@ body {
 .page-subtitle {
   text-align: center;
   color: var(--text-secondary);
-  font-size: 15px;
+  font-size: 14px;
   margin-bottom: 24px;
   font-weight: 400;
 }
@@ -254,7 +254,7 @@ body {
 /* Product Grid */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
   padding-bottom: 64px;
 }
@@ -330,21 +330,57 @@ body {
   flex: 1;
 }
 
-.product-team-tag {
+/* Taxonomy Breadcrumb Header (Deporte > Liga > Equipo) */
+.product-taxonomy {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 11px;
-  color: var(--accent-color);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
   font-weight: 800;
-  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
 }
+
+.tax-sport { color: var(--accent-color); }
+.tax-sep { color: #555; font-weight: normal; }
+.tax-league { color: #ccc; }
+.tax-team { color: #fff; font-weight: 900; }
 
 .product-title {
   font-size: 17px;
   line-height: 1.3;
-  margin-bottom: 8px;
-  font-weight: 700;
+  margin-bottom: 6px;
+  font-weight: 800;
   color: #fff;
+}
+
+.product-meta-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.tag-department {
+  background: rgba(250, 204, 21, 0.14);
+  color: var(--accent-color);
+  border: 1px solid rgba(250, 204, 21, 0.3);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.tag-category {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ddd;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
 }
 
 .product-desc {
