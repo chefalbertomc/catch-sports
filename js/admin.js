@@ -836,6 +836,7 @@ function loadAdminProducts() {
 function renderAdminProductsList(products) {
   const list = document.getElementById('adminProductList');
   const query = (document.getElementById('adminSearchInput')?.value || '').toLowerCase().trim();
+  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
   
   const filtered = products.filter(p => (p.name || '').toLowerCase().includes(query) || (p.team || '').toLowerCase().includes(query));
   
@@ -845,33 +846,81 @@ function renderAdminProductsList(products) {
   }
   
   list.innerHTML = filtered.map(product => {
-    const teamName = typeof getTeamName !== 'undefined' ? getTeamName(product.team) : product.team;
+    // Resolve Taxonomy (Deporte > Liga > Equipo)
+    let sportIcon = '🏆';
+    let sportName = 'DEPORTE';
+    let leagueName = 'LIGA';
+    let teamName = typeof getTeamName !== 'undefined' ? getTeamName(product.team) : product.team;
+
+    for (const s of catalog) {
+      for (const l of s.leagues) {
+        if (l.teams.some(t => t.id === product.team)) {
+          sportIcon = s.icon || '🏆';
+          sportName = s.sport;
+          leagueName = l.league;
+          break;
+        }
+      }
+    }
+
     const genderLabel = typeof getGenderLabel !== 'undefined' ? getGenderLabel(product.gender) : '👨 Caballero';
     const priceStr = `$${product.price}`;
+    const origPriceHtml = product.originalPrice ? `<span style="text-decoration: line-through; color: #888; font-size: 12px; margin-left: 6px;">$${product.originalPrice}</span>` : '';
     const sizeStockMap = product.sizeStockMap || [];
     
-    const stockDetailsHtml = sizeStockMap.length > 0 
-      ? sizeStockMap.map(s => `<strong>${s.size}</strong> (⚡${s.immediateQty} / 🏢${s.warehouseQty})`).join(' | ')
-      : `Tallas: ${(product.sizes || []).join(', ')}`;
-    
+    // Render organized stock pills
+    const stockPillsHtml = sizeStockMap.length > 0 
+      ? sizeStockMap.map(s => `
+          <div style="background: #000; border: 1px solid #333; border-radius: 6px; padding: 3px 8px; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; margin-bottom: 4px;">
+            <span style="font-weight: 900; color: #facc15;">${s.size}</span>
+            <span style="color: #22c55e; font-weight: 800;">⚡ ${s.immediateQty}</span>
+            <span style="color: #666;">|</span>
+            <span style="color: #eab308; font-weight: 800;">🏢 ${s.warehouseQty}</span>
+          </div>
+        `).join('')
+      : (product.sizes || []).map(s => `
+          <span style="background: #111; border: 1px solid #444; border-radius: 4px; padding: 2px 6px; font-size: 11px; color: #ccc;">${s}</span>
+        `).join(' ');
+
     return `
-      <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(255,255,255,0.04); border-radius: 10px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 10px;">
-        <div style="display: flex; align-items: center; gap: 14px;">
-          <img src="${product.imageUrl}" style="width: 52px; height: 52px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-gold);" onerror="this.src='https://via.placeholder.com/100'">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 12px;">
+        
+        <!-- PHOTO & DETAILS -->
+        <div style="display: flex; align-items: flex-start; gap: 14px; flex: 1; min-width: 260px;">
+          <img src="${product.imageUrl}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 2px solid var(--border-gold);" onerror="this.src='https://via.placeholder.com/100'">
           <div>
-            <div style="font-weight: bold; color: #fff; font-size: 15px;">${product.name}</div>
-            <div style="font-size: 12px; color: var(--accent-color); font-weight: 700;">
-              ${genderLabel} — ${teamName} — ${priceStr}
+            <!-- 1️⃣ DEPORTE, LIGA & EQUIPO -->
+            <div style="font-size: 11px; font-weight: 800; color: var(--accent-color); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">
+              ${sportIcon} ${sportName} • ${leagueName} • ${teamName}
             </div>
-            <div style="font-size: 11px; color: #aaa; margin-top: 4px;">
-              ${stockDetailsHtml}
+
+            <!-- 4️⃣ NOMBRE DEL PRODUCTO -->
+            <div style="font-weight: 900; color: #fff; font-size: 16px; margin-bottom: 4px;">
+              ${product.name}
+            </div>
+
+            <!-- 6️⃣ GÉNERO & 9️⃣ PRECIO -->
+            <div style="font-size: 12px; color: #ccc; margin-bottom: 8px;">
+              <span>${genderLabel}</span> | <span style="color: #22c55e; font-weight: 900; font-size: 14px;">${priceStr}</span> ${origPriceHtml}
+            </div>
+
+            <!-- 7️⃣ & 8️⃣ EXISTENCIAS POR TALLA EN PÍLDORAS LIMPIAS -->
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px;">
+              ${stockPillsHtml}
             </div>
           </div>
         </div>
-        <div style="display: flex; gap: 8px;">
-          <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; border-color: var(--accent-color); color: var(--accent-color);" onclick="startEditingProduct('${product.id}')">✏️ Editar en Formulario</button>
-          <button class="btn btn-outline" style="border-color: #ff6b6b; color: #ff6b6b; padding: 6px 12px; font-size: 12px;" onclick="deleteProduct('${product.id}')">🗑️ Eliminar</button>
+
+        <!-- ACTIONS -->
+        <div style="display: flex; gap: 8px; flex-shrink: 0;">
+          <button class="btn btn-outline" style="padding: 8px 14px; font-size: 12px; border-color: var(--accent-color); color: var(--accent-color);" onclick="startEditingProduct('${product.id}')">
+            ✏️ Editar en Formulario
+          </button>
+          <button class="btn btn-outline" style="border-color: #ef4444; color: #ef4444; padding: 8px 14px; font-size: 12px;" onclick="deleteProduct('${product.id}')">
+            🗑️ Eliminar
+          </button>
         </div>
+
       </div>
     `;
   }).join('');
