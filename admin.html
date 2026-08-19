@@ -20,7 +20,7 @@
 
   <!-- Ticker Banner -->
   <div class="ticker-banner">
-    ⚡ PANEL DE ADMINISTRACIÓN — EDICIÓN COMPLETA DE FOTOS, PRECIOS Y TALLAS
+    ⚡ PANEL DE ADMINISTRACIÓN — CARGA Y EDICIÓN COMPLETA DE PRODUCTOS EN EL FORMULARIO PRINCIPAL
   </div>
 
   <!-- Navbar -->
@@ -63,19 +63,20 @@
       
       <!-- Mode Tabs -->
       <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap;">
-        <button type="button" class="btn active" id="tabSingleBtn" onclick="switchAdminTab('single')">➕ Publicar Individual</button>
+        <button type="button" class="btn active" id="tabSingleBtn" onclick="switchAdminTab('single')">➕ Publicar / Editar Producto</button>
         <button type="button" class="btn btn-outline" id="tabBulkBtn" onclick="switchAdminTab('bulk')">⚡ Carga Masiva por Bloque (Fotos)</button>
         <button type="button" class="btn btn-outline" id="tabSeedBtn" onclick="seedDemoCatalog()" style="border-color: var(--accent-color); color: var(--accent-color);">🌱 Inyectar Catálogo de Muestra</button>
       </div>
 
-      <!-- FORM 1: PUBLICACIÓN INDIVIDUAL CON LISTA DE EXISTENCIAS POR TALLA -->
+      <!-- FORMULARIO PRINCIPAL: PUBLICACIÓN Y EDICIÓN COMPLETA -->
       <div id="singleUploadCard" class="admin-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <h2 style="font-size: 24px; color: var(--accent-color);">➕ Publicar Nuevo Artículo</h2>
-          <span class="badge" style="background: rgba(250, 204, 21, 0.15); color: var(--accent-color); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">CATCH SPORTS ADMIN</span>
+          <h2 id="formTitle" style="font-size: 24px; color: var(--accent-color);">➕ Publicar Nuevo Artículo</h2>
+          <button type="button" id="btnCancelEdit" class="btn btn-outline" style="display: none; border-color: #ef4444; color: #ef4444; font-size: 12px;" onclick="cancelEditMode()">✕ Cancelar Edición</button>
         </div>
         
         <form id="productForm">
+          <input type="hidden" id="editingProductId" value="">
           
           <!-- 1️⃣ DEPORTE -->
           <div class="form-group">
@@ -184,7 +185,7 @@
 
           <!-- 12️⃣ IMAGEN DEL PRODUCTO -->
           <div class="form-group">
-            <label>12️⃣ Imagen del Producto (Subir Foto desde tu Celular o Dirección de Imagen) *</label>
+            <label>12️⃣ Imagen del Producto (Subir Foto o Dirección de Imagen) *</label>
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
               <input type="file" id="prodImage" class="form-control" accept="image/*" style="padding: 10px; flex: 1;">
               <span style="font-size: 12px; color: #888;">Ó</span>
@@ -321,70 +322,6 @@
           <input type="url" id="newTeamLogo" class="form-control" placeholder="https://...">
         </div>
         <button type="submit" class="btn" style="width: 100%;">💾 Guardar Equipo</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL DE EDICIÓN COMPLETA DE PRODUCTO -->
-  <div class="modal-overlay" id="editProductModal">
-    <div class="modal-box" style="max-width: 650px;">
-      <div class="modal-header">
-        <h3 style="color: var(--accent-color); font-size: 20px;">✏️ Editar Producto & Inventario</h3>
-        <button class="close-btn" onclick="closeEditModal()">✕</button>
-      </div>
-      <form id="editProductForm">
-        <input type="hidden" id="editProdId">
-        
-        <div class="form-group">
-          <label>Nombre del Producto *</label>
-          <input type="text" id="editProdName" class="form-control" required>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
-          <div class="form-group">
-            <label>Precio ($ MXN) *</label>
-            <input type="number" id="editProdPrice" class="form-control" required min="0" step="0.01">
-          </div>
-          <div class="form-group">
-            <label>Precio Regular ($ MXN)</label>
-            <input type="number" id="editProdOriginalPrice" class="form-control" min="0" step="0.01">
-          </div>
-        </div>
-
-        <!-- TALLAS Y CONTROL DE STOCK EN EDICIÓN -->
-        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-gold); padding: 14px; border-radius: 10px; margin-bottom: 14px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <label style="margin-bottom: 0; color: var(--accent-color); font-weight: 800; font-size: 13px;">
-              📊 TALLAS Y EXISTENCIAS EN STOCK
-            </label>
-            <button type="button" class="btn" style="font-size: 11px; padding: 4px 8px;" onclick="addEditSizeStockRow()">
-              ➕ Agregar Talla
-            </button>
-          </div>
-          <div id="editSizeStockRows" style="display: flex; flex-direction: column; gap: 6px;">
-            <!-- Rows injected dynamically -->
-          </div>
-        </div>
-
-        <!-- CAMBIAR IMAGEN EN EDICIÓN -->
-        <div class="form-group">
-          <label>Cambiar Imagen del Producto (Subir Foto o URL)</label>
-          <div style="display: flex; gap: 8px; align-items: center;">
-            <input type="file" id="editProdImageFile" class="form-control" accept="image/*" style="padding: 8px; flex: 1;">
-            <span style="font-size: 12px; color: #888;">Ó</span>
-            <input type="url" id="editProdImageUrlInput" class="form-control" placeholder="URL https://...jpg" style="flex: 1;">
-          </div>
-          <div style="margin-top: 8px; text-align: center;">
-            <img id="editImagePreview" src="" style="max-width: 120px; max-height: 120px; border-radius: 6px; border: 1px solid var(--accent-color); display: none;">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Descripción del Producto</label>
-          <textarea id="editProdDesc" class="form-control" required style="min-height: 70px;"></textarea>
-        </div>
-
-        <button type="submit" id="btnSaveEdit" class="btn" style="width: 100%; font-size: 15px; padding: 12px;">💾 Guardar Todos los Cambios</button>
       </form>
     </div>
   </div>

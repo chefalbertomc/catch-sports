@@ -6,10 +6,8 @@ const uploadStatus = document.getElementById('uploadStatus');
 const imagePreview = document.getElementById('imagePreview');
 const btnLogout = document.getElementById('btnLogout');
 
-let currentSizeStockRows = []; // Array for creation
-let editingSizeStockRows = []; // Array for editing
+let currentSizeStockRows = []; // Array of { size: "M", immediateQty: 2, warehouseQty: 5 }
 let selectedFile = null;
-let editSelectedFile = null;
 let currentProducts = [];
 let bulkItems = [];
 
@@ -264,18 +262,19 @@ function populateCategoriesSelect() {
 
 function populateBadgesSelect() {
   const select = document.getElementById('prodBadge');
-  const editSelect = document.getElementById('editProdBadge');
   if (typeof PROMO_BADGES === 'undefined') return;
   
   const optionsHtml = PROMO_BADGES.map(b => `<option value="${b.id}">${b.label}</option>`).join('');
   if (select) select.innerHTML = optionsHtml;
-  if (editSelect) editSelect.innerHTML = optionsHtml;
 }
 
 // ============================================
-// CREATION SIZE STOCK BUILDER
+// ULTRA-COMPACT SIZE STOCK BUILDER
 // ============================================
 window.onGenderSelectChange = function() {
+  // Only override if not editing an existing product
+  if (document.getElementById('editingProductId')?.value) return;
+
   const genderId = document.getElementById('prodGender')?.value || 'caballero';
   const gObj = (typeof GENDER_DEPARTMENTS !== 'undefined') ? GENDER_DEPARTMENTS.find(g => g.id === genderId) : null;
   
@@ -317,6 +316,7 @@ function renderSizeStockRows() {
   
   container.innerHTML = quickChipsHtml + currentSizeStockRows.map((row, idx) => `
     <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; background: #000; padding: 6px 8px; border-radius: 8px; border: 1px solid #333; margin-bottom: 4px;">
+      
       <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
         <span style="font-size: 10px; color: var(--accent-color); font-weight: 800; white-space: nowrap;">Talla:</span>
         <input type="text" value="${row.size}" onchange="updateSizeRow(${idx}, 'size', this.value)" style="width: 48px !important; background: #181818; color: #fff; border: 1px solid #444; border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center; text-transform: uppercase;">
@@ -622,7 +622,7 @@ window.publishAllBulkProducts = async function() {
   }
 };
 
-// Seed Demo Catalog with ONLY actual available sizes
+// Seed Demo Catalog
 window.seedDemoCatalog = async function() {
   if (!confirm("¿Deseas inyectar 8 productos de muestra con existencias reales únicas por talla a la base de datos?")) return;
 
@@ -820,7 +820,7 @@ function renderAdminProductsList(products) {
           </div>
         </div>
         <div style="display: flex; gap: 8px;">
-          <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; border-color: var(--accent-color); color: var(--accent-color);" onclick="openEditModal('${product.id}')">✏️ Editar Completo</button>
+          <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; border-color: var(--accent-color); color: var(--accent-color);" onclick="startEditingProduct('${product.id}')">✏️ Editar en Formulario</button>
           <button class="btn btn-outline" style="border-color: #ff6b6b; color: #ff6b6b; padding: 6px 12px; font-size: 12px;" onclick="deleteProduct('${product.id}')">🗑️ Eliminar</button>
         </div>
       </div>
@@ -833,183 +833,100 @@ document.getElementById('adminSearchInput')?.addEventListener('input', () => {
 });
 
 // ============================================
-// FULL PRODUCT EDITING MATRIX (PHOTO, SIZES, STOCK, PRICES)
+// START EDITING PRODUCT DIRECTLY IN MAIN FORM
 // ============================================
-window.openEditModal = function(id) {
+window.startEditingProduct = function(id) {
   const prod = currentProducts.find(p => p.id === id);
   if (!prod) return;
+
+  switchAdminTab('single');
+
+  document.getElementById('editingProductId').value = prod.id;
+  document.getElementById('formTitle').textContent = `✏️ Editando: ${prod.name}`;
+  document.getElementById('btnCancelEdit').style.display = 'inline-block';
   
-  document.getElementById('editProdId').value = prod.id;
-  document.getElementById('editProdName').value = prod.name || '';
-  document.getElementById('editProdPrice').value = prod.price || '';
-  document.getElementById('editProdOriginalPrice').value = prod.originalPrice || '';
-  document.getElementById('editProdDesc').value = prod.description || '';
-  
-  // Set image preview
-  const editPreview = document.getElementById('editImagePreview');
-  if (editPreview) {
-    editPreview.src = prod.imageUrl || '';
-    editPreview.style.display = prod.imageUrl ? 'inline-block' : 'none';
-  }
-  
-  document.getElementById('editProdImageUrlInput').value = prod.imageUrl || '';
-  editSelectedFile = null;
+  const btnSubmit = document.getElementById('btnSubmit');
+  if (btnSubmit) btnSubmit.textContent = `💾 Guardar Cambios del Producto`;
 
-  // Load product size stock rows for editing
-  if (prod.sizeStockMap && prod.sizeStockMap.length > 0) {
-    editingSizeStockRows = JSON.parse(JSON.stringify(prod.sizeStockMap));
-  } else if (prod.sizes && prod.sizes.length > 0) {
-    editingSizeStockRows = prod.sizes.map(s => ({ size: s, immediateQty: 2, warehouseQty: 5 }));
-  } else {
-    editingSizeStockRows = [{ size: "M", immediateQty: 2, warehouseQty: 5 }];
-  }
+  // Pre-fill Taxonomy Selects
+  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+  let foundSportKey = null;
+  let foundLeagueName = null;
 
-  renderEditSizeStockRows();
-  document.getElementById('editProductModal').classList.add('active');
-};
-
-function renderEditSizeStockRows() {
-  const container = document.getElementById('editSizeStockRows');
-  if (!container) return;
-
-  if (editingSizeStockRows.length === 0) {
-    container.innerHTML = `<p class="text-secondary" style="font-size: 12px;">No hay tallas configuradas. Presiona "➕ Agregar Talla".</p>`;
-    return;
-  }
-
-  container.innerHTML = editingSizeStockRows.map((row, idx) => `
-    <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; background: #000; padding: 6px 8px; border-radius: 8px; border: 1px solid #333; margin-bottom: 4px;">
-      <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
-        <span style="font-size: 10px; color: var(--accent-color); font-weight: 800; white-space: nowrap;">Talla:</span>
-        <input type="text" value="${row.size}" onchange="updateEditSizeRow(${idx}, 'size', this.value)" style="width: 48px !important; background: #181818; color: #fff; border: 1px solid #444; border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center; text-transform: uppercase;">
-      </div>
-      
-      <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
-        <span style="font-size: 10px; color: #22c55e; font-weight: 800; white-space: nowrap;">⚡Tienda:</span>
-        <input type="number" value="${row.immediateQty}" onchange="updateEditSizeRow(${idx}, 'immediateQty', parseInt(this.value) || 0)" style="width: 38px !important; background: #181818; color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center;" min="0" max="99">
-      </div>
-
-      <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
-        <span style="font-size: 10px; color: #facc15; font-weight: 800; white-space: nowrap;">🏢Bodega:</span>
-        <input type="number" value="${row.warehouseQty}" onchange="updateEditSizeRow(${idx}, 'warehouseQty', parseInt(this.value) || 0)" style="width: 38px !important; background: #181818; color: #facc15; border: 1px solid rgba(250, 204, 21, 0.4); border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center;" min="0" max="99">
-      </div>
-
-      <button type="button" onclick="removeEditSizeStockRow(${idx})" style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; cursor: pointer; flex-shrink: 0; padding: 0; margin-left: 2px;" title="Eliminar talla">✕</button>
-    </div>
-  `).join('');
-}
-
-window.addEditSizeStockRow = function() {
-  editingSizeStockRows.push({ size: "M", immediateQty: 1, warehouseQty: 3 });
-  renderEditSizeStockRows();
-};
-
-window.updateEditSizeRow = function(idx, field, value) {
-  if (editingSizeStockRows[idx]) {
-    editingSizeStockRows[idx][field] = value;
-  }
-};
-
-window.removeEditSizeStockRow = function(idx) {
-  if (editingSizeStockRows[idx]) {
-    editingSizeStockRows.splice(idx, 1);
-    renderEditSizeStockRows();
-  }
-};
-
-document.getElementById('editProdImageFile')?.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    editSelectedFile = file;
-    document.getElementById('editProdImageUrlInput').value = '';
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const editPreview = document.getElementById('editImagePreview');
-      if (editPreview) {
-        editPreview.src = e.target.result;
-        editPreview.style.display = 'inline-block';
+  for (const s of catalog) {
+    for (const l of s.leagues) {
+      if (l.teams.some(t => t.id === prod.team)) {
+        foundSportKey = s.sportKey;
+        foundLeagueName = l.league;
+        break;
       }
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
-document.getElementById('editProdImageUrlInput')?.addEventListener('input', (e) => {
-  const url = e.target.value.trim();
-  if (url) {
-    editSelectedFile = null;
-    const editPreview = document.getElementById('editImagePreview');
-    if (editPreview) {
-      editPreview.src = url;
-      editPreview.style.display = 'inline-block';
     }
   }
-});
 
-window.closeEditModal = function() {
-  document.getElementById('editProductModal').classList.remove('active');
+  if (foundSportKey) {
+    document.getElementById('prodSport').value = foundSportKey;
+    onAdminSportChange();
+    if (foundLeagueName) {
+      document.getElementById('prodLeague').value = foundLeagueName;
+      onAdminLeagueChange();
+      document.getElementById('prodTeam').value = prod.team;
+    }
+  }
+
+  // Pre-fill text inputs
+  document.getElementById('prodName').value = prod.name || '';
+  document.getElementById('prodDesc').value = prod.description || '';
+  document.getElementById('prodGender').value = prod.gender || 'caballero';
+  if (document.getElementById('prodCategory')) document.getElementById('prodCategory').value = prod.category || 'jerseys';
+  document.getElementById('prodPrice').value = prod.price || '';
+  document.getElementById('prodOriginalPrice').value = prod.originalPrice || '';
+  if (document.getElementById('prodBadge')) document.getElementById('prodBadge').value = prod.badge || 'ninguno';
+
+  // Pre-fill Image & Preview
+  document.getElementById('prodImageUrlInput').value = prod.imageUrl || '';
+  if (imagePreview) {
+    imagePreview.src = prod.imageUrl || '';
+    imagePreview.style.display = prod.imageUrl ? 'inline-block' : 'none';
+  }
+  selectedFile = null;
+
+  // Pre-fill size stock rows
+  if (prod.sizeStockMap && prod.sizeStockMap.length > 0) {
+    currentSizeStockRows = JSON.parse(JSON.stringify(prod.sizeStockMap));
+  } else if (prod.sizes && prod.sizes.length > 0) {
+    currentSizeStockRows = prod.sizes.map(s => ({ size: s, immediateQty: 2, warehouseQty: 5 }));
+  } else {
+    currentSizeStockRows = [{ size: "M", immediateQty: 2, warehouseQty: 5 }];
+  }
+
+  renderSizeStockRows();
+
+  // Scroll smoothly up to form
+  document.getElementById('singleUploadCard')?.scrollIntoView({ behavior: 'smooth' });
 };
 
-document.getElementById('editProductForm')?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const id = document.getElementById('editProdId').value;
-  const name = document.getElementById('editProdName').value.trim();
-  const price = parseFloat(document.getElementById('editProdPrice').value);
-  const origPriceVal = document.getElementById('editProdOriginalPrice').value;
-  const originalPrice = origPriceVal ? parseFloat(origPriceVal) : null;
-  const desc = document.getElementById('editProdDesc').value.trim();
-  const urlInput = document.getElementById('editProdImageUrlInput').value.trim();
-  const btnSave = document.getElementById('btnSaveEdit');
+window.cancelEditMode = function() {
+  document.getElementById('editingProductId').value = '';
+  document.getElementById('formTitle').textContent = `➕ Publicar Nuevo Artículo`;
+  document.getElementById('btnCancelEdit').style.display = 'none';
 
-  if (btnSave) {
-    btnSave.disabled = true;
-    btnSave.textContent = '⏳ Guardando...';
-  }
+  const btnSubmit = document.getElementById('btnSubmit');
+  if (btnSubmit) btnSubmit.textContent = `🔥 Publicar Producto`;
 
-  try {
-    let finalImageUrl = urlInput;
-    if (editSelectedFile) {
-      finalImageUrl = await resizeImage(editSelectedFile, 800, 800);
-    }
-
-    const sizesArray = editingSizeStockRows.map(s => s.size);
-
-    const updatePayload = {
-      name,
-      price,
-      originalPrice,
-      sizeStockMap: editingSizeStockRows,
-      sizes: sizesArray,
-      description: desc
-    };
-
-    if (finalImageUrl) {
-      updatePayload.imageUrl = finalImageUrl;
-    }
-    
-    await db.collection('products').doc(id).update(updatePayload);
-    alert('✅ Producto, foto y existencias actualizados exitosamente');
-    closeEditModal();
-
-    if (btnSave) {
-      btnSave.disabled = false;
-      btnSave.textContent = '💾 Guardar Todos los Cambios';
-    }
-  } catch(e) {
-    console.error('Error updating product:', e);
-    alert('Error al actualizar: ' + e.message);
-    if (btnSave) {
-      btnSave.disabled = false;
-      btnSave.textContent = '💾 Guardar Todos los Cambios';
-    }
-  }
-});
+  document.getElementById('productForm').reset();
+  if (imagePreview) imagePreview.style.display = 'none';
+  selectedFile = null;
+  onGenderSelectChange();
+};
 
 // Delete Product
 window.deleteProduct = async function(id) {
   if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
     try {
       await db.collection('products').doc(id).delete();
+      if (document.getElementById('editingProductId')?.value === id) {
+        cancelEditMode();
+      }
     } catch (error) {
       console.error("Error al eliminar producto:", error);
       alert("Hubo un error al eliminar. Intenta de nuevo.");
@@ -1017,13 +934,14 @@ window.deleteProduct = async function(id) {
   }
 };
 
-// Submit Product Form
+// Submit Product Form (Handles BOTH Creation & Updating)
 document.getElementById('productForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   
+  const editingId = document.getElementById('editingProductId')?.value;
   const urlInput = document.getElementById('prodImageUrlInput').value.trim();
   
-  if (!selectedFile && !urlInput) {
+  if (!selectedFile && !urlInput && !editingId) {
     alert("Por favor selecciona un archivo de imagen o ingresa una URL");
     return;
   }
@@ -1037,7 +955,7 @@ document.getElementById('productForm')?.addEventListener('submit', async (e) => 
   const originalText = btnSubmit.textContent;
   
   btnSubmit.disabled = true;
-  btnSubmit.textContent = '⏳ Publicando...';
+  btnSubmit.textContent = editingId ? '⏳ Guardando cambios...' : '⏳ Publicando...';
   uploadStatus.style.color = '#fff';
   uploadStatus.textContent = 'Procesando producto...';
   
@@ -1059,10 +977,9 @@ document.getElementById('productForm')?.addEventListener('submit', async (e) => 
     }
     
     uploadStatus.textContent = 'Guardando en catálogo...';
-    
     const sizesArray = currentSizeStockRows.map(s => s.size);
 
-    await db.collection('products').add({
+    const productPayload = {
       name,
       team,
       gender,
@@ -1072,19 +989,31 @@ document.getElementById('productForm')?.addEventListener('submit', async (e) => 
       originalPrice,
       sizeStockMap: currentSizeStockRows,
       sizes: sizesArray,
-      description: desc,
-      imageUrl,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    
-    uploadStatus.style.color = '#4ade80';
-    uploadStatus.textContent = '✅ ¡Producto publicado exitosamente con existencias exactas por talla!';
-    
-    // Reset Form
-    document.getElementById('productForm').reset();
-    imagePreview.style.display = 'none';
-    selectedFile = null;
-    onGenderSelectChange();
+      description: desc
+    };
+
+    if (imageUrl) {
+      productPayload.imageUrl = imageUrl;
+    }
+
+    if (editingId) {
+      // UPDATE EXISTING PRODUCT
+      await db.collection('products').doc(editingId).update(productPayload);
+      uploadStatus.style.color = '#4ade80';
+      uploadStatus.textContent = '✅ ¡Cambios del producto guardados exitosamente!';
+      cancelEditMode();
+    } else {
+      // CREATE NEW PRODUCT
+      productPayload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      await db.collection('products').add(productPayload);
+      uploadStatus.style.color = '#4ade80';
+      uploadStatus.textContent = '✅ ¡Producto publicado exitosamente con existencias exactas por talla!';
+      
+      document.getElementById('productForm').reset();
+      imagePreview.style.display = 'none';
+      selectedFile = null;
+      onGenderSelectChange();
+    }
     
     setTimeout(() => {
       uploadStatus.textContent = '';
@@ -1093,9 +1022,9 @@ document.getElementById('productForm')?.addEventListener('submit', async (e) => 
     }, 3000);
     
   } catch (error) {
-    console.error('Error adding product:', error);
+    console.error('Error saving product:', error);
     uploadStatus.style.color = '#ff6b6b';
-    uploadStatus.textContent = '❌ Error al publicar: ' + error.message;
+    uploadStatus.textContent = '❌ Error al guardar: ' + error.message;
     btnSubmit.disabled = false;
     btnSubmit.textContent = originalText;
   }
