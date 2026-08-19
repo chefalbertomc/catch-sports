@@ -537,11 +537,21 @@ body {
   transition: all 0.2s ease;
 }
 
-.size-chip:hover, .size-chip.selected {
+.size-chip:hover {
   background: var(--accent-color);
   color: #000;
   border-color: var(--accent-color);
 }
+
+.size-chip.selected {
+  background: #facc15 !important;
+  color: #000000 !important;
+  border-color: #facc15 !important;
+  font-weight: 900 !important;
+  box-shadow: 0 0 14px rgba(250, 204, 21, 0.7) !important;
+  transform: scale(1.06);
+}
+
 
 .product-footer {
   display: flex;

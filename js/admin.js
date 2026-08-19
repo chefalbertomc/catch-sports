@@ -271,13 +271,12 @@ function populateBadgesSelect() {
 }
 
 // ============================================
-// DYNAMIC SIZE STOCK BUILDER - ONLY REAL SIZES ADDED BY ADMIN
+// ULTRA-COMPACT SIZE STOCK BUILDER FOR MOBILE ADMIN
 // ============================================
 window.onGenderSelectChange = function() {
   const genderId = document.getElementById('prodGender')?.value || 'caballero';
   const gObj = (typeof GENDER_DEPARTMENTS !== 'undefined') ? GENDER_DEPARTMENTS.find(g => g.id === genderId) : null;
   
-  // Start with 1 clean default size row (e.g. "M") instead of auto-filling all sizes
   const defaultSizes = gObj ? gObj.sizes : ["S", "M", "L", "XL"];
   const initialSize = defaultSizes[1] || defaultSizes[0] || "M";
 
@@ -298,11 +297,11 @@ function renderSizeStockRows() {
 
   // Quick Addition Chips for Admin
   const quickChipsHtml = `
-    <div style="margin-bottom: 12px; font-size: 11px; color: #aaa;">
-      <strong>Toca para agregar rápido una talla:</strong>
-      <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
+    <div style="margin-bottom: 10px; font-size: 11px; color: #aaa;">
+      <strong>Toca para agregar rápido:</strong>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;">
         ${suggestedSizes.map(s => `
-          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 11px; border-color: var(--accent-color); color: var(--accent-color);" onclick="addQuickSize('${s}')">
+          <button type="button" class="btn btn-outline" style="padding: 3px 8px; font-size: 11px; border-color: var(--accent-color); color: var(--accent-color);" onclick="addQuickSize('${s}')">
             + ${s}
           </button>
         `).join('')}
@@ -311,28 +310,28 @@ function renderSizeStockRows() {
   `;
   
   if (currentSizeStockRows.length === 0) {
-    container.innerHTML = quickChipsHtml + `<p class="text-secondary" style="font-size: 12px;">No hay tallas agregadas. Toca un botón de arriba o presiona "➕ Agregar Talla Personalizada".</p>`;
+    container.innerHTML = quickChipsHtml + `<p class="text-secondary" style="font-size: 12px;">No hay tallas agregadas. Toca un botón de arriba.</p>`;
     return;
   }
   
   container.innerHTML = quickChipsHtml + currentSizeStockRows.map((row, idx) => `
-    <div style="display: flex; gap: 10px; align-items: center; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #333; flex-wrap: wrap;">
-      <div style="flex: 1; min-width: 110px;">
-        <label style="font-size: 11px; color: var(--accent-color); font-weight: bold;">TALLA *</label>
-        <input type="text" class="form-control" style="padding: 6px 10px; font-size: 13px;" value="${row.size}" onchange="updateSizeRow(${idx}, 'size', this.value)">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; background: #111; padding: 8px 10px; border-radius: 8px; border: 1px solid #333; flex-wrap: nowrap; overflow-x: auto;">
+      <div style="display: flex; align-items: center; gap: 4px;">
+        <span style="font-size: 11px; color: var(--accent-color); font-weight: 800;">Talla:</span>
+        <input type="text" class="form-control" style="width: 60px; padding: 4px 6px; font-size: 12px; text-align: center; text-transform: uppercase;" value="${row.size}" onchange="updateSizeRow(${idx}, 'size', this.value)">
       </div>
       
-      <div style="flex: 1; min-width: 140px;">
-        <label style="font-size: 11px; color: #22c55e; font-weight: bold;">⚡ INMEDIATA (TIENDA)</label>
-        <input type="number" class="form-control" style="padding: 6px 10px; font-size: 13px;" min="0" value="${row.immediateQty}" onchange="updateSizeRow(${idx}, 'immediateQty', parseInt(this.value) || 0)">
+      <div style="display: flex; align-items: center; gap: 4px;">
+        <span style="font-size: 11px; color: #22c55e; font-weight: 800;">⚡Tienda:</span>
+        <input type="number" class="form-control" style="width: 50px; padding: 4px 6px; font-size: 12px; text-align: center;" min="0" max="99" value="${row.immediateQty}" onchange="updateSizeRow(${idx}, 'immediateQty', parseInt(this.value) || 0)">
       </div>
 
-      <div style="flex: 1; min-width: 130px;">
-        <label style="font-size: 11px; color: #facc15; font-weight: bold;">🏢 BODEGA</label>
-        <input type="number" class="form-control" style="padding: 6px 10px; font-size: 13px;" min="0" value="${row.warehouseQty}" onchange="updateSizeRow(${idx}, 'warehouseQty', parseInt(this.value) || 0)">
+      <div style="display: flex; align-items: center; gap: 4px;">
+        <span style="font-size: 11px; color: #facc15; font-weight: 800;">🏢Bodega:</span>
+        <input type="number" class="form-control" style="width: 50px; padding: 4px 6px; font-size: 12px; text-align: center;" min="0" max="99" value="${row.warehouseQty}" onchange="updateSizeRow(${idx}, 'warehouseQty', parseInt(this.value) || 0)">
       </div>
 
-      <button type="button" onclick="removeSizeStockRow(${idx})" style="background: transparent; border: none; color: #ef4444; font-size: 18px; cursor: pointer; padding: 4px; margin-top: 14px;">✕</button>
+      <button type="button" onclick="removeSizeStockRow(${idx})" style="background: transparent; border: none; color: #ef4444; font-size: 16px; font-weight: bold; cursor: pointer; padding: 0 4px; margin-left: auto;">✕</button>
     </div>
   `).join('');
 }
@@ -345,7 +344,7 @@ window.addQuickSize = function(sizeLabel) {
 };
 
 window.addSizeStockRow = function() {
-  currentSizeStockRows.push({ size: "NUEVA TALLA", immediateQty: 1, warehouseQty: 3 });
+  currentSizeStockRows.push({ size: "NUEVA", immediateQty: 1, warehouseQty: 3 });
   renderSizeStockRows();
 };
 
@@ -613,7 +612,7 @@ window.seedDemoCatalog = async function() {
       price: 1899,
       originalPrice: 2299,
       sizeStockMap: [
-        { size: "CH / S", immediateQty: 2, warehouseQty: 5 },
+        { size: "S", immediateQty: 2, warehouseQty: 5 },
         { size: "M", immediateQty: 4, warehouseQty: 8 }
       ],
       description: "Jersey oficial de utilería con bordados premium en oro y negro de los Pittsburgh Steelers.",
@@ -658,8 +657,8 @@ window.seedDemoCatalog = async function() {
       price: 1799,
       originalPrice: 2099,
       sizeStockMap: [
-        { size: "S Dama", immediateQty: 3, warehouseQty: 4 },
-        { size: "M Dama", immediateQty: 2, warehouseQty: 5 }
+        { size: "S", immediateQty: 3, warehouseQty: 4 },
+        { size: "M", immediateQty: 2, warehouseQty: 5 }
       ],
       description: "Jersey de damas corte entallado oficial de Patrick Mahomes con logo de los Campeones Chiefs.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/kc.png"
@@ -674,7 +673,7 @@ window.seedDemoCatalog = async function() {
       originalPrice: 1999,
       sizeStockMap: [
         { size: "M", immediateQty: 4, warehouseQty: 6 },
-        { size: "L / G", immediateQty: 3, warehouseQty: 5 }
+        { size: "L", immediateQty: 3, warehouseQty: 5 }
       ],
       description: "Jersey oficial Nike Dri-FIT de LeBron James Icon Edition en color púrpura y oro.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/nba/500/lal.png"
@@ -703,7 +702,7 @@ window.seedDemoCatalog = async function() {
       originalPrice: 2399,
       sizeStockMap: [
         { size: "M", immediateQty: 6, warehouseQty: 12 },
-        { size: "L / G", immediateQty: 4, warehouseQty: 8 }
+        { size: "L", immediateQty: 4, warehouseQty: 8 }
       ],
       description: "Jersey oficial de local en blanco puro con detalles dorados y parche de 15 Champions League.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/soccer/500/83.png"
@@ -717,7 +716,7 @@ window.seedDemoCatalog = async function() {
       price: 2899,
       originalPrice: 3499,
       sizeStockMap: [
-        { size: "L / G", immediateQty: 2, warehouseQty: 3 }
+        { size: "L", immediateQty: 2, warehouseQty: 3 }
       ],
       description: "Chamarra softshell oficial Castore de Red Bull Racing y Checo Pérez #11.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/leagues/500/f1.png"
