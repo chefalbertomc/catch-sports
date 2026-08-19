@@ -269,10 +269,9 @@ function populateBadgesSelect() {
 }
 
 // ============================================
-// ULTRA-COMPACT SIZE STOCK BUILDER
+// ULTRA-CLEAR VISUAL INVENTORY MATRIX (CHIPS + COUNTERS)
 // ============================================
 window.onGenderSelectChange = function() {
-  // Only override if not editing an existing product
   if (document.getElementById('editingProductId')?.value) return;
 
   const genderId = document.getElementById('prodGender')?.value || 'caballero';
@@ -289,76 +288,126 @@ window.onGenderSelectChange = function() {
 };
 
 function renderSizeStockRows() {
-  const container = document.getElementById('sizeStockRows');
-  if (!container) return;
+  const gridContainer = document.getElementById('sizeQuickGrid');
+  const cardsContainer = document.getElementById('activeSizesContainer');
+  if (!gridContainer || !cardsContainer) return;
 
   const genderId = document.getElementById('prodGender')?.value || 'caballero';
   const gObj = (typeof GENDER_DEPARTMENTS !== 'undefined') ? GENDER_DEPARTMENTS.find(g => g.id === genderId) : null;
-  const suggestedSizes = gObj ? gObj.sizes : ["S", "M", "L", "XL", "XXL", "Unitalla"];
-
-  const quickChipsHtml = `
-    <div style="margin-bottom: 8px; font-size: 11px; color: #aaa;">
-      <strong>Toca para agregar talla:</strong>
-      <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px;">
-        ${suggestedSizes.map(s => `
-          <button type="button" class="btn btn-outline" style="padding: 2px 8px; font-size: 11px; border-color: var(--accent-color); color: var(--accent-color);" onclick="addQuickSize('${s}')">
-            + ${s}
-          </button>
-        `).join('')}
-      </div>
-    </div>
-  `;
   
+  // Available standard sizes
+  const baseSizes = ["S", "M", "L", "XL", "XXL", "Unitalla"];
+  const categorySizes = gObj ? gObj.sizes : [];
+  const allSuggested = Array.from(new Set([...baseSizes, ...categorySizes]));
+
+  // Add any custom sizes already added to currentSizeStockRows
+  currentSizeStockRows.forEach(r => {
+    if (!allSuggested.includes(r.size)) {
+      allSuggested.push(r.size);
+    }
+  });
+
+  // Render Step A: Quick Size Chips
+  gridContainer.innerHTML = allSuggested.map(s => {
+    const isActive = currentSizeStockRows.some(r => r.size.toUpperCase() === s.toUpperCase());
+    return `
+      <button type="button" 
+        onclick="toggleSizeActive('${s}')" 
+        style="padding: 8px 14px; font-size: 13px; font-weight: 800; border-radius: 8px; cursor: pointer; transition: all 0.2s; ${
+          isActive 
+            ? 'background: #facc15 !important; color: #000 !important; border: 2px solid #facc15 !important; box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);' 
+            : 'background: #181818; color: #ccc; border: 1px solid #444;'
+        }">
+        ${isActive ? '✓ Talla ' : '+ Talla '} ${s}
+      </button>
+    `;
+  }).join('');
+
+  // Render Step B: Active Size Cards with + / - Buttons
   if (currentSizeStockRows.length === 0) {
-    container.innerHTML = quickChipsHtml + `<p class="text-secondary" style="font-size: 12px;">No hay tallas agregadas. Toca un botón de arriba.</p>`;
+    cardsContainer.innerHTML = `
+      <div style="background: rgba(255,255,255,0.03); border: 1px dashed #555; padding: 14px; border-radius: 10px; text-align: center; color: #aaa; font-size: 13px;">
+        ⚠️ Ninguna talla seleccionada. Toca los botones amarillos de arriba para activar las tallas disponibles.
+      </div>
+    `;
     return;
   }
-  
-  container.innerHTML = quickChipsHtml + currentSizeStockRows.map((row, idx) => `
-    <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; background: #000; padding: 6px 8px; border-radius: 8px; border: 1px solid #333; margin-bottom: 4px;">
+
+  cardsContainer.innerHTML = currentSizeStockRows.map((row, idx) => `
+    <div style="background: #121212; border: 1px solid #333; border-radius: 12px; padding: 12px 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
       
-      <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
-        <span style="font-size: 10px; color: var(--accent-color); font-weight: 800; white-space: nowrap;">Talla:</span>
-        <input type="text" value="${row.size}" onchange="updateSizeRow(${idx}, 'size', this.value)" style="width: 48px !important; background: #181818; color: #fff; border: 1px solid #444; border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center; text-transform: uppercase;">
-      </div>
-      
-      <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
-        <span style="font-size: 10px; color: #22c55e; font-weight: 800; white-space: nowrap;">⚡Tienda:</span>
-        <input type="number" value="${row.immediateQty}" onchange="updateSizeRow(${idx}, 'immediateQty', parseInt(this.value) || 0)" style="width: 38px !important; background: #181818; color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center;" min="0" max="99">
+      <!-- CARD HEADER -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #222;">
+        <span style="font-size: 14px; font-weight: 900; background: #facc15; color: #000; padding: 3px 12px; border-radius: 6px;">
+          TALLA ${row.size}
+        </span>
+        <button type="button" onclick="toggleSizeActive('${row.size}')" style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #ef4444; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer;">
+          🗑️ Quitar Talla ${row.size}
+        </button>
       </div>
 
-      <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
-        <span style="font-size: 10px; color: #facc15; font-weight: 800; white-space: nowrap;">🏢Bodega:</span>
-        <input type="number" value="${row.warehouseQty}" onchange="updateSizeRow(${idx}, 'warehouseQty', parseInt(this.value) || 0)" style="width: 38px !important; background: #181818; color: #facc15; border: 1px solid rgba(250, 204, 21, 0.4); border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center;" min="0" max="99">
+      <!-- COUNTERS GRID -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
+        
+        <!-- ⚡ TIENDA COUNTER -->
+        <div style="background: rgba(34, 197, 94, 0.08); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 10px; padding: 10px; text-align: center;">
+          <div style="font-size: 11px; font-weight: 800; color: #22c55e; margin-bottom: 6px;">
+            ⚡ TIENDA (Entrega Inmediata)
+          </div>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <button type="button" onclick="changeQty('${row.size}', 'immediateQty', -1)" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #22c55e; background: rgba(34, 197, 94, 0.2); color: #22c55e; font-weight: 900; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;">-</button>
+            <span style="font-size: 18px; font-weight: 900; color: #fff; min-width: 28px; text-align: center;">${row.immediateQty}</span>
+            <button type="button" onclick="changeQty('${row.size}', 'immediateQty', 1)" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #22c55e; background: rgba(34, 197, 94, 0.2); color: #22c55e; font-weight: 900; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;">+</button>
+          </div>
+          <div style="font-size: 10px; color: #888; margin-top: 4px;">piezas en tienda</div>
+        </div>
+
+        <!-- 🏢 BODEGA COUNTER -->
+        <div style="background: rgba(250, 204, 21, 0.08); border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 10px; padding: 10px; text-align: center;">
+          <div style="font-size: 11px; font-weight: 800; color: #facc15; margin-bottom: 6px;">
+            🏢 BODEGA (Envío a Domicilio)
+          </div>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <button type="button" onclick="changeQty('${row.size}', 'warehouseQty', -1)" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #facc15; background: rgba(250, 204, 21, 0.2); color: #facc15; font-weight: 900; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;">-</button>
+            <span style="font-size: 18px; font-weight: 900; color: #fff; min-width: 28px; text-align: center;">${row.warehouseQty}</span>
+            <button type="button" onclick="changeQty('${row.size}', 'warehouseQty', 1)" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid #facc15; background: rgba(250, 204, 21, 0.2); color: #facc15; font-weight: 900; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;">+</button>
+          </div>
+          <div style="font-size: 10px; color: #888; margin-top: 4px;">piezas en bodega</div>
+        </div>
+
       </div>
 
-      <button type="button" onclick="removeSizeStockRow(${idx})" style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; cursor: pointer; flex-shrink: 0; padding: 0; margin-left: 2px;" title="Eliminar talla">✕</button>
     </div>
   `).join('');
 }
 
-window.addQuickSize = function(sizeLabel) {
-  if (!currentSizeStockRows.some(r => r.size.toUpperCase() === sizeLabel.toUpperCase())) {
-    currentSizeStockRows.push({ size: sizeLabel, immediateQty: 1, warehouseQty: 3 });
-    renderSizeStockRows();
+window.toggleSizeActive = function(sizeLabel) {
+  const existingIdx = currentSizeStockRows.findIndex(r => r.size.toUpperCase() === sizeLabel.toUpperCase());
+  if (existingIdx >= 0) {
+    currentSizeStockRows.splice(existingIdx, 1);
+  } else {
+    currentSizeStockRows.push({ size: sizeLabel, immediateQty: 2, warehouseQty: 5 });
   }
-};
-
-window.addSizeStockRow = function() {
-  currentSizeStockRows.push({ size: "NUEVA", immediateQty: 1, warehouseQty: 3 });
   renderSizeStockRows();
 };
 
-window.updateSizeRow = function(idx, field, value) {
-  if (currentSizeStockRows[idx]) {
-    currentSizeStockRows[idx][field] = value;
+window.changeQty = function(sizeLabel, field, delta) {
+  const item = currentSizeStockRows.find(r => r.size.toUpperCase() === sizeLabel.toUpperCase());
+  if (item) {
+    item[field] = Math.max(0, Math.min(99, (item[field] || 0) + delta));
+    renderSizeStockRows();
   }
 };
 
-window.removeSizeStockRow = function(idx) {
-  if (currentSizeStockRows[idx]) {
-    currentSizeStockRows.splice(idx, 1);
-    renderSizeStockRows();
+window.addCustomSize = function() {
+  const input = document.getElementById('customSizeInput');
+  const val = input ? input.value.trim().toUpperCase() : '';
+  if (val) {
+    if (!currentSizeStockRows.some(r => r.size.toUpperCase() === val)) {
+      currentSizeStockRows.push({ size: val, immediateQty: 2, warehouseQty: 5 });
+      renderSizeStockRows();
+    }
+    input.value = '';
   }
 };
 
@@ -947,7 +996,7 @@ document.getElementById('productForm')?.addEventListener('submit', async (e) => 
   }
   
   if (currentSizeStockRows.length === 0) {
-    alert("Por favor agrega al menos 1 talla con su cantidad de inventario.");
+    alert("Por favor activa al menos 1 talla con sus existencias.");
     return;
   }
 

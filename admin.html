@@ -20,7 +20,7 @@
 
   <!-- Ticker Banner -->
   <div class="ticker-banner">
-    ⚡ PANEL DE ADMINISTRACIÓN — CARGA Y EDICIÓN COMPLETA DE PRODUCTOS EN EL FORMULARIO PRINCIPAL
+    ⚡ PANEL DE ADMINISTRACIÓN — GESTOR DE INVENTARIO Y CATÁLOGO
   </div>
 
   <!-- Navbar -->
@@ -143,23 +143,37 @@
             </div>
           </div>
 
-          <!-- 7️⃣ & 8️⃣ EXISTENCIA EN BODEGA Y TIENDA POR TALLA -->
-          <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-gold); padding: 18px; border-radius: 12px; margin-bottom: 18px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-              <label style="margin-bottom: 0; color: var(--accent-color); font-weight: 800; font-size: 14px;">
-                7️⃣ & 8️⃣ LISTA DE TALLAS Y EXISTENCIAS (TIENDA VS BODEGA) *
-              </label>
-              <button type="button" class="btn" style="font-size: 12px; padding: 6px 12px;" onclick="addSizeStockRow()">
-                ➕ Agregar Talla
-              </button>
+          <!-- 7️⃣ & 8️⃣ EXISTENCIAS POR TALLA: GESTOR VISUAL CLARO -->
+          <div style="background: rgba(255,255,255,0.02); border: 2px solid var(--accent-color); padding: 18px; border-radius: 14px; margin-bottom: 22px;">
+            <div style="margin-bottom: 14px;">
+              <h3 style="color: var(--accent-color); font-size: 16px; margin-bottom: 4px;">
+                7️⃣ & 8️⃣ EXISTENCIAS POR TALLA (INVENTARIO FÍSICO Y BODEGA) *
+              </h3>
+              <p class="text-secondary" style="font-size: 12px; margin-bottom: 0;">
+                Toca las tallas que deseas activar para este producto y ajusta cuántas tienes en <strong>⚡ Tienda</strong> y en <strong>🏢 Bodega</strong>.
+              </p>
             </div>
-            <p class="text-secondary" style="font-size: 12px; margin-bottom: 14px;">
-              Ingresa cada talla y sus existencias físicas en <strong>⚡ Tienda</strong> y <strong>🏢 Bodega</strong>.
-            </p>
 
-            <!-- Dynamic Size Stock Rows -->
-            <div id="sizeStockRows" style="display: flex; flex-direction: column; gap: 10px;">
-              <!-- Dynamic rows injected via JS -->
+            <!-- Paso A: Selección de Tallas Rápidas -->
+            <div style="margin-bottom: 16px; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px; border: 1px solid #333;">
+              <div style="font-size: 12px; color: #fff; font-weight: bold; margin-bottom: 8px;">
+                1. Toca para activar o desactivar tallas:
+              </div>
+              <div id="sizeQuickGrid" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                <!-- Chips injected dynamically via JS -->
+              </div>
+              <div style="margin-top: 10px; display: flex; gap: 6px; align-items: center;">
+                <input type="text" id="customSizeInput" class="form-control" placeholder="Otra talla (ej. 3X, 7 1/2)" style="max-width: 160px; padding: 4px 8px; font-size: 12px;">
+                <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;" onclick="addCustomSize()">➕ Agregar Talla Personalizada</button>
+              </div>
+            </div>
+
+            <!-- Paso B: Tarjetas de Existencias por Talla -->
+            <div style="font-size: 12px; color: #fff; font-weight: bold; margin-bottom: 8px;">
+              2. Ajusta las piezas disponibles por talla:
+            </div>
+            <div id="activeSizesContainer" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Cards injected dynamically via JS -->
             </div>
           </div>
 
