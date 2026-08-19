@@ -20,7 +20,7 @@
 
   <!-- Ticker Banner -->
   <div class="ticker-banner">
-    ⚡ PANEL DE ADMINISTRACIÓN — CARGA MASIVA DE FOTOS, EDICIÓN EN LÍNEA E INYECCIÓN DE CATÁLOGO
+    ⚡ PANEL DE ADMINISTRACIÓN — SECUENCIA EXACTA DE PUBLICACIÓN E INVENTARIO
   </div>
 
   <!-- Navbar -->
@@ -68,16 +68,16 @@
         <button type="button" class="btn btn-outline" id="tabSeedBtn" onclick="seedDemoCatalog()" style="border-color: var(--accent-color); color: var(--accent-color);">🌱 Inyectar Catálogo de Muestra</button>
       </div>
 
-      <!-- FORM 1: PUBLICACIÓN INDIVIDUAL -->
+      <!-- FORM 1: PUBLICACIÓN INDIVIDUAL CON SECUENCIA EXACTA -->
       <div id="singleUploadCard" class="admin-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <h2 style="font-size: 24px; color: var(--accent-color);">➕ Publicar Nuevo Artículo</h2>
-          <span class="badge" style="background: rgba(250, 204, 21, 0.15); color: var(--accent-color); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">CATCH SPORTS ADMIN</span>
+          <span class="badge" style="background: rgba(250, 204, 21, 0.15); color: var(--accent-color); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">SECUENCIA OFICIAL</span>
         </div>
         
         <form id="productForm">
           
-          <!-- PASO 1: DEPORTE -->
+          <!-- 1️⃣ DEPORTE -->
           <div class="form-group">
             <label>1️⃣ Deporte *</label>
             <div style="display: flex; gap: 8px;">
@@ -88,7 +88,7 @@
             </div>
           </div>
 
-          <!-- PASO 2: LIGA -->
+          <!-- 2️⃣ LIGA -->
           <div class="form-group">
             <label>2️⃣ Liga / Torneo *</label>
             <div style="display: flex; gap: 8px;">
@@ -99,7 +99,7 @@
             </div>
           </div>
 
-          <!-- PASO 3: EQUIPO -->
+          <!-- 3️⃣ EQUIPO -->
           <div class="form-group">
             <label>3️⃣ Equipo / Franquicia *</label>
             <div style="display: flex; gap: 8px;">
@@ -110,60 +110,45 @@
             </div>
           </div>
 
-          <!-- PASO 4: NOMBRE DEL PRODUCTO -->
+          <!-- 4️⃣ NOMBRE DEL PRODUCTO -->
           <div class="form-group">
             <label>4️⃣ Nombre del Producto *</label>
             <input type="text" id="prodName" class="form-control" required placeholder="Ej. Jersey Steelers Oficial Temporada 2026">
           </div>
 
-          <!-- PASO 5 & 6: DEPARTAMENTO Y CATEGORÍA -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-            <div class="form-group">
-              <label>5️⃣ Departamento / Género *</label>
-              <select id="prodGender" class="form-control" required onchange="onGenderSelectChange()">
-                <option value="caballero">👨 Caballero</option>
-                <option value="dama">👩 Dama</option>
-                <option value="nino">🧒 Niño / Infantil</option>
-                <option value="unisex">🧢 Unisex / Gorras / Calzado</option>
-              </select>
-            </div>
+          <!-- 5️⃣ DESCRIPCIÓN DEL ARTÍCULO -->
+          <div class="form-group">
+            <label>5️⃣ Descripción del Artículo *</label>
+            <textarea id="prodDesc" class="form-control" required placeholder="Detalles de tela, ajuste, edición y bordados..."></textarea>
+          </div>
 
-            <div class="form-group">
-              <label>6️⃣ Tipo de Artículo *</label>
-              <select id="prodCategory" class="form-control" required>
-                <!-- Populated dynamically -->
-              </select>
+          <!-- 6️⃣ GÉNERO / DEPARTAMENTO -->
+          <div class="form-group">
+            <label>6️⃣ Género / Departamento *</label>
+            <select id="prodGender" class="form-control" required onchange="onGenderSelectChange()">
+              <option value="caballero">👨 Caballero</option>
+              <option value="dama">👩 Dama</option>
+              <option value="nino">🧒 Niño / Infantil</option>
+              <option value="unisex">🧢 Unisex / Gorras / Calzado</option>
+            </select>
+          </div>
+
+          <!-- 7️⃣ TALLA(S) -->
+          <div class="form-group">
+            <label>7️⃣ Tallas Disponibles (Selecciona varias con clic)</label>
+            <div id="sizeChipsContainer" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
+              <!-- Populated dynamically based on selected gender -->
             </div>
           </div>
 
-          <!-- PRECIOS -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
-            <div class="form-group">
-              <label>Precio de Venta ($ MXN) *</label>
-              <input type="number" id="prodPrice" class="form-control" required placeholder="Ej. 1499" min="0" step="0.01">
-            </div>
-            
-            <div class="form-group">
-              <label>Precio Regular / Lista ($ MXN)</label>
-              <input type="number" id="prodOriginalPrice" class="form-control" placeholder="Ej. 1999 (Opcional)" min="0" step="0.01">
-            </div>
-
-            <div class="form-group">
-              <label>Insignia / Badge Especial</label>
-              <select id="prodBadge" class="form-control">
-                <!-- Populated dynamically -->
-              </select>
-            </div>
-          </div>
-
-          <!-- INVENTARIO FÍSICO Y TIEMPOS DE ENTREGA -->
+          <!-- 8️⃣ EXISTENCIA EN STOCK / BODEGA & TIEMPO DE ENTREGA -->
           <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-gold); padding: 16px; border-radius: 10px; margin-bottom: 18px;">
             <div style="font-weight: 800; color: var(--accent-color); font-size: 13px; margin-bottom: 12px; text-transform: uppercase;">
-              📦 CONTROL DE INVENTARIO Y DISPONIBILIDAD DE ENTREGA
+              8️⃣ Existencia en Stock / Bodega & Tiempo de Entrega
             </div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
               <div class="form-group" style="margin-bottom: 0;">
-                <label>Piezas Disponibles en Bodega/Tienda *</label>
+                <label>Piezas en Bodega/Tienda *</label>
                 <input type="number" id="prodStockQty" class="form-control" required min="0" value="5" placeholder="Ej. 10">
               </div>
 
@@ -177,21 +162,29 @@
             </div>
           </div>
 
-          <!-- Tallas del Departamento -->
-          <div class="form-group">
-            <label>Tallas Disponibles (Selecciona varias con clic)</label>
-            <div id="sizeChipsContainer" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
-              <!-- Populated dynamically based on selected gender -->
+          <!-- 9️⃣ PRECIO DE VENTA, 🔟 PRECIO REGULAR Y 11️⃣ INSIGNIA O BADGE -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+            <div class="form-group">
+              <label>9️⃣ Precio de Venta ($ MXN) *</label>
+              <input type="number" id="prodPrice" class="form-control" required placeholder="Ej. 1499" min="0" step="0.01">
+            </div>
+            
+            <div class="form-group">
+              <label>🔟 Precio Regular / Lista ($ MXN)</label>
+              <input type="number" id="prodOriginalPrice" class="form-control" placeholder="Ej. 1999 (Opcional)" min="0" step="0.01">
+            </div>
+
+            <div class="form-group">
+              <label>11️⃣ Insignia o Badge Especial</label>
+              <select id="prodBadge" class="form-control">
+                <!-- Populated dynamically -->
+              </select>
             </div>
           </div>
 
+          <!-- 12️⃣ IMAGEN DEL PRODUCTO -->
           <div class="form-group">
-            <label>Descripción del Artículo *</label>
-            <textarea id="prodDesc" class="form-control" required placeholder="Detalles de tela, ajuste, edición y bordados..."></textarea>
-          </div>
-          
-          <div class="form-group">
-            <label>Imagen del Producto (Subir Foto o URL directa) *</label>
+            <label>12️⃣ Imagen del Producto (Subir Foto o URL directa) *</label>
             <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
               <input type="file" id="prodImage" class="form-control" accept="image/*" style="padding: 10px; flex: 1;">
               <span style="font-size: 12px; color: #888;">Ó</span>
@@ -206,7 +199,7 @@
           
           <div id="uploadStatus" style="font-size: 14px; margin-bottom: 16px; font-weight: bold;"></div>
           
-          <button type="submit" id="btnSubmit" class="btn" style="width: 100%; font-size: 16px; padding: 14px;">🔥 Publicar Producto con Stock</button>
+          <button type="submit" id="btnSubmit" class="btn" style="width: 100%; font-size: 16px; padding: 14px;">🔥 Publicar Producto con Secuencia Exacta</button>
         </form>
       </div>
 
