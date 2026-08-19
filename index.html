@@ -14,7 +14,7 @@
 
   <!-- Ticker Promo Banner -->
   <div class="ticker-banner">
-    🔥 ¡ENVÍOS GRATIS A TODO MÉXICO EN COMPRAS MAYORES A $1,500! 🚚 | ⚡ COLECCIÓN CABALLERO, DAMA Y NIÑO
+    🔥 ¡ENVÍOS GRATIS A TODO MÉXICO EN COMPRAS MAYORES A $1,500! 🚚 | ⚡ NAVEGACIÓN GUIADA POR DEPORTE ➔ LIGA ➔ EQUIPO
   </div>
 
   <!-- Navbar -->
@@ -34,42 +34,77 @@
     </div>
   </nav>
 
-  <!-- Sports & Gender Filter Strip -->
-  <div class="sports-nav-strip">
-    <button class="filter-pill active" onclick="setSportFilter('all', this)">🔥 TODOS</button>
-    <button class="filter-pill" onclick="setGenderFilter('caballero', this)">👨 CABALLERO</button>
-    <button class="filter-pill" onclick="setGenderFilter('dama', this)">👩 DAMA</button>
-    <button class="filter-pill" onclick="setGenderFilter('nino', this)">🧒 NIÑO</button>
-    <button class="filter-pill" onclick="setSportFilter('nfl', this)">🏈 NFL</button>
-    <button class="filter-pill" onclick="setSportFilter('nba', this)">🏀 NBA</button>
-    <button class="filter-pill" onclick="setSportFilter('mlb', this)">⚾ MLB</button>
-    <button class="filter-pill" onclick="setSportFilter('soccer', this)">⚽ FÚTBOL</button>
-    <button class="filter-pill" onclick="setSportFilter('f1', this)">🏎️ F1</button>
-    <button class="filter-pill" onclick="setCategoryFilter('gorras', this)">🧢 GORRAS</button>
-    <button class="filter-pill" onclick="setCategoryFilter('jerseys', this)">👕 JERSEYS</button>
-    <button class="filter-pill" onclick="setPromoFilter('oferta', this)">⚡ OFERTAS</button>
-  </div>
-
   <!-- Main Content -->
   <main class="container">
     
-    <!-- Search & Team Selector Toolbar -->
-    <div class="toolbar-container">
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="Buscar por producto, equipo, caballero, dama o niño... (ej. Steelers Dama, Gorra, Jersey)">
+    <!-- NAVEGACIÓN GUIADA PASO A PASO (DEPORTE > LIGA > EQUIPO) -->
+    <section class="wizard-container" id="flowWizardContainer">
+      
+      <!-- Indicator Breadcrumbs Pills -->
+      <div class="wizard-steps-header">
+        <div class="wizard-step-pill active" id="pillStep1" onclick="goToWizardStep(1)">
+          1️⃣ Deporte <span id="selectedSportLabel" style="font-weight: 900; color: #fff;"></span>
+        </div>
+        <span class="wizard-step-arrow">➔</span>
+        <div class="wizard-step-pill" id="pillStep2" onclick="goToWizardStep(2)">
+          2️⃣ Liga <span id="selectedLeagueLabel" style="font-weight: 900; color: #fff;"></span>
+        </div>
+        <span class="wizard-step-arrow">➔</span>
+        <div class="wizard-step-pill" id="pillStep3" onclick="goToWizardStep(3)">
+          3️⃣ Equipo <span id="selectedTeamLabel" style="font-weight: 900; color: #fff;"></span>
+        </div>
+      </div>
+
+      <!-- Step Title & Subtitle -->
+      <h2 class="wizard-title" id="wizardTitle">PASO 1: SELECCIONA EL DEPORTE</h2>
+      <p class="wizard-subtitle" id="wizardSubtitle">Elige la disciplina que deseas explorar</p>
+
+      <!-- Step Dynamic Cards Grid -->
+      <div class="wizard-cards-grid" id="wizardCardsGrid">
+        <!-- Visual cards injected via JS -->
       </div>
       
-      <div class="select-box">
-        <select id="teamFilterSelect" class="form-control" onchange="onTeamSelectChange()">
-          <!-- Populated dynamically from teams.js -->
-        </select>
+      <!-- Reset/View All Toggle Button -->
+      <div style="text-align: center; margin-top: 20px;">
+        <button class="btn btn-outline" id="btnResetWizard" onclick="resetWizardToStep1()" style="display: none; font-size: 12px; padding: 8px 16px;">
+          🔄 Empezar de nuevo (Cambiar Deporte)
+        </button>
+        <button class="btn btn-outline" id="btnShowAllDirect" onclick="showAllProductsDirectly()" style="font-size: 12px; padding: 8px 16px; margin-left: 8px;">
+          ⚡ Ver Todo el Catálogo Directamente
+        </button>
       </div>
-    </div>
+    </section>
 
-    <!-- Dynamic Titles -->
-    <h1 class="page-title" id="storeTitle">Colección <span style="color: var(--accent-color);">Oficial</span></h1>
-    <p class="page-subtitle" id="storeSubtitle">Los mejores artículos deportivos premium clasificados por Deporte, Liga, Equipo y Departamento</p>
+    <!-- Toolbar & Gender Department Selector -->
+    <div id="catalogToolbar" style="display: block;">
+      
+      <!-- Gender Strip -->
+      <div class="gender-nav-strip">
+        <span style="font-size: 12px; font-weight: 800; color: #888; text-transform: uppercase;">DEPARTAMENTO:</span>
+        <button class="filter-pill active" onclick="setGenderFilter('all', this)">🔥 TODOS</button>
+        <button class="filter-pill" onclick="setGenderFilter('caballero', this)">👨 CABALLERO</button>
+        <button class="filter-pill" onclick="setGenderFilter('dama', this)">👩 DAMA</button>
+        <button class="filter-pill" onclick="setGenderFilter('nino', this)">🧒 NIÑO / INFANTIL</button>
+        <button class="filter-pill" onclick="setGenderFilter('unisex', this)">🧢 UNISEX / GORRAS</button>
+      </div>
+
+      <!-- Search Box & Direct Select -->
+      <div class="toolbar-container">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" class="search-input" placeholder="Buscar artículo, equipo o modelo... (ej. Steelers, Jersey Caballero, Gorra)">
+        </div>
+        <div class="select-box">
+          <select id="teamFilterSelect" class="form-control" onchange="onTeamSelectChange()">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+      </div>
+
+      <!-- Title & Subtitle -->
+      <h1 class="page-title" id="storeTitle">Catálogo <span style="color: var(--accent-color);">Oficial</span></h1>
+      <p class="page-subtitle" id="storeSubtitle">Artículos deportivos en México</p>
+    </div>
 
     <!-- Product Grid -->
     <div id="productGrid" class="product-grid">
