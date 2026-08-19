@@ -6,7 +6,7 @@ const uploadStatus = document.getElementById('uploadStatus');
 const imagePreview = document.getElementById('imagePreview');
 const btnLogout = document.getElementById('btnLogout');
 
-let selectedSizes = ["M", "G / L"];
+let selectedSizes = [];
 let selectedFile = null;
 let currentProducts = [];
 
@@ -60,31 +60,42 @@ if (btnLogout) {
 // Populate Admin Select Inputs
 function initAdminForm() {
   populateTeamsSelect();
+  populateGenderSelect();
   populateCategoriesSelect();
   populateBadgesSelect();
-  renderSizeChips();
+  onGenderSelectChange();
 }
 
 function populateTeamsSelect() {
   const select = document.getElementById('prodTeam');
-  if (!select) return;
-  select.innerHTML = '<option value="">Selecciona una opción...</option>';
+  if (!select || typeof SPORTS_CATALOG === 'undefined') return;
+  select.innerHTML = '<option value="">Selecciona Deporte / Liga / Equipo...</option>';
   
-  if (typeof SPORTS_CATALOG === 'undefined') return;
-  
-  SPORTS_CATALOG.forEach(league => {
-    const group = document.createElement('optgroup');
-    group.label = `${league.league}`;
-    
-    league.teams.forEach(team => {
-      const option = document.createElement('option');
-      option.value = team.id;
-      option.textContent = team.name;
-      group.appendChild(option);
+  SPORTS_CATALOG.forEach(s => {
+    s.leagues.forEach(l => {
+      const group = document.createElement('optgroup');
+      group.label = `${s.icon} ${s.sport} — ${l.league}`;
+      
+      l.teams.forEach(team => {
+        const option = document.createElement('option');
+        option.value = team.id;
+        option.textContent = team.name;
+        group.appendChild(option);
+      });
+      
+      select.appendChild(group);
     });
-    
-    select.appendChild(group);
   });
+}
+
+function populateGenderSelect() {
+  const select = document.getElementById('prodGender');
+  const editSelect = document.getElementById('editProdGender');
+  if (typeof GENDER_DEPARTMENTS === 'undefined') return;
+  
+  const optionsHtml = GENDER_DEPARTMENTS.map(g => `<option value="${g.id}">${g.label}</option>`).join('');
+  if (select) select.innerHTML = optionsHtml;
+  if (editSelect) editSelect.innerHTML = optionsHtml;
 }
 
 function populateCategoriesSelect() {
@@ -103,11 +114,21 @@ function populateBadgesSelect() {
   if (editSelect) editSelect.innerHTML = optionsHtml;
 }
 
-function renderSizeChips() {
-  const container = document.getElementById('sizeChipsContainer');
-  if (!container || typeof SIZE_OPTIONS === 'undefined') return;
+window.onGenderSelectChange = function() {
+  const genderId = document.getElementById('prodGender')?.value || 'caballero';
+  const gObj = (typeof GENDER_DEPARTMENTS !== 'undefined') ? GENDER_DEPARTMENTS.find(g => g.id === genderId) : null;
   
-  container.innerHTML = SIZE_OPTIONS.map(size => {
+  const sizesToRender = gObj ? gObj.sizes : ["S", "M", "L", "XL"];
+  selectedSizes = [sizesToRender[1] || sizesToRender[0]];
+  
+  renderSizeChips(sizesToRender);
+};
+
+function renderSizeChips(sizesToRender) {
+  const container = document.getElementById('sizeChipsContainer');
+  if (!container) return;
+  
+  container.innerHTML = sizesToRender.map(size => {
     const isSelected = selectedSizes.includes(size);
     return `<button type="button" class="size-chip ${isSelected ? 'selected' : ''}" onclick="toggleSize('${size}')">${size}</button>`;
   }).join('');
@@ -119,7 +140,10 @@ window.toggleSize = function(size) {
   } else {
     selectedSizes.push(size);
   }
-  renderSizeChips();
+  
+  const genderId = document.getElementById('prodGender')?.value || 'caballero';
+  const gObj = GENDER_DEPARTMENTS.find(g => g.id === genderId);
+  renderSizeChips(gObj ? gObj.sizes : []);
 };
 
 // Image Preview & Base64 Converter
@@ -209,6 +233,7 @@ function renderAdminProductsList(products) {
   
   list.innerHTML = filtered.map(product => {
     const teamName = typeof getTeamName !== 'undefined' ? getTeamName(product.team) : product.team;
+    const genderLabel = typeof getGenderLabel !== 'undefined' ? getGenderLabel(product.gender) : '👨 Caballero';
     const priceStr = `$${product.price}`;
     const origPriceStr = product.originalPrice ? `<span style="text-decoration: line-through; color: #888; margin-left: 6px; font-size: 11px;">$${product.originalPrice}</span>` : '';
     
@@ -219,7 +244,7 @@ function renderAdminProductsList(products) {
           <div>
             <div style="font-weight: bold; color: #fff; font-size: 15px;">${product.name}</div>
             <div style="font-size: 12px; color: var(--accent-color); font-weight: 700;">
-              ${teamName} — ${priceStr} ${origPriceStr}
+              ${genderLabel} — ${teamName} — ${priceStr} ${origPriceStr}
             </div>
             <div style="font-size: 11px; color: #aaa; margin-top: 2px;">
               Tallas: ${(product.sizes || []).join(', ') || 'N/A'}
@@ -246,6 +271,7 @@ window.openEditModal = function(id) {
   
   document.getElementById('editProdId').value = prod.id;
   document.getElementById('editProdName').value = prod.name || '';
+  document.getElementById('editProdGender').value = prod.gender || 'caballero';
   document.getElementById('editProdPrice').value = prod.price || '';
   document.getElementById('editProdOriginalPrice').value = prod.originalPrice || '';
   document.getElementById('editProdBadge').value = prod.badge || 'ninguno';
@@ -262,6 +288,7 @@ document.getElementById('editProductForm').addEventListener('submit', async (e) 
   e.preventDefault();
   const id = document.getElementById('editProdId').value;
   const name = document.getElementById('editProdName').value.trim();
+  const gender = document.getElementById('editProdGender').value;
   const price = parseFloat(document.getElementById('editProdPrice').value);
   const origPriceVal = document.getElementById('editProdOriginalPrice').value;
   const originalPrice = origPriceVal ? parseFloat(origPriceVal) : null;
@@ -270,7 +297,7 @@ document.getElementById('editProductForm').addEventListener('submit', async (e) 
   
   try {
     await db.collection('products').doc(id).update({
-      name, price, originalPrice, badge, description: desc
+      name, gender, price, originalPrice, badge, description: desc
     });
     alert('✅ Producto actualizado exitosamente');
     closeEditModal();
@@ -313,6 +340,7 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
   try {
     const name = document.getElementById('prodName').value.trim();
     const team = document.getElementById('prodTeam').value;
+    const gender = document.getElementById('prodGender').value;
     const category = document.getElementById('prodCategory').value;
     const badge = document.getElementById('prodBadge').value;
     const price = parseFloat(document.getElementById('prodPrice').value);
@@ -331,6 +359,7 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
     await db.collection('products').add({
       name,
       team,
+      gender,
       category,
       badge,
       price,
@@ -348,8 +377,7 @@ document.getElementById('productForm').addEventListener('submit', async (e) => {
     document.getElementById('productForm').reset();
     imagePreview.style.display = 'none';
     selectedFile = null;
-    selectedSizes = ["M", "G / L"];
-    renderSizeChips();
+    onGenderSelectChange();
     
     setTimeout(() => {
       uploadStatus.textContent = '';

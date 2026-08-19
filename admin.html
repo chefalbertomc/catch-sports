@@ -20,7 +20,7 @@
 
   <!-- Ticker Banner -->
   <div class="ticker-banner">
-    ⚡ PANEL DE ADMINISTRACIÓN — CONTROL TOTAL DEL CATÁLOGO DEPORTIVO
+    ⚡ PANEL DE ADMINISTRACIÓN — PUBLICACIÓN POR DEPORTE, LIGA, EQUIPO Y DEPARTAMENTO (CABALLERO, DAMA, NIÑO)
   </div>
 
   <!-- Navbar -->
@@ -62,21 +62,30 @@
     <div id="adminSection" class="admin-card" style="display: none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2 style="font-size: 24px; color: var(--accent-color);">➕ Publicar Nuevo Artículo</h2>
-        <span class="badge" style="background: rgba(250, 204, 21, 0.15); color: var(--accent-color); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">CATCH SPORTS STORE</span>
+        <span class="badge" style="background: rgba(250, 204, 21, 0.15); color: var(--accent-color); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">CATÁLOGO OFICIAL</span>
       </div>
       
       <form id="productForm">
         
+        <!-- Nombre del producto -->
+        <div class="form-group">
+          <label>Nombre del Producto *</label>
+          <input type="text" id="prodName" class="form-control" required placeholder="Ej. Jersey Steelers Caballero Temporada 2026">
+        </div>
+
+        <!-- 3-Level Hierarchy: Deporte > Liga > Equipo -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
           <div class="form-group">
-            <label>Nombre del Producto *</label>
-            <input type="text" id="prodName" class="form-control" required placeholder="Ej. Jersey Steelers Oficial 2026">
-          </div>
-          
-          <div class="form-group">
-            <label>Deporte / Liga / Equipo *</label>
+            <label>Deporte ➔ Liga ➔ Equipo *</label>
             <select id="prodTeam" class="form-control" required>
               <!-- Populated dynamically from teams.js -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Departamento / Género *</label>
+            <select id="prodGender" class="form-control" required onchange="onGenderSelectChange()">
+              <!-- Populated dynamically -->
             </select>
           </div>
         </div>
@@ -109,10 +118,11 @@
           </div>
         </div>
 
+        <!-- Tallas del Departamento -->
         <div class="form-group">
-          <label>Tallas Disponibles (Selecciona varias con clic)</label>
+          <label>Tallas Disponibles para este Departamento (Selecciona varias con clic)</label>
           <div id="sizeChipsContainer" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
-            <!-- Populated dynamically -->
+            <!-- Populated dynamically based on selected gender -->
           </div>
         </div>
 
@@ -169,6 +179,16 @@
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div class="form-group">
+            <label>Departamento / Género</label>
+            <select id="editProdGender" class="form-control"></select>
+          </div>
+          <div class="form-group">
+            <label>Insignia Especial</label>
+            <select id="editProdBadge" class="form-control"></select>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
             <label>Precio ($ MXN)</label>
             <input type="number" id="editProdPrice" class="form-control" required min="0" step="0.01">
           </div>
@@ -176,10 +196,6 @@
             <label>Precio Regular ($ MXN)</label>
             <input type="number" id="editProdOriginalPrice" class="form-control" min="0" step="0.01">
           </div>
-        </div>
-        <div class="form-group">
-          <label>Insignia Especial</label>
-          <select id="editProdBadge" class="form-control"></select>
         </div>
         <div class="form-group">
           <label>Descripción</label>

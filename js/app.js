@@ -1,5 +1,6 @@
 // Parse URL parameters
 const urlParams = new URLSearchParams(window.location.search);
+let activeGenderFilter = urlParams.get('gender') || 'all';
 let activeSportFilter = urlParams.get('sport') || 'all';
 let activeCategoryFilter = urlParams.get('category') || 'all';
 let activeTeamFilter = urlParams.get('team') || 'all';
@@ -24,25 +25,27 @@ function formatPrice(price) {
   return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(price);
 }
 
-// Setup Team Dropdown Select
+// Setup Team Dropdown Select (Structured by Sport > League > Team)
 function populateTeamFilterSelect() {
   if (!teamFilterSelect || typeof SPORTS_CATALOG === 'undefined') return;
   
-  teamFilterSelect.innerHTML = '<option value="all">🏆 Todos los Equipos</option>';
+  teamFilterSelect.innerHTML = '<option value="all">🏆 Todos los Deportes y Equipos</option>';
   
-  SPORTS_CATALOG.forEach(league => {
-    const group = document.createElement('optgroup');
-    group.label = league.league;
-    
-    league.teams.forEach(team => {
-      const option = document.createElement('option');
-      option.value = team.id;
-      option.textContent = team.name;
-      if (team.id === activeTeamFilter) option.selected = true;
-      group.appendChild(option);
+  SPORTS_CATALOG.forEach(s => {
+    s.leagues.forEach(l => {
+      const group = document.createElement('optgroup');
+      group.label = `${s.icon} ${s.sport} — ${l.league}`;
+      
+      l.teams.forEach(team => {
+        const option = document.createElement('option');
+        option.value = team.id;
+        option.textContent = team.name;
+        if (team.id === activeTeamFilter) option.selected = true;
+        group.appendChild(option);
+      });
+      
+      teamFilterSelect.appendChild(group);
     });
-    
-    teamFilterSelect.appendChild(group);
   });
 }
 
@@ -50,16 +53,32 @@ function onTeamSelectChange() {
   activeTeamFilter = teamFilterSelect.value;
   activeSportFilter = 'all';
   activeCategoryFilter = 'all';
+  activeGenderFilter = 'all';
   
-  // Clear active pills
   document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
   updateStoreHeader();
   renderProducts();
 }
 
-// Sport & Category Filters
+// Filters
+window.setGenderFilter = function(genderKey, btnEl) {
+  activeGenderFilter = genderKey;
+  activeSportFilter = 'all';
+  activeCategoryFilter = 'all';
+  activeTeamFilter = 'all';
+  activePromoFilter = 'all';
+  if (teamFilterSelect) teamFilterSelect.value = 'all';
+  
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  
+  updateStoreHeader();
+  renderProducts();
+};
+
 window.setSportFilter = function(sportKey, btnEl) {
   activeSportFilter = sportKey;
+  activeGenderFilter = 'all';
   activeCategoryFilter = 'all';
   activeTeamFilter = 'all';
   activePromoFilter = 'all';
@@ -74,6 +93,7 @@ window.setSportFilter = function(sportKey, btnEl) {
 
 window.setCategoryFilter = function(catKey, btnEl) {
   activeCategoryFilter = catKey;
+  activeGenderFilter = 'all';
   activeSportFilter = 'all';
   activeTeamFilter = 'all';
   activePromoFilter = 'all';
@@ -88,6 +108,7 @@ window.setCategoryFilter = function(catKey, btnEl) {
 
 window.setPromoFilter = function(promoKey, btnEl) {
   activePromoFilter = promoKey;
+  activeGenderFilter = 'all';
   activeSportFilter = 'all';
   activeCategoryFilter = 'all';
   activeTeamFilter = 'all';
@@ -110,10 +131,14 @@ if (searchInput) {
 
 // Store Title Header Updates
 function updateStoreHeader() {
-  if (activeTeamFilter !== 'all') {
+  if (activeGenderFilter !== 'all') {
+    const gLabel = typeof getGenderLabel !== 'undefined' ? getGenderLabel(activeGenderFilter) : activeGenderFilter;
+    storeTitle.innerHTML = `DEPARTAMENTO <span style="color: var(--accent-color);">${gLabel.toUpperCase()}</span>`;
+    storeSubtitle.textContent = `Catálogo especializado de tallas para ${gLabel}`;
+  } else if (activeTeamFilter !== 'all') {
     const teamName = typeof getTeamName !== 'undefined' ? getTeamName(activeTeamFilter) : activeTeamFilter;
     storeTitle.innerHTML = `COLECCIÓN <span style="color: var(--accent-color);">${teamName.toUpperCase()}</span>`;
-    storeSubtitle.textContent = `Artículos oficiales de ${typeof getLeagueByTeam !== 'undefined' ? getLeagueByTeam(activeTeamFilter) : 'deportes'}`;
+    storeSubtitle.textContent = `${typeof getLeagueByTeam !== 'undefined' ? getLeagueByTeam(activeTeamFilter) : 'Deportes'}`;
   } else if (activeSportFilter !== 'all') {
     storeTitle.innerHTML = `DEPORTE <span style="color: var(--accent-color);">${activeSportFilter.toUpperCase()}</span>`;
     storeSubtitle.textContent = `Catálogo especializado de ${activeSportFilter.toUpperCase()}`;
@@ -124,8 +149,8 @@ function updateStoreHeader() {
     storeTitle.innerHTML = `⚡ <span style="color: var(--accent-color);">OFERTAS Y PROMOCIONES</span> ⚡`;
     storeSubtitle.textContent = `Aprovecha los mejores precios en artículos seleccionados`;
   } else {
-    storeTitle.innerHTML = `CATÁLOGO <span style="color: var(--accent-color);">COMPLETO</span>`;
-    storeSubtitle.textContent = `Los mejores artículos deportivos oficiales con envío a todo México`;
+    storeTitle.innerHTML = `CATÁLOGO <span style="color: var(--accent-color);">OFICIAL</span>`;
+    storeSubtitle.textContent = `Los mejores artículos deportivos ordenados por Deporte, Liga, Equipo y Departamento`;
   }
 }
 
@@ -135,6 +160,7 @@ function createProductCard(product, id) {
   card.className = 'product-card';
   
   const teamName = typeof getTeamName !== 'undefined' ? getTeamName(product.team) : (product.team || 'Oficial');
+  const genderLabel = typeof getGenderLabel !== 'undefined' ? getGenderLabel(product.gender) : '👨 Caballero';
   const sizes = product.sizes || ["M", "L"];
   const defaultSize = sizes[0] || 'M';
   
@@ -163,7 +189,10 @@ function createProductCard(product, id) {
       <img src="${product.imageUrl}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='https://via.placeholder.com/400x400?text=Catch+Sports'">
     </div>
     <div class="product-info">
-      <div class="product-team-tag">🛡️ ${teamName}</div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <div class="product-team-tag">🛡️ ${teamName}</div>
+        <div style="font-size: 11px; background: rgba(255,255,255,0.08); padding: 2px 7px; border-radius: 4px; font-weight: bold; color: #fff;">${genderLabel}</div>
+      </div>
       <h3 class="product-title">${product.name}</h3>
       <p class="product-desc">${product.description || 'Artículo deportivo de alta calidad oficial.'}</p>
       
@@ -224,9 +253,15 @@ function renderProducts() {
       const nameMatch = (product.name || '').toLowerCase().includes(searchQuery);
       const teamMatch = (product.team || '').toLowerCase().includes(searchQuery);
       const descMatch = (product.description || '').toLowerCase().includes(searchQuery);
-      if (!nameMatch && !teamMatch && !descMatch) return false;
+      const genderMatch = (product.gender || '').toLowerCase().includes(searchQuery);
+      if (!nameMatch && !teamMatch && !descMatch && !genderMatch) return false;
     }
     
+    // Gender filter
+    if (activeGenderFilter !== 'all' && (product.gender || 'caballero').toLowerCase() !== activeGenderFilter.toLowerCase()) {
+      return false;
+    }
+
     // Team filter
     if (activeTeamFilter !== 'all' && (product.team || '').toLowerCase() !== activeTeamFilter.toLowerCase()) {
       return false;
@@ -252,7 +287,7 @@ function renderProducts() {
       <div class="empty-state" style="grid-column: 1 / -1;">
         <div class="empty-state-icon">🏈</div>
         <h2>No encontramos artículos</h2>
-        <p>Intenta cambiar el filtro de búsqueda o el equipo seleccionado.</p>
+        <p>Intenta cambiar el departamento (Caballero, Dama, Niño) o el equipo seleccionado.</p>
       </div>
     `;
     return;
@@ -318,21 +353,24 @@ function updateCartUI() {
     return;
   }
 
-  itemsContainer.innerHTML = cart.map((item, index) => `
-    <div class="cart-item">
-      <img src="${item.imageUrl}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/100'">
-      <div class="cart-item-info">
-        <div class="cart-item-title">${item.name}</div>
-        <div class="cart-item-meta">Talla: <strong>${item.size}</strong> — ${formatPrice(item.price)}</div>
-        <div class="qty-controls">
-          <button class="qty-btn" onclick="updateItemQty(${index}, -1)">-</button>
-          <span style="font-size: 13px; font-weight: bold; color: #fff; min-width: 18px; text-align: center;">${item.qty}</span>
-          <button class="qty-btn" onclick="updateItemQty(${index}, 1)">+</button>
-          <button onclick="removeFromCart(${index})" style="background: transparent; border: none; color: #ef4444; font-size: 12px; margin-left: auto; cursor: pointer;">🗑️ Quitar</button>
+  itemsContainer.innerHTML = cart.map((item, index) => {
+    const genderLabel = typeof getGenderLabel !== 'undefined' ? getGenderLabel(item.gender) : '';
+    return `
+      <div class="cart-item">
+        <img src="${item.imageUrl}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/100'">
+        <div class="cart-item-info">
+          <div class="cart-item-title">${item.name}</div>
+          <div class="cart-item-meta">${genderLabel} — Talla: <strong>${item.size}</strong> — ${formatPrice(item.price)}</div>
+          <div class="qty-controls">
+            <button class="qty-btn" onclick="updateItemQty(${index}, -1)">-</button>
+            <span style="font-size: 13px; font-weight: bold; color: #fff; min-width: 18px; text-align: center;">${item.qty}</span>
+            <button class="qty-btn" onclick="updateItemQty(${index}, 1)">+</button>
+            <button onclick="removeFromCart(${index})" style="background: transparent; border: none; color: #ef4444; font-size: 12px; margin-left: auto; cursor: pointer;">🗑️ Quitar</button>
+          </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 window.addToCart = function(product, size) {
@@ -345,6 +383,7 @@ window.addToCart = function(product, size) {
       name: product.name,
       price: product.price,
       imageUrl: product.imageUrl,
+      gender: product.gender || 'caballero',
       size: size,
       qty: 1
     });
@@ -442,7 +481,10 @@ window.submitCheckoutOrder = async function(event) {
   const deliveryText = delivery === 'domicilio' ? '🚚 Envío a Domicilio' : '🏪 Entrega en Sucursal QRO';
   
   // Format WhatsApp Order Message
-  let itemsListText = cart.map(item => `• ${item.qty}x ${item.name} (Talla: ${item.size}) - ${formatPrice(item.price * item.qty)}`).join('\n');
+  let itemsListText = cart.map(item => {
+    const gLabel = typeof getGenderLabel !== 'undefined' ? getGenderLabel(item.gender) : '';
+    return `• ${item.qty}x ${item.name} (${gLabel} — Talla: ${item.size}) - ${formatPrice(item.price * item.qty)}`;
+  }).join('\n');
   
   const whatsappMessage = 
 `🏆 *NUEVO PEDIDO - CATCH SPORTS* 🏆

@@ -14,7 +14,7 @@
 
   <!-- Ticker Promo Banner -->
   <div class="ticker-banner">
-    🔥 ¡ENVÍOS GRATIS A TODO MÉXICO EN COMPRAS MAYORES A $1,500! 🚚 | ⚡ HASTA 30% OFF EN EDICIONES ESPECIALES
+    🔥 ¡ENVÍOS GRATIS A TODO MÉXICO EN COMPRAS MAYORES A $1,500! 🚚 | ⚡ COLECCIÓN CABALLERO, DAMA Y NIÑO
   </div>
 
   <!-- Navbar -->
@@ -34,9 +34,12 @@
     </div>
   </nav>
 
-  <!-- Sports Filter Navigation Strip -->
+  <!-- Sports & Gender Filter Strip -->
   <div class="sports-nav-strip">
     <button class="filter-pill active" onclick="setSportFilter('all', this)">🔥 TODOS</button>
+    <button class="filter-pill" onclick="setGenderFilter('caballero', this)">👨 CABALLERO</button>
+    <button class="filter-pill" onclick="setGenderFilter('dama', this)">👩 DAMA</button>
+    <button class="filter-pill" onclick="setGenderFilter('nino', this)">🧒 NIÑO</button>
     <button class="filter-pill" onclick="setSportFilter('nfl', this)">🏈 NFL</button>
     <button class="filter-pill" onclick="setSportFilter('nba', this)">🏀 NBA</button>
     <button class="filter-pill" onclick="setSportFilter('mlb', this)">⚾ MLB</button>
@@ -44,7 +47,6 @@
     <button class="filter-pill" onclick="setSportFilter('f1', this)">🏎️ F1</button>
     <button class="filter-pill" onclick="setCategoryFilter('gorras', this)">🧢 GORRAS</button>
     <button class="filter-pill" onclick="setCategoryFilter('jerseys', this)">👕 JERSEYS</button>
-    <button class="filter-pill" onclick="setCategoryFilter('chamarras', this)">🧥 CHAMARRAS</button>
     <button class="filter-pill" onclick="setPromoFilter('oferta', this)">⚡ OFERTAS</button>
   </div>
 
@@ -55,7 +57,7 @@
     <div class="toolbar-container">
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="Buscar por producto, equipo o marca... (ej. Steelers, Gorra, Jersey)">
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar por producto, equipo, caballero, dama o niño... (ej. Steelers Dama, Gorra, Jersey)">
       </div>
       
       <div class="select-box">
@@ -67,7 +69,7 @@
 
     <!-- Dynamic Titles -->
     <h1 class="page-title" id="storeTitle">Colección <span style="color: var(--accent-color);">Oficial</span></h1>
-    <p class="page-subtitle" id="storeSubtitle">Los mejores artículos deportivos premium en México</p>
+    <p class="page-subtitle" id="storeSubtitle">Los mejores artículos deportivos premium clasificados por Deporte, Liga, Equipo y Departamento</p>
 
     <!-- Product Grid -->
     <div id="productGrid" class="product-grid">
