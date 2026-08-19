@@ -20,7 +20,7 @@
 
   <!-- Ticker Banner -->
   <div class="ticker-banner">
-    ⚡ PANEL DE ADMINISTRACIÓN — GESTOR DE INVENTARIO Y CATÁLOGO
+    ⚡ PANEL DE ADMINISTRACIÓN — CARGA Y EDICIÓN COMPLETA DE PRODUCTOS
   </div>
 
   <!-- Navbar -->
@@ -264,13 +264,61 @@
       </div>
     </div>
     
-    <!-- Product List Management -->
+    <!-- PRODUCT CATALOG MANAGEMENT WITH CASCADING SEQUENCE SELECTOR -->
     <div id="manageSection" class="admin-card" style="display: none; margin-top: 24px; max-width: 1100px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
-        <h2>📦 Catálogo Publicado (<span id="adminProdCount" style="color: var(--accent-color);">0</span>)</h2>
-        <input type="text" id="adminSearchInput" class="form-control" placeholder="🔍 Filtrar por nombre..." style="max-width: 250px; padding: 8px 12px;">
+      <div style="margin-bottom: 16px;">
+        <h2 style="font-size: 24px; color: var(--accent-color); margin-bottom: 6px;">
+          📦 Catálogo Publicado (<span id="adminProdCount">0</span>)
+        </h2>
+        <p class="text-secondary" style="font-size: 13px;">
+          Navegación por Secuencia: Toca Deporte ➔ Liga ➔ Equipo para ver sus productos y existencias exactas.
+        </p>
+      </div>
+
+      <!-- CASCADING SEQUENCE NAVIGATOR IN ADMIN CATALOG -->
+      <div style="background: rgba(0,0,0,0.5); border: 2px solid var(--accent-color); border-radius: 14px; padding: 16px; margin-bottom: 20px;">
+        
+        <!-- STEP 1: DEPORTE -->
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 12px; font-weight: 800; color: var(--accent-color); margin-bottom: 6px; text-transform: uppercase;">
+            1️⃣ Deporte:
+          </div>
+          <div id="adminSportChips" style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <!-- Dynamic Sport Chips -->
+          </div>
+        </div>
+
+        <!-- STEP 2: LIGA -->
+        <div id="adminLeagueStep" style="display: none; margin-bottom: 12px;">
+          <div style="font-size: 12px; font-weight: 800; color: #38bdf8; margin-bottom: 6px; text-transform: uppercase;">
+            2️⃣ Liga / Torneo:
+          </div>
+          <div id="adminLeagueChips" style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <!-- Dynamic League Chips -->
+          </div>
+        </div>
+
+        <!-- STEP 3: EQUIPO -->
+        <div id="adminTeamStep" style="display: none; margin-bottom: 12px;">
+          <div style="font-size: 12px; font-weight: 800; color: #facc15; margin-bottom: 6px; text-transform: uppercase;">
+            3️⃣ Equipo / Franquicia:
+          </div>
+          <div id="adminTeamChips" style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <!-- Dynamic Team Chips -->
+          </div>
+        </div>
+
+        <!-- TOOLBAR & ALL PRODUCTS BTN -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 12px; border-top: 1px solid #333; flex-wrap: wrap; gap: 10px;">
+          <input type="text" id="adminSearchInput" class="form-control" placeholder="🔍 O busca directamente por nombre..." style="max-width: 280px; padding: 6px 12px; font-size: 12px;">
+          <button type="button" class="btn btn-outline" style="font-size: 11px; padding: 6px 12px;" onclick="resetAdminCatalogFilter()">
+            🌐 Ver Todo el Catálogo Sin Filtros
+          </button>
+        </div>
+
       </div>
       
+      <!-- PRODUCT CARDS LIST -->
       <div id="adminProductList" style="display: flex; flex-direction: column; gap: 12px;">
         <p class="text-secondary">Cargando productos...</p>
       </div>
