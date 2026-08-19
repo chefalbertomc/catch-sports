@@ -6,8 +6,10 @@ const uploadStatus = document.getElementById('uploadStatus');
 const imagePreview = document.getElementById('imagePreview');
 const btnLogout = document.getElementById('btnLogout');
 
-let currentSizeStockRows = []; // Array of { size: "M", immediateQty: 2, warehouseQty: 5 }
+let currentSizeStockRows = []; // Array for creation
+let editingSizeStockRows = []; // Array for editing
 let selectedFile = null;
+let editSelectedFile = null;
 let currentProducts = [];
 let bulkItems = [];
 
@@ -271,7 +273,7 @@ function populateBadgesSelect() {
 }
 
 // ============================================
-// ULTRA-COMPACT PERFECT 1-LINE SIZE STOCK BUILDER
+// CREATION SIZE STOCK BUILDER
 // ============================================
 window.onGenderSelectChange = function() {
   const genderId = document.getElementById('prodGender')?.value || 'caballero';
@@ -295,7 +297,6 @@ function renderSizeStockRows() {
   const gObj = (typeof GENDER_DEPARTMENTS !== 'undefined') ? GENDER_DEPARTMENTS.find(g => g.id === genderId) : null;
   const suggestedSizes = gObj ? gObj.sizes : ["S", "M", "L", "XL", "XXL", "Unitalla"];
 
-  // Quick Addition Chips for Admin
   const quickChipsHtml = `
     <div style="margin-bottom: 8px; font-size: 11px; color: #aaa;">
       <strong>Toca para agregar talla:</strong>
@@ -316,26 +317,21 @@ function renderSizeStockRows() {
   
   container.innerHTML = quickChipsHtml + currentSizeStockRows.map((row, idx) => `
     <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; background: #000; padding: 6px 8px; border-radius: 8px; border: 1px solid #333; margin-bottom: 4px;">
-      
-      <!-- TALLA INPUT -->
       <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
         <span style="font-size: 10px; color: var(--accent-color); font-weight: 800; white-space: nowrap;">Talla:</span>
         <input type="text" value="${row.size}" onchange="updateSizeRow(${idx}, 'size', this.value)" style="width: 48px !important; background: #181818; color: #fff; border: 1px solid #444; border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center; text-transform: uppercase;">
       </div>
       
-      <!-- TIENDA INPUT -->
       <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
         <span style="font-size: 10px; color: #22c55e; font-weight: 800; white-space: nowrap;">⚡Tienda:</span>
         <input type="number" value="${row.immediateQty}" onchange="updateSizeRow(${idx}, 'immediateQty', parseInt(this.value) || 0)" style="width: 38px !important; background: #181818; color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center;" min="0" max="99">
       </div>
 
-      <!-- BODEGA INPUT (INLINE EMOJI & LABEL) -->
       <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
         <span style="font-size: 10px; color: #facc15; font-weight: 800; white-space: nowrap;">🏢Bodega:</span>
         <input type="number" value="${row.warehouseQty}" onchange="updateSizeRow(${idx}, 'warehouseQty', parseInt(this.value) || 0)" style="width: 38px !important; background: #181818; color: #facc15; border: 1px solid rgba(250, 204, 21, 0.4); border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center;" min="0" max="99">
       </div>
 
-      <!-- VISIBLE RED CIRCULAR X BUTTON -->
       <button type="button" onclick="removeSizeStockRow(${idx})" style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; cursor: pointer; flex-shrink: 0; padding: 0; margin-left: 2px;" title="Eliminar talla">✕</button>
     </div>
   `).join('');
@@ -390,7 +386,6 @@ document.getElementById('prodImageUrlInput')?.addEventListener('input', (e) => {
     imagePreview.src = url;
     imagePreview.style.display = 'inline-block';
 
-    // Detect if user pasted a webpage URL (like Amazon product page) instead of direct image URL
     if (url.includes('amazon.com') || url.includes('mercadolibre') || url.includes('ebay') || url.includes('/dp/')) {
       if (tipEl) {
         tipEl.style.display = 'block';
@@ -413,7 +408,6 @@ document.getElementById('prodImageUrlInput')?.addEventListener('input', (e) => {
     if (tipEl) tipEl.style.display = 'none';
   }
 });
-
 
 function resizeImage(file, maxWidth, maxHeight) {
   return new Promise((resolve, reject) => {
@@ -826,7 +820,7 @@ function renderAdminProductsList(products) {
           </div>
         </div>
         <div style="display: flex; gap: 8px;">
-          <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; border-color: var(--accent-color); color: var(--accent-color);" onclick="openEditModal('${product.id}')">✏️ Editar</button>
+          <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; border-color: var(--accent-color); color: var(--accent-color);" onclick="openEditModal('${product.id}')">✏️ Editar Completo</button>
           <button class="btn btn-outline" style="border-color: #ff6b6b; color: #ff6b6b; padding: 6px 12px; font-size: 12px;" onclick="deleteProduct('${product.id}')">🗑️ Eliminar</button>
         </div>
       </div>
@@ -838,7 +832,9 @@ document.getElementById('adminSearchInput')?.addEventListener('input', () => {
   renderAdminProductsList(currentProducts);
 });
 
-// Edit Product Modal
+// ============================================
+// FULL PRODUCT EDITING MATRIX (PHOTO, SIZES, STOCK, PRICES)
+// ============================================
 window.openEditModal = function(id) {
   const prod = currentProducts.find(p => p.id === id);
   if (!prod) return;
@@ -849,8 +845,106 @@ window.openEditModal = function(id) {
   document.getElementById('editProdOriginalPrice').value = prod.originalPrice || '';
   document.getElementById('editProdDesc').value = prod.description || '';
   
+  // Set image preview
+  const editPreview = document.getElementById('editImagePreview');
+  if (editPreview) {
+    editPreview.src = prod.imageUrl || '';
+    editPreview.style.display = prod.imageUrl ? 'inline-block' : 'none';
+  }
+  
+  document.getElementById('editProdImageUrlInput').value = prod.imageUrl || '';
+  editSelectedFile = null;
+
+  // Load product size stock rows for editing
+  if (prod.sizeStockMap && prod.sizeStockMap.length > 0) {
+    editingSizeStockRows = JSON.parse(JSON.stringify(prod.sizeStockMap));
+  } else if (prod.sizes && prod.sizes.length > 0) {
+    editingSizeStockRows = prod.sizes.map(s => ({ size: s, immediateQty: 2, warehouseQty: 5 }));
+  } else {
+    editingSizeStockRows = [{ size: "M", immediateQty: 2, warehouseQty: 5 }];
+  }
+
+  renderEditSizeStockRows();
   document.getElementById('editProductModal').classList.add('active');
 };
+
+function renderEditSizeStockRows() {
+  const container = document.getElementById('editSizeStockRows');
+  if (!container) return;
+
+  if (editingSizeStockRows.length === 0) {
+    container.innerHTML = `<p class="text-secondary" style="font-size: 12px;">No hay tallas configuradas. Presiona "➕ Agregar Talla".</p>`;
+    return;
+  }
+
+  container.innerHTML = editingSizeStockRows.map((row, idx) => `
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; background: #000; padding: 6px 8px; border-radius: 8px; border: 1px solid #333; margin-bottom: 4px;">
+      <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
+        <span style="font-size: 10px; color: var(--accent-color); font-weight: 800; white-space: nowrap;">Talla:</span>
+        <input type="text" value="${row.size}" onchange="updateEditSizeRow(${idx}, 'size', this.value)" style="width: 48px !important; background: #181818; color: #fff; border: 1px solid #444; border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center; text-transform: uppercase;">
+      </div>
+      
+      <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
+        <span style="font-size: 10px; color: #22c55e; font-weight: 800; white-space: nowrap;">⚡Tienda:</span>
+        <input type="number" value="${row.immediateQty}" onchange="updateEditSizeRow(${idx}, 'immediateQty', parseInt(this.value) || 0)" style="width: 38px !important; background: #181818; color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center;" min="0" max="99">
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
+        <span style="font-size: 10px; color: #facc15; font-weight: 800; white-space: nowrap;">🏢Bodega:</span>
+        <input type="number" value="${row.warehouseQty}" onchange="updateEditSizeRow(${idx}, 'warehouseQty', parseInt(this.value) || 0)" style="width: 38px !important; background: #181818; color: #facc15; border: 1px solid rgba(250, 204, 21, 0.4); border-radius: 4px; padding: 3px 2px; font-size: 11px; font-weight: 800; text-align: center;" min="0" max="99">
+      </div>
+
+      <button type="button" onclick="removeEditSizeStockRow(${idx})" style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; cursor: pointer; flex-shrink: 0; padding: 0; margin-left: 2px;" title="Eliminar talla">✕</button>
+    </div>
+  `).join('');
+}
+
+window.addEditSizeStockRow = function() {
+  editingSizeStockRows.push({ size: "M", immediateQty: 1, warehouseQty: 3 });
+  renderEditSizeStockRows();
+};
+
+window.updateEditSizeRow = function(idx, field, value) {
+  if (editingSizeStockRows[idx]) {
+    editingSizeStockRows[idx][field] = value;
+  }
+};
+
+window.removeEditSizeStockRow = function(idx) {
+  if (editingSizeStockRows[idx]) {
+    editingSizeStockRows.splice(idx, 1);
+    renderEditSizeStockRows();
+  }
+};
+
+document.getElementById('editProdImageFile')?.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    editSelectedFile = file;
+    document.getElementById('editProdImageUrlInput').value = '';
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const editPreview = document.getElementById('editImagePreview');
+      if (editPreview) {
+        editPreview.src = e.target.result;
+        editPreview.style.display = 'inline-block';
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+document.getElementById('editProdImageUrlInput')?.addEventListener('input', (e) => {
+  const url = e.target.value.trim();
+  if (url) {
+    editSelectedFile = null;
+    const editPreview = document.getElementById('editImagePreview');
+    if (editPreview) {
+      editPreview.src = url;
+      editPreview.style.display = 'inline-block';
+    }
+  }
+});
 
 window.closeEditModal = function() {
   document.getElementById('editProductModal').classList.remove('active');
@@ -864,15 +958,50 @@ document.getElementById('editProductForm')?.addEventListener('submit', async (e)
   const origPriceVal = document.getElementById('editProdOriginalPrice').value;
   const originalPrice = origPriceVal ? parseFloat(origPriceVal) : null;
   const desc = document.getElementById('editProdDesc').value.trim();
-  
+  const urlInput = document.getElementById('editProdImageUrlInput').value.trim();
+  const btnSave = document.getElementById('btnSaveEdit');
+
+  if (btnSave) {
+    btnSave.disabled = true;
+    btnSave.textContent = '⏳ Guardando...';
+  }
+
   try {
-    await db.collection('products').doc(id).update({
-      name, price, originalPrice, description: desc
-    });
-    alert('✅ Producto e Inventario actualizados exitosamente');
+    let finalImageUrl = urlInput;
+    if (editSelectedFile) {
+      finalImageUrl = await resizeImage(editSelectedFile, 800, 800);
+    }
+
+    const sizesArray = editingSizeStockRows.map(s => s.size);
+
+    const updatePayload = {
+      name,
+      price,
+      originalPrice,
+      sizeStockMap: editingSizeStockRows,
+      sizes: sizesArray,
+      description: desc
+    };
+
+    if (finalImageUrl) {
+      updatePayload.imageUrl = finalImageUrl;
+    }
+    
+    await db.collection('products').doc(id).update(updatePayload);
+    alert('✅ Producto, foto y existencias actualizados exitosamente');
     closeEditModal();
+
+    if (btnSave) {
+      btnSave.disabled = false;
+      btnSave.textContent = '💾 Guardar Todos los Cambios';
+    }
   } catch(e) {
+    console.error('Error updating product:', e);
     alert('Error al actualizar: ' + e.message);
+    if (btnSave) {
+      btnSave.disabled = false;
+      btnSave.textContent = '💾 Guardar Todos los Cambios';
+    }
   }
 });
 
