@@ -271,19 +271,19 @@ function populateBadgesSelect() {
 }
 
 // ============================================
-// DYNAMIC SIZE STOCK BUILDER (ENTREGA INMEDIATA VS BODEGA)
+// DYNAMIC SIZE STOCK BUILDER - ONLY REAL SIZES ADDED BY ADMIN
 // ============================================
 window.onGenderSelectChange = function() {
   const genderId = document.getElementById('prodGender')?.value || 'caballero';
   const gObj = (typeof GENDER_DEPARTMENTS !== 'undefined') ? GENDER_DEPARTMENTS.find(g => g.id === genderId) : null;
   
+  // Start with 1 clean default size row (e.g. "M") instead of auto-filling all sizes
   const defaultSizes = gObj ? gObj.sizes : ["S", "M", "L", "XL"];
-  
-  currentSizeStockRows = defaultSizes.map(size => ({
-    size: size,
-    immediateQty: 2,
-    warehouseQty: 5
-  }));
+  const initialSize = defaultSizes[1] || defaultSizes[0] || "M";
+
+  currentSizeStockRows = [
+    { size: initialSize, immediateQty: 2, warehouseQty: 5 }
+  ];
   
   renderSizeStockRows();
 };
@@ -291,13 +291,31 @@ window.onGenderSelectChange = function() {
 function renderSizeStockRows() {
   const container = document.getElementById('sizeStockRows');
   if (!container) return;
+
+  const genderId = document.getElementById('prodGender')?.value || 'caballero';
+  const gObj = (typeof GENDER_DEPARTMENTS !== 'undefined') ? GENDER_DEPARTMENTS.find(g => g.id === genderId) : null;
+  const suggestedSizes = gObj ? gObj.sizes : ["S", "M", "L", "XL", "XXL", "Unitalla"];
+
+  // Quick Addition Chips for Admin
+  const quickChipsHtml = `
+    <div style="margin-bottom: 12px; font-size: 11px; color: #aaa;">
+      <strong>Toca para agregar rápido una talla:</strong>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
+        ${suggestedSizes.map(s => `
+          <button type="button" class="btn btn-outline" style="padding: 4px 10px; font-size: 11px; border-color: var(--accent-color); color: var(--accent-color);" onclick="addQuickSize('${s}')">
+            + ${s}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
   
   if (currentSizeStockRows.length === 0) {
-    container.innerHTML = `<p class="text-secondary" style="font-size: 12px;">No hay tallas configuradas. Presiona "➕ Agregar Talla con Stock".</p>`;
+    container.innerHTML = quickChipsHtml + `<p class="text-secondary" style="font-size: 12px;">No hay tallas agregadas. Toca un botón de arriba o presiona "➕ Agregar Talla Personalizada".</p>`;
     return;
   }
   
-  container.innerHTML = currentSizeStockRows.map((row, idx) => `
+  container.innerHTML = quickChipsHtml + currentSizeStockRows.map((row, idx) => `
     <div style="display: flex; gap: 10px; align-items: center; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #333; flex-wrap: wrap;">
       <div style="flex: 1; min-width: 110px;">
         <label style="font-size: 11px; color: var(--accent-color); font-weight: bold;">TALLA *</label>
@@ -318,6 +336,13 @@ function renderSizeStockRows() {
     </div>
   `).join('');
 }
+
+window.addQuickSize = function(sizeLabel) {
+  if (!currentSizeStockRows.some(r => r.size.toUpperCase() === sizeLabel.toUpperCase())) {
+    currentSizeStockRows.push({ size: sizeLabel, immediateQty: 1, warehouseQty: 3 });
+    renderSizeStockRows();
+  }
+};
 
 window.addSizeStockRow = function() {
   currentSizeStockRows.push({ size: "NUEVA TALLA", immediateQty: 1, warehouseQty: 3 });
@@ -528,9 +553,7 @@ window.publishAllBulkProducts = async function() {
     for (const item of bulkItems) {
       const docRef = db.collection('products').doc();
       const defaultSizeStock = [
-        { size: "S", immediateQty: 1, warehouseQty: 2 },
-        { size: "M", immediateQty: 2, warehouseQty: 3 },
-        { size: "L", immediateQty: 1, warehouseQty: 2 }
+        { size: "M", immediateQty: 2, warehouseQty: 3 }
       ];
 
       batch.set(docRef, {
@@ -576,9 +599,9 @@ window.publishAllBulkProducts = async function() {
   }
 };
 
-// Seed Demo Catalog
+// Seed Demo Catalog with ONLY actual available sizes
 window.seedDemoCatalog = async function() {
-  if (!confirm("¿Deseas inyectar 12 productos reales con inventario por talla (Tienda vs Bodega) a la base de datos?")) return;
+  if (!confirm("¿Deseas inyectar 8 productos de muestra con existencias reales únicas por talla a la base de datos?")) return;
 
   const demoProducts = [
     {
@@ -591,9 +614,7 @@ window.seedDemoCatalog = async function() {
       originalPrice: 2299,
       sizeStockMap: [
         { size: "CH / S", immediateQty: 2, warehouseQty: 5 },
-        { size: "M", immediateQty: 4, warehouseQty: 8 },
-        { size: "G / L", immediateQty: 3, warehouseQty: 4 },
-        { size: "XL", immediateQty: 0, warehouseQty: 2 }
+        { size: "M", immediateQty: 4, warehouseQty: 8 }
       ],
       description: "Jersey oficial de utilería con bordados premium en oro y negro de los Pittsburgh Steelers.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/pit.png"
@@ -607,10 +628,8 @@ window.seedDemoCatalog = async function() {
       price: 899,
       originalPrice: 1199,
       sizeStockMap: [
-        { size: "7 1/8", immediateQty: 3, warehouseQty: 5 },
         { size: "7 1/4", immediateQty: 5, warehouseQty: 10 },
-        { size: "7 3/8", immediateQty: 2, warehouseQty: 4 },
-        { size: "7 1/2", immediateQty: 0, warehouseQty: 3 }
+        { size: "7 3/8", immediateQty: 2, warehouseQty: 4 }
       ],
       description: "Gorra oficial New Era 59FIFTY cerrada de los Dallas Cowboys con visera plana.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png"
@@ -625,8 +644,7 @@ window.seedDemoCatalog = async function() {
       originalPrice: 2699,
       sizeStockMap: [
         { size: "M", immediateQty: 2, warehouseQty: 3 },
-        { size: "L / G", immediateQty: 1, warehouseQty: 4 },
-        { size: "XL", immediateQty: 0, warehouseQty: 2 }
+        { size: "XL", immediateQty: 1, warehouseQty: 2 }
       ],
       description: "Chamarra rompevientos térmica oficial Nike Sideline de los San Francisco 49ers.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/sf.png"
@@ -641,8 +659,7 @@ window.seedDemoCatalog = async function() {
       originalPrice: 2099,
       sizeStockMap: [
         { size: "S Dama", immediateQty: 3, warehouseQty: 4 },
-        { size: "M Dama", immediateQty: 2, warehouseQty: 5 },
-        { size: "L Dama", immediateQty: 1, warehouseQty: 2 }
+        { size: "M Dama", immediateQty: 2, warehouseQty: 5 }
       ],
       description: "Jersey de damas corte entallado oficial de Patrick Mahomes con logo de los Campeones Chiefs.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/kc.png"
@@ -657,8 +674,7 @@ window.seedDemoCatalog = async function() {
       originalPrice: 1999,
       sizeStockMap: [
         { size: "M", immediateQty: 4, warehouseQty: 6 },
-        { size: "L / G", immediateQty: 3, warehouseQty: 5 },
-        { size: "XL", immediateQty: 1, warehouseQty: 3 }
+        { size: "L / G", immediateQty: 3, warehouseQty: 5 }
       ],
       description: "Jersey oficial Nike Dri-FIT de LeBron James Icon Edition en color púrpura y oro.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/nba/500/lal.png"
@@ -672,7 +688,7 @@ window.seedDemoCatalog = async function() {
       price: 799,
       originalPrice: 999,
       sizeStockMap: [
-        { size: "Ajustable / Unitalla", immediateQty: 10, warehouseQty: 25 }
+        { size: "Unitalla", immediateQty: 10, warehouseQty: 25 }
       ],
       description: "Gorra clásica ajustable 9FIFTY con logo bordado 3D de los NY Yankees.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png"
@@ -686,10 +702,8 @@ window.seedDemoCatalog = async function() {
       price: 1999,
       originalPrice: 2399,
       sizeStockMap: [
-        { size: "CH / S", immediateQty: 5, warehouseQty: 10 },
         { size: "M", immediateQty: 6, warehouseQty: 12 },
-        { size: "L / G", immediateQty: 4, warehouseQty: 8 },
-        { size: "XL", immediateQty: 2, warehouseQty: 5 }
+        { size: "L / G", immediateQty: 4, warehouseQty: 8 }
       ],
       description: "Jersey oficial de local en blanco puro con detalles dorados y parche de 15 Champions League.",
       imageUrl: "https://a.espncdn.com/i/teamlogos/soccer/500/83.png"
@@ -703,7 +717,6 @@ window.seedDemoCatalog = async function() {
       price: 2899,
       originalPrice: 3499,
       sizeStockMap: [
-        { size: "M", immediateQty: 2, warehouseQty: 4 },
         { size: "L / G", immediateQty: 2, warehouseQty: 3 }
       ],
       description: "Chamarra softshell oficial Castore de Red Bull Racing y Checo Pérez #11.",
@@ -723,7 +736,7 @@ window.seedDemoCatalog = async function() {
       });
     }
     await batch.commit();
-    alert("✅ ¡8 Productos de muestra inyectados exitosamente con control de existencias por talla!");
+    alert("✅ ¡Productos de muestra inyectados exitosamente con existencias exactas por talla!");
   } catch(e) {
     alert("Error al inyectar catálogo: " + e.message);
   }
@@ -907,7 +920,7 @@ document.getElementById('productForm')?.addEventListener('submit', async (e) => 
     });
     
     uploadStatus.style.color = '#4ade80';
-    uploadStatus.textContent = '✅ ¡Producto publicado exitosamente con existencias por talla!';
+    uploadStatus.textContent = '✅ ¡Producto publicado exitosamente con existencias exactas por talla!';
     
     // Reset Form
     document.getElementById('productForm').reset();
