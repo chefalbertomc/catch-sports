@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Catch Sports — Tienda Oficial de Deportes & Utilería</title>
-  <link rel="stylesheet" href="css/styles.css?v=1600.0">
+  <link rel="stylesheet" href="css/styles.css?v=1700.0">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,31 +41,48 @@
     </div>
   </nav>
 
-  <!-- 100% Mobile Optimized Floating Dock (No cut-off, NFL pill is 100% visible on left border) -->
-  <div class="mobile-league-scroll-bar" style="position: sticky; top: 60px; z-index: 90; backdrop-filter: blur(12px);">
-    <button onclick="openLeagueHub('nfl')" class="league-dock-chip active" id="dock-nfl">
-      <span style="font-size: 14px;">🏈</span> NFL <span class="badge-dot">32</span>
+  <!-- ================================================================= -->
+  <!-- 3-LEVEL CASCADING VISUAL SELECTOR SYSTEM                          -->
+  <!-- LEVEL 1: NOMBRES DE LOS DEPORTES                                  -->
+  <!-- LEVEL 2: LOGOS CHIQUITOS DE LAS LIGAS                             -->
+  <!-- LEVEL 3: LOGOS CHIQUITOS DE LOS EQUIPOS                           -->
+  <!-- ================================================================= -->
+
+  <!-- LEVEL 1: BARRA DE NOMBRES DE DEPORTES -->
+  <div class="mobile-league-scroll-bar" style="position: sticky; top: 60px; z-index: 90; background: #0a0a0c;">
+    <button onclick="selectSportLevel('nfl')" class="league-dock-chip active" id="sport-pill-nfl">
+      <span style="font-size: 14px;">🏈</span> Fútbol Americano
     </button>
 
-    <button onclick="openLeagueHub('nba')" class="league-dock-chip" id="dock-nba">
-      <span style="font-size: 14px;">🏀</span> NBA <span class="badge-dot">12</span>
+    <button onclick="selectSportLevel('nba')" class="league-dock-chip" id="sport-pill-nba">
+      <span style="font-size: 14px;">🏀</span> Básquetbol
     </button>
 
-    <button onclick="openLeagueHub('mlb')" class="league-dock-chip" id="dock-mlb">
-      <span style="font-size: 14px;">⚾</span> MLB <span class="badge-dot">8</span>
+    <button onclick="selectSportLevel('mlb')" class="league-dock-chip" id="sport-pill-mlb">
+      <span style="font-size: 14px;">⚾</span> Béisbol
     </button>
 
-    <button onclick="openLeagueHub('soccer')" class="league-dock-chip" id="dock-soccer">
-      <span style="font-size: 14px;">⚽</span> FÚTBOL <span class="badge-dot">13</span>
+    <button onclick="selectSportLevel('soccer')" class="league-dock-chip" id="sport-pill-soccer">
+      <span style="font-size: 14px;">⚽</span> Fútbol
     </button>
 
-    <button onclick="openLeagueHub('f1')" class="league-dock-chip" id="dock-f1">
-      <span style="font-size: 14px;">🏎️</span> F1 <span class="badge-dot">5</span>
+    <button onclick="selectSportLevel('f1')" class="league-dock-chip" id="sport-pill-f1">
+      <span style="font-size: 14px;">🏎️</span> Automovilismo / F1
     </button>
 
-    <button onclick="openDepartmentHub('jerseys')" class="league-dock-chip" id="dock-jerseys">
-      <span style="font-size: 14px;">👕</span> JERSEYS
+    <button onclick="selectSportLevel('general')" class="league-dock-chip" id="sport-pill-general">
+      <span style="font-size: 14px;">🏋️</span> Fitness / Accesorios
     </button>
+  </div>
+
+  <!-- LEVEL 2: LOGOS CHIQUITOS DE LAS LIGAS (Dinamico) -->
+  <div id="leagueLevelContainer" style="background: #121215; border-bottom: 1px solid rgba(250, 204, 21, 0.2); padding: 8px 12px; display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; position: sticky; top: 104px; z-index: 89;">
+    <!-- Injected dynamically via JS: Logos chiquitos de las ligas -->
+  </div>
+
+  <!-- LEVEL 3: LOGOS CHIQUITOS DE LOS EQUIPOS (Dinamico) -->
+  <div id="teamLevelContainer" style="background: #18181c; border-bottom: 1px solid #333; padding: 8px 12px; display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; position: sticky; top: 148px; z-index: 88;">
+    <!-- Injected dynamically via JS: Logos chiquitos de los equipos -->
   </div>
 
   <!-- DYNAMIC PORTAL CONTAINER (Se renderiza dinámicamente según la liga/departamento activo) -->
@@ -279,8 +296,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-  <script src="js/firebase-config.js?v=1600.0"></script>
-  <script src="js/teams.js?v=1600.0"></script>
-  <script src="js/app.js?v=1600.0"></script>
+  <script src="js/firebase-config.js?v=1700.0"></script>
+  <script src="js/teams.js?v=1700.0"></script>
+  <script src="js/app.js?v=1700.0"></script>
 </body>
 </html>

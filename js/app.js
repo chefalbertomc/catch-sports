@@ -228,12 +228,17 @@ window.resetWizardToStep1 = function() {
   renderProducts();
 };
 
-// DYNAMIC LEAGUE HUB PORTAL ROUTER SYSTEM
-window.openLeagueHub = function(sportKey) {
+// =================================================================
+// 3-LEVEL CASCADING VISUAL SELECTOR SYSTEM
+// LEVEL 1: NOMBRES DE LOS DEPORTES (Fútbol Americano, Básquetbol, Béisbol, Fútbol, F1)
+// LEVEL 2: LOGOS CHIQUITOS DE LAS LIGAS (NFL, NBA, MLB, Liga MX, Europeas)
+// LEVEL 3: LOGOS CHIQUITOS DE LOS EQUIPOS (Steelers, Cowboys, América, Real Madrid)
+// =================================================================
+
+window.selectSportLevel = function(sportKey) {
   activeSportFilter = sportKey;
   activeTeamFilter = 'all';
   activeCategoryFilter = 'all';
-  activeGenderFilter = 'all';
 
   const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
   const sportObj = catalog.find(s => s.sportKey === sportKey);
@@ -243,56 +248,108 @@ window.openLeagueHub = function(sportKey) {
   wizardSportObj = sportObj;
   wizardLeagueObj = sportObj.leagues[0] || null;
   wizardTeamObj = null;
-  currentWizardStep = 3;
 
-  // Highlight dock pill
-  document.querySelectorAll('.league-dock-chip').forEach(c => c.classList.remove('active'));
-  document.getElementById(`dock-${sportKey}`)?.classList.add('active');
+  // Highlight Level 1 Pill
+  document.querySelectorAll('.mobile-league-scroll-bar .league-dock-chip').forEach(c => c.classList.remove('active'));
+  document.getElementById(`sport-pill-${sportKey}`)?.classList.add('active');
 
-  // Render Dynamic Full-Page Hero Portal Header
-  const heroContainer = document.getElementById('dynamicPortalHero');
-  if (heroContainer) {
-    const teamsList = sportObj.leagues.flatMap(l => l.teams);
-    
-    heroContainer.innerHTML = `
-      <section style="background: radial-gradient(circle at 50% 30%, #201d16 0%, #09090b 100%); border-bottom: 2px solid var(--accent-color); padding: 32px 16px;">
-        <div class="container" style="max-width: 950px; text-align: center;">
-          
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
-            <button onclick="showAllProductsDirectly()" class="btn btn-outline" style="font-size: 11px; padding: 6px 14px;">
-              ← Volver al Portal Principal
-            </button>
-            <span style="font-size: 11px; font-weight: 900; color: var(--accent-color); text-transform: uppercase;">
-              ${sportObj.icon} PORTAL OFICIAL DE ${sportObj.sport.toUpperCase()}
-            </span>
-          </div>
-
-          <h1 style="font-family: var(--font-display); font-size: clamp(24px, 4.5vw, 38px); font-weight: 900; color: #fff; text-transform: uppercase; margin-bottom: 8px;">
-            PORTAL OFICIAL <span style="color: var(--accent-color);">${sportObj.sport.toUpperCase()}</span> (${teamsList.length} EQUIPOS)
-          </h1>
-          <p style="color: #aaa; font-size: 13px; margin-bottom: 20px;">
-            Selecciona tu franquicia favorita de ${sportObj.sport} o explora toda la colección de utilería y fanáticos.
-          </p>
-
-          <!-- Quick Team Badge Selector Strip -->
-          <div style="display: flex; gap: 10px; overflow-x: auto; padding: 8px 0; -webkit-overflow-scrolling: touch; justify-content: flex-start; max-width: 100%;">
-            ${teamsList.map(t => `
-              <div onclick="selectWizardTeam('${t.id}')" style="background: #141414; border: 1px solid #333; border-radius: 10px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; white-space: nowrap; flex-shrink: 0;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#333'">
-                <img src="${t.logo}" style="width: 24px; height: 24px; object-fit: contain;" onerror="this.src='assets/catch_sports_logo.png'"/>
-                <span style="font-size: 11px; font-weight: 800; color: #fff;">${t.name}</span>
-              </div>
-            `).join('')}
-          </div>
-
+  // Populate LEVEL 2: LOGOS CHIQUITOS DE LAS LIGAS
+  const leagueContainer = document.getElementById('leagueLevelContainer');
+  if (leagueContainer) {
+    leagueContainer.style.display = 'flex';
+    leagueContainer.innerHTML = `
+      <span style="font-size: 10px; font-weight: 900; color: var(--accent-color); text-transform: uppercase; white-space: nowrap; align-self: center; margin-right: 4px; flex-shrink: 0;">
+        🏆 LIGAS (${sportObj.sport.toUpperCase()}):
+      </span>
+      ${sportObj.leagues.map((l, index) => `
+        <div onclick="selectLeagueLevel('${l.league}')" class="league-level-chip ${index === 0 ? 'active' : ''}" id="league-chip-${l.league.replace(/[^a-zA-Z0-9]/g, '-')}" style="background: #1a1a20; border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 16px; padding: 4px 10px; display: flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; font-size: 11px; font-weight: 800; color: #fff; flex-shrink: 0;">
+          <img src="${l.leagueLogo}" style="width: 20px; height: 20px; object-fit: contain;" onerror="this.src='assets/catch_sports_logo.png'"/>
+          <span>${l.league}</span>
         </div>
-      </section>
+      `).join('')}
     `;
   }
 
-  renderWizardStep();
+  // Trigger first league automatically
+  if (sportObj.leagues.length > 0) {
+    selectLeagueLevel(sportObj.leagues[0].league);
+  }
+};
+
+window.selectLeagueLevel = function(leagueName) {
+  if (!wizardSportObj) return;
+
+  wizardLeagueObj = wizardSportObj.leagues.find(l => l.league === leagueName);
+  wizardTeamObj = null;
+
+  // Highlight Level 2 Chip
+  document.querySelectorAll('#leagueLevelContainer .league-level-chip').forEach(c => {
+    c.style.borderColor = 'rgba(250, 204, 21, 0.3)';
+    c.style.background = '#1a1a20';
+    c.style.color = '#fff';
+  });
+  const activeLeagueEl = document.getElementById(`league-chip-${leagueName.replace(/[^a-zA-Z0-9]/g, '-')}`);
+  if (activeLeagueEl) {
+    activeLeagueEl.style.borderColor = 'var(--accent-color)';
+    activeLeagueEl.style.background = 'var(--accent-color)';
+    activeLeagueEl.style.color = '#000';
+  }
+
+  // Populate LEVEL 3: LOGOS CHIQUITOS DE LOS EQUIPOS
+  const teamContainer = document.getElementById('teamLevelContainer');
+  if (teamContainer && wizardLeagueObj) {
+    teamContainer.style.display = 'flex';
+    teamContainer.innerHTML = `
+      <span style="font-size: 10px; font-weight: 900; color: var(--accent-color); text-transform: uppercase; white-space: nowrap; align-self: center; margin-right: 4px; flex-shrink: 0;">
+        🛡️ EQUIPOS (${wizardLeagueObj.league}):
+      </span>
+      <div onclick="selectTeamLevel('all')" class="team-level-chip active" id="team-chip-all" style="background: var(--accent-color); color: #000; border: 1px solid var(--accent-color); border-radius: 16px; padding: 4px 10px; display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; font-size: 11px; font-weight: 800; flex-shrink: 0;">
+        <span>🔥 Todos (${wizardLeagueObj.teams.length})</span>
+      </div>
+      ${wizardLeagueObj.teams.map(t => `
+        <div onclick="selectTeamLevel('${t.id}')" class="team-level-chip" id="team-chip-${t.id}" style="background: #202026; border: 1px solid #333; border-radius: 16px; padding: 4px 10px; display: flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; font-size: 11px; font-weight: 800; color: #fff; flex-shrink: 0;">
+          <img src="${t.logo}" style="width: 20px; height: 20px; object-fit: contain;" onerror="this.src='assets/catch_sports_logo.png'"/>
+          <span>${t.name}</span>
+        </div>
+      `).join('')}
+    `;
+  }
+
   updateStoreHeader();
   renderProducts();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.selectTeamLevel = function(teamId) {
+  if (teamId === 'all') {
+    activeTeamFilter = 'all';
+    wizardTeamObj = null;
+  } else {
+    activeTeamFilter = teamId;
+    if (wizardLeagueObj) {
+      wizardTeamObj = wizardLeagueObj.teams.find(t => t.id === teamId) || null;
+    }
+  }
+
+  // Highlight Level 3 Chip
+  document.querySelectorAll('#teamLevelContainer .team-level-chip').forEach(c => {
+    c.style.borderColor = '#333';
+    c.style.background = '#202026';
+    c.style.color = '#fff';
+  });
+  const activeTeamEl = document.getElementById(`team-chip-${teamId}`);
+  if (activeTeamEl) {
+    activeTeamEl.style.borderColor = 'var(--accent-color)';
+    activeTeamEl.style.background = 'var(--accent-color)';
+    activeTeamEl.style.color = '#000';
+  }
+
+  updateStoreHeader();
+  renderProducts();
+};
+
+// DYNAMIC LEAGUE HUB PORTAL ROUTER SYSTEM
+window.openLeagueHub = function(sportKey) {
+  selectSportLevel(sportKey);
 };
 
 window.openDepartmentHub = function(categoryKey) {
@@ -511,10 +568,13 @@ function initCategorySlideshowEngine() {
   setInterval(updateSlides, 3200);
 }
 
-// Search Listener
+// Search & Selector Initializer
 document.addEventListener('DOMContentLoaded', () => {
   initDOMReferences();
   initCategorySlideshowEngine();
+  if (typeof selectSportLevel === 'function') {
+    selectSportLevel('nfl');
+  }
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       searchQuery = e.target.value.toLowerCase().trim();
