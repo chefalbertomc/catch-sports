@@ -682,26 +682,144 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Store Title Header Updates
+// Store Title & Dynamic Team Hero Header Updates
 function updateStoreHeader() {
   initDOMReferences();
-  if (!storeTitle) return;
-  
+  const heroContainer = document.getElementById('dynamicPortalHero');
+
   if (wizardTeamObj) {
-    const tax = typeof getFullTaxonomy !== 'undefined' ? getFullTaxonomy(wizardTeamObj.id) : { team: wizardTeamObj.name };
-    const logoImg = tax.teamLogo ? `<img src="${tax.teamLogo}" style="height: 38px; vertical-align: middle; margin-right: 8px; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8));"/>` : '';
-    storeTitle.innerHTML = `${logoImg}COLECCIÓN <span style="color: var(--accent-color);">${tax.team.toUpperCase()}</span>`;
-    if (storeSubtitle) storeSubtitle.textContent = `${tax.icon} ${tax.sport} — Liga ${tax.league}`;
+    const tax = typeof getFullTaxonomy !== 'undefined' ? getFullTaxonomy(wizardTeamObj.id) : { team: wizardTeamObj.name, teamLogo: 'assets/catch_sports_logo.png' };
+    
+    if (storeTitle) {
+      const logoImg = tax.teamLogo ? `<img src="${tax.teamLogo}" style="height: 38px; vertical-align: middle; margin-right: 8px; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8));"/>` : '';
+      storeTitle.innerHTML = `${logoImg}COLECCIÓN <span style="color: var(--accent-color);">${tax.team.toUpperCase()}</span>`;
+      if (storeSubtitle) storeSubtitle.textContent = `${tax.icon} ${tax.sport} — Liga ${tax.league}`;
+    }
+
+    // Render Ultra-Badass Team Hero Banner right below top navbar!
+    if (heroContainer) {
+      heroContainer.innerHTML = `
+        <section style="background: radial-gradient(circle at 50% 20%, #2b2612 0%, #0c0c0e 100%); border-bottom: 2px solid var(--accent-color); padding: 22px 14px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
+          <div class="container" style="max-width: 900px; padding: 0;">
+            
+            <!-- Floating Team Logo Badge -->
+            <div style="margin-bottom: 8px; display: inline-block; position: relative;">
+              <img src="${tax.teamLogo}" style="width: 68px; height: 68px; object-fit: contain; filter: drop-shadow(0 6px 16px rgba(250, 204, 21, 0.45)); border-radius: 50%; background: rgba(0,0,0,0.5); padding: 6px; border: 2px solid var(--accent-color);" onerror="this.src='assets/catch_sports_logo.png'"/>
+            </div>
+
+            <!-- Team Main Title -->
+            <h1 style="font-family: var(--font-display); font-size: clamp(20px, 5vw, 34px); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 4px; text-transform: uppercase; letter-spacing: -0.5px;">
+              COLECCIÓN OFICIAL <span style="color: var(--accent-color); text-shadow: 0 0 15px var(--accent-glow);">${tax.team.toUpperCase()}</span>
+            </h1>
+
+            <!-- Taxonomy Pill Subtitle -->
+            <p style="color: #ccc; font-size: 12px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;">
+              <span style="background: rgba(250, 204, 21, 0.15); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 900;">
+                ${tax.icon} ${tax.sport.toUpperCase()} — LIGA ${tax.league}
+              </span>
+              <span style="color: #666;">•</span>
+              <span style="color: #aaa;">Utilería y Ediciones Fanático 2026</span>
+            </p>
+
+            <!-- Ultra-Compact Dynamic Rotating Real Firestore Product Photos Grid (Filtered by Team!) -->
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 10px;" id="catCardsGridDesktop">
+              
+              <!-- Card 1: Jerseys -->
+              <div id="catCardJerseys" class="compact-cat-card" onclick="openDepartmentHub('jerseys')">
+                <div class="compact-cat-overlay">
+                  <div class="compact-cat-title">👕 Jerseys Oficiales</div>
+                  <div class="compact-cat-subtitle" id="subJerseys">Cargando jerseys de ${tax.team}...</div>
+                </div>
+              </div>
+
+              <!-- Card 2: Sudaderas -->
+              <div id="catCardHoodies" class="compact-cat-card" onclick="openDepartmentHub('chamarras')">
+                <div class="compact-cat-overlay">
+                  <div class="compact-cat-title">🧥 Sudaderas & Hoodies</div>
+                  <div class="compact-cat-subtitle" id="subHoodies">Cargando sudaderas de ${tax.team}...</div>
+                </div>
+              </div>
+
+              <!-- Card 3: Gorras -->
+              <div id="catCardCaps" class="compact-cat-card" onclick="openDepartmentHub('gorras')">
+                <div class="compact-cat-overlay">
+                  <div class="compact-cat-title">🧢 Gorras New Era</div>
+                  <div class="compact-cat-subtitle" id="subCaps">Cargando gorras de ${tax.team}...</div>
+                </div>
+              </div>
+
+              <!-- Card 4: Dama -->
+              <div id="catCardDama" class="compact-cat-card" onclick="setGenderFilter('dama', this)">
+                <div class="compact-cat-overlay">
+                  <div class="compact-cat-title">👩 Colección Dama</div>
+                  <div class="compact-cat-subtitle" id="subDama">Cargando ropa dama de ${tax.team}...</div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+      `;
+    }
   } else if (wizardSportObj) {
-    storeTitle.innerHTML = `DEPORTE <span style="color: var(--accent-color);">${wizardSportObj.sport.toUpperCase()}</span>`;
-    if (storeSubtitle) storeSubtitle.textContent = `Catálogo especializado de ${wizardSportObj.sport}`;
+    if (storeTitle) {
+      storeTitle.innerHTML = `DEPORTE <span style="color: var(--accent-color);">${wizardSportObj.sport.toUpperCase()}</span>`;
+      if (storeSubtitle) storeSubtitle.textContent = `Catálogo especializado de ${wizardSportObj.sport}`;
+    }
+
+    if (heroContainer) {
+      heroContainer.innerHTML = `
+        <section style="background: radial-gradient(circle at 50% 20%, #201e14 0%, #0c0c0e 100%); border-bottom: 2px solid var(--accent-color); padding: 22px 14px; text-align: center;">
+          <div class="container" style="max-width: 900px; padding: 0;">
+            <span style="font-size: 32px; display: block; margin-bottom: 4px;">${wizardSportObj.icon}</span>
+            <h1 style="font-family: var(--font-display); font-size: clamp(20px, 4.5vw, 32px); font-weight: 900; color: #fff; text-transform: uppercase; margin-bottom: 4px;">
+              PORTAL OFICIAL <span style="color: var(--accent-color);">${wizardSportObj.sport.toUpperCase()}</span>
+            </h1>
+            <p style="color: #aaa; font-size: 11px; margin-bottom: 10px;">
+              Explora todas las franquicias y prendas oficiales de ${wizardSportObj.sport}
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 8px;" id="catCardsGridDesktop">
+              <div id="catCardJerseys" class="compact-cat-card" onclick="openDepartmentHub('jerseys')">
+                <div class="compact-cat-overlay">
+                  <div class="compact-cat-title">👕 Jerseys Oficiales</div>
+                  <div class="compact-cat-subtitle" id="subJerseys">Jerseys de ${wizardSportObj.sport}...</div>
+                </div>
+              </div>
+              <div id="catCardHoodies" class="compact-cat-card" onclick="openDepartmentHub('chamarras')">
+                <div class="compact-cat-overlay">
+                  <div class="compact-cat-title">🧥 Sudaderas & Hoodies</div>
+                  <div class="compact-cat-subtitle" id="subHoodies">Sudaderas de ${wizardSportObj.sport}...</div>
+                </div>
+              </div>
+              <div id="catCardCaps" class="compact-cat-card" onclick="openDepartmentHub('gorras')">
+                <div class="compact-cat-overlay">
+                  <div class="compact-cat-title">🧢 Gorras New Era</div>
+                  <div class="compact-cat-subtitle" id="subCaps">Gorras de ${wizardSportObj.sport}...</div>
+                </div>
+              </div>
+              <div id="catCardDama" class="compact-cat-card" onclick="setGenderFilter('dama', this)">
+                <div class="compact-cat-overlay">
+                  <div class="compact-cat-title">👩 Colección Dama</div>
+                  <div class="compact-cat-subtitle" id="subDama">Colección Dama de ${wizardSportObj.sport}...</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+      `;
+    }
   } else if (activeGenderFilter !== 'all') {
     const gLabel = typeof getGenderLabel !== 'undefined' ? getGenderLabel(activeGenderFilter) : activeGenderFilter;
-    storeTitle.innerHTML = `DEPARTAMENTO <span style="color: var(--accent-color);">${gLabel.toUpperCase()}</span>`;
+    if (storeTitle) storeTitle.innerHTML = `DEPARTAMENTO <span style="color: var(--accent-color);">${gLabel.toUpperCase()}</span>`;
     if (storeSubtitle) storeSubtitle.textContent = `Catálogo especializado de tallas para ${gLabel}`;
+    if (heroContainer) heroContainer.innerHTML = '';
   } else {
-    storeTitle.innerHTML = `CATÁLOGO <span style="color: var(--accent-color);">OFICIAL</span>`;
+    if (storeTitle) storeTitle.innerHTML = `CATÁLOGO <span style="color: var(--accent-color);">OFICIAL</span>`;
     if (storeSubtitle) storeSubtitle.textContent = `Artículos deportivos clasificados por Deporte, Liga, Equipo y Departamento`;
+    if (heroContainer) heroContainer.innerHTML = '';
   }
 }
 
