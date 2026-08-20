@@ -803,61 +803,34 @@ function updateStoreHeader() {
       if (storeSubtitle) storeSubtitle.textContent = `${tax.icon} ${tax.sport} — Liga ${tax.league}`;
     }
 
-    // Render Ultra-Compact Team Hero Banner with Stadium Lights AND the 4 Category Cards Grid!
+    // Render Clean Team Header Pill (Large Logo Left + Title & Sport Right)
     if (heroContainer) {
       heroContainer.innerHTML = `
-        <section style="position: relative; background: #07090e; border-bottom: 2px solid var(--accent-color); padding: 14px 12px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.8); overflow: hidden;">
-          
-          <!-- GUARANTEED HIGH-IMPACT STADIUM FLOODLIGHTS & STADIUM FIELD SVG BACKDROP -->
-          <div style="position: absolute; inset: 0; pointer-events: none; opacity: 0.85; z-index: 1;">
-            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-              <defs>
-                <radialGradient id="lightBeamGold" cx="20%" cy="10%" r="75%">
-                  <stop offset="0%" stop-color="#facb15" stop-opacity="0.75"/>
-                  <stop offset="50%" stop-color="#141418" stop-opacity="0.2"/>
-                  <stop offset="100%" stop-color="#050508" stop-opacity="0"/>
-                </radialGradient>
-                <radialGradient id="lightBeamWhite" cx="80%" cy="10%" r="75%">
-                  <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6"/>
-                  <stop offset="50%" stop-color="#facb15" stop-opacity="0.15"/>
-                  <stop offset="100%" stop-color="#050508" stop-opacity="0"/>
-                </radialGradient>
-              </defs>
-
-              <rect width="100%" height="100%" fill="#07080c"/>
-              <rect width="100%" height="100%" fill="url(#lightBeamGold)"/>
-              <rect width="100%" height="100%" fill="url(#lightBeamWhite)"/>
-
-              <line x1="0" y1="95%" x2="100%" y2="95%" stroke="rgba(250,204,21,0.4)" stroke-width="2"/>
-              <line x1="12%" y1="0" x2="12%" y2="100%" stroke="rgba(250,204,21,0.2)" stroke-width="1.5" stroke-dasharray="3,3"/>
-              <line x1="32%" y1="0" x2="32%" y2="100%" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
-              <line x1="50%" y1="0" x2="50%" y2="100%" stroke="rgba(250,204,21,0.45)" stroke-width="3"/>
-              <line x1="68%" y1="0" x2="68%" y2="100%" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
-              <line x1="88%" y1="0" x2="88%" y2="100%" stroke="rgba(250,204,21,0.2)" stroke-width="1.5" stroke-dasharray="3,3"/>
-            </svg>
-          </div>
-
-          <div class="container" style="position: relative; z-index: 2; max-width: 900px; padding: 0;">
+        <section style="background: radial-gradient(circle at 50% 30%, #1f1b0f 0%, #09090b 100%); border-bottom: 2px solid var(--accent-color); padding: 12px 10px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.8);">
+          <div class="container" style="max-width: 900px; padding: 0;">
             
-            <!-- Floating Team Logo Badge & Header -->
-            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px;">
-              <img src="${tax.teamLogo}" style="width: 44px; height: 44px; object-fit: contain; filter: drop-shadow(0 4px 14px rgba(250, 204, 21, 0.8)); border-radius: 50%; background: rgba(0,0,0,0.75); padding: 4px; border: 2px solid var(--accent-color);" onerror="this.src='assets/catch_sports_logo.png'"/>
+            <!-- Clean Header Card: Large Logo Left + Title/Sport Right -->
+            <div style="background: rgba(20, 18, 12, 0.85); border: 1px solid rgba(250, 204, 21, 0.4); border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; justify-content: flex-start; gap: 12px; text-align: left; margin-bottom: 8px;">
+              
+              <!-- Large Team Logo Left -->
+              <img src="${tax.teamLogo}" style="width: 52px; height: 52px; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(250, 204, 21, 0.6)); border-radius: 50%; background: #000; padding: 4px; border: 2px solid var(--accent-color); flex-shrink: 0;" onerror="this.src='assets/catch_sports_logo.png'"/>
 
-              <div style="text-align: left;">
-                <h1 style="font-family: var(--font-display); font-size: clamp(15px, 4.2vw, 22px); font-weight: 900; color: #fff; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; text-shadow: 0 2px 10px rgba(0,0,0,0.9);">
-                  COLECCIÓN OFICIAL <span style="color: var(--accent-color); text-shadow: 0 0 15px var(--accent-glow);">${tax.team.toUpperCase()}</span>
+              <!-- Right Info: Single Line Title + Subtitle -->
+              <div>
+                <h1 style="font-family: var(--font-display); font-size: clamp(14px, 3.8vw, 20px); font-weight: 900; color: #fff; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -0.3px;">
+                  COLECCIÓN OFICIAL <span style="color: var(--accent-color); text-shadow: 0 0 10px var(--accent-glow);">${tax.team.toUpperCase()}</span>
                 </h1>
-                <p style="color: #eee; font-size: 10px; font-weight: 700; margin: 3px 0 0; display: flex; align-items: center; gap: 6px;">
-                  <span style="background: rgba(0, 0, 0, 0.85); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 2px 8px; border-radius: 12px; font-size: 9px; font-weight: 900;">
+                <p style="color: #ccc; font-size: 11px; font-weight: 700; margin: 3px 0 0; display: flex; align-items: center; gap: 6px;">
+                  <span style="background: rgba(250, 204, 21, 0.15); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 1px 8px; border-radius: 12px; font-size: 9px; font-weight: 900;">
                     ${tax.icon} ${tax.sport.toUpperCase()} — ${tax.league}
                   </span>
-                  <span style="color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.9);">🏟️ Estilo Estadio 2026</span>
                 </p>
               </div>
+
             </div>
 
             <!-- DYNAMIC 4 CATEGORY CARDS GRID FOR THE ACTIVE TEAM -->
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 8px;" id="catCardsGridDesktop">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;" id="catCardsGridDesktop">
               <div id="catCardJerseys" class="compact-cat-card" onclick="openDepartmentHub('jerseys')">
                 <div class="compact-cat-overlay">
                   <div class="compact-cat-title">👕 Jerseys Oficiales</div>
