@@ -980,33 +980,23 @@ const adminStockViewMap = {}; // productId -> 'tienda' | 'bodega'
 
 window.toggleCardStockView = function(productId, mode) {
   adminStockViewMap[productId] = mode;
-  const btnTienda = document.getElementById(`btnStockTienda_${productId}`);
-  const btnBodega = document.getElementById(`btnStockBodega_${productId}`);
   const container = document.getElementById(`stockViewContainer_${productId}`);
 
-  if (btnTienda && btnBodega && container) {
-    if (mode === 'tienda') {
-      btnTienda.style.background = '#22c55e';
-      btnTienda.style.color = '#000';
-      btnBodega.style.background = '#181818';
-      btnBodega.style.color = '#facc15';
-    } else {
-      btnTienda.style.background = '#181818';
-      btnTienda.style.color = '#22c55e';
-      btnBodega.style.background = '#facc15';
-      btnBodega.style.color = '#000';
-    }
-
+  if (container) {
     const prod = currentProducts.find(p => p.id === productId);
     if (prod) {
-      container.innerHTML = getCompactStockPillsHtml(prod, mode);
+      container.outerHTML = getUnifiedStockPillHtml(prod, mode);
     }
   }
 };
 
-function getCompactStockPillsHtml(product, mode) {
+function getUnifiedStockPillHtml(product, mode) {
   const sizeStockMap = product.sizeStockMap || [];
+  const color = (mode === 'tienda') ? '#22c55e' : '#facc15';
+  const label = (mode === 'tienda') ? '⚡ Tienda' : '🏢 Bodega';
+  const otherMode = (mode === 'tienda') ? 'bodega' : 'tienda';
   
+  let sizesHtml = '';
   if (sizeStockMap.length > 0) {
     const filteredRows = sizeStockMap.filter(s => {
       const qty = (mode === 'tienda') ? (s.immediateQty || 0) : (s.warehouseQty || 0);
@@ -1014,23 +1004,31 @@ function getCompactStockPillsHtml(product, mode) {
     });
 
     if (filteredRows.length === 0) {
-      return `<span style="font-size: 9px; color: #777;">Sin piezas en ${mode === 'tienda' ? 'Tienda' : 'Bodega'}.</span>`;
+      sizesHtml = `<span style="color: #777; font-size: 9px; padding: 0 4px;">Sin stock</span>`;
+    } else {
+      sizesHtml = filteredRows.map(s => {
+        const qty = (mode === 'tienda') ? s.immediateQty : s.warehouseQty;
+        return `
+          <span style="border-left: 1px solid #333; padding-left: 4px; padding-right: 4px; color: #ddd; font-size: 9px;">
+            ${s.size} <strong style="color: ${color};">${qty}</strong>
+          </span>
+        `;
+      }).join('');
     }
-
-    return filteredRows.map(s => {
-      const qty = (mode === 'tienda') ? s.immediateQty : s.warehouseQty;
-      const color = (mode === 'tienda') ? '#22c55e' : '#facc15';
-      return `
-        <span style="background: #000; border: 1px solid #333; border-radius: 3px; padding: 1px 4px; font-size: 9px; font-weight: 800; color: #ccc;">
-          ${s.size} <strong style="color: ${color};">${qty}</strong>
-        </span>
-      `;
-    }).join('');
   } else {
-    return (product.sizes || []).map(s => `
-      <span style="background: #000; border: 1px solid #333; border-radius: 3px; padding: 1px 4px; font-size: 9px; color: #aaa;">${s}</span>
+    sizesHtml = (product.sizes || []).map(s => `
+      <span style="border-left: 1px solid #333; padding-left: 4px; padding-right: 4px; color: #aaa; font-size: 9px;">${s}</span>
     `).join('');
   }
+
+  return `
+    <div id="stockViewContainer_${product.id}" style="display: inline-flex; align-items: center; background: #000; border: 1px solid #333; border-radius: 6px; padding: 2px 4px; font-size: 9px; font-weight: 800; max-width: 100%; flex-wrap: wrap; gap: 2px;">
+      <button type="button" onclick="toggleCardStockView('${product.id}', '${otherMode}')" style="background: ${color}; color: #000; border: none; border-radius: 4px; padding: 1px 5px; font-size: 9px; font-weight: 900; cursor: pointer;" title="Toca para cambiar de lugar">
+        ${label} ⇄
+      </button>
+      ${sizesHtml}
+    </div>
+  `;
 }
 
 let adminFilterShowAll = false;
@@ -1108,18 +1106,18 @@ function renderAdminProductsList(products) {
     const genderLabel = typeof getGenderLabel !== 'undefined' ? getGenderLabel(product.gender) : '👨 Caballero';
     const cleanGenderText = genderLabel.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
     const activeViewMode = adminStockViewMap[product.id] || 'tienda';
-    const initialStockHtml = getCompactStockPillsHtml(product, activeViewMode);
+    const unifiedPillHtml = getUnifiedStockPillHtml(product, activeViewMode);
 
     return `
-      <div style="display: flex; align-items: center; gap: 8px; padding: 6px 8px; background: #111; border-radius: 8px; border: 1px solid #282828; margin-bottom: 3px;">
+      <div style="display: flex; align-items: center; gap: 8px; padding: 5px 8px; background: #111; border-radius: 8px; border: 1px solid #282828; margin-bottom: 3px;">
         
-        <!-- FOTO MINIATURA (36px x 36px) -->
-        <img src="${product.imageUrl}" style="width: 36px; height: 36px; object-fit: cover; border-radius: 5px; border: 1px solid var(--accent-color); flex-shrink: 0;" onerror="this.src='https://via.placeholder.com/100'">
+        <!-- FOTO MINIATURA (34px x 34px) -->
+        <img src="${product.imageUrl}" style="width: 34px; height: 34px; object-fit: cover; border-radius: 5px; border: 1px solid var(--accent-color); flex-shrink: 0;" onerror="this.src='https://via.placeholder.com/100'">
 
-        <!-- CONTENIDO COMPACTO -->
+        <!-- CONTENIDO EN 1 PÍLDORA UNIFICADA -->
         <div style="flex: 1; min-width: 0;">
           
-          <!-- RENGLÓN 1: DEPORTE + EQUIPO — NOMBRE + GÉNERO Y BOTONES EDITAR/ELIMINAR -->
+          <!-- RENGLÓN 1: DEPORTE + EQUIPO — NOMBRE (GÉNERO) + BOTONES ACCIÓN -->
           <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-bottom: 2px;">
             <div style="font-size: 11px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               <span style="color: var(--accent-color);">${sportIcon} ${teamName}</span>
@@ -1130,37 +1128,18 @@ function renderAdminProductsList(products) {
 
             <!-- BOTONES EDITAR Y ELIMINAR (MICRO ICONOS) -->
             <div style="display: flex; align-items: center; gap: 3px; flex-shrink: 0;">
-              <button class="btn btn-outline" style="padding: 1px 6px; font-size: 10px; border-color: var(--accent-color); color: var(--accent-color); height: 20px; line-height: 1;" onclick="startEditingProduct('${product.id}')" title="Editar">
+              <button class="btn btn-outline" style="padding: 1px 5px; font-size: 10px; border-color: var(--accent-color); color: var(--accent-color); height: 20px; line-height: 1;" onclick="startEditingProduct('${product.id}')" title="Editar">
                 ✏️
               </button>
-              <button class="btn btn-outline" style="border-color: #ef4444; color: #ef4444; padding: 1px 6px; font-size: 10px; height: 20px; line-height: 1;" onclick="deleteProduct('${product.id}')" title="Eliminar">
+              <button class="btn btn-outline" style="border-color: #ef4444; color: #ef4444; padding: 1px 5px; font-size: 10px; height: 20px; line-height: 1;" onclick="deleteProduct('${product.id}')" title="Eliminar">
                 🗑️
               </button>
             </div>
           </div>
 
-          <!-- RENGLÓN 2: FILTRO UBICACIÓN (TIENDA/BODEGA) + PÍLDORAS STOCK -->
-          <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-            
-            <!-- TOGGLE DE UBICACIÓN DENSE -->
-            <div style="display: inline-flex; background: #000; border: 1px solid #333; border-radius: 4px; padding: 1px;">
-              <button type="button" onclick="toggleCardStockView('${product.id}', 'tienda')" id="btnStockTienda_${product.id}" style="padding: 1px 5px; font-size: 9px; font-weight: 800; border-radius: 3px; border: none; cursor: pointer; transition: all 0.15s; ${
-                activeViewMode === 'tienda' ? 'background: #22c55e; color: #000;' : 'background: transparent; color: #22c55e;'
-              }">
-                ⚡ Tienda
-              </button>
-              <button type="button" onclick="toggleCardStockView('${product.id}', 'bodega')" id="btnStockBodega_${product.id}" style="padding: 1px 5px; font-size: 9px; font-weight: 800; border-radius: 3px; border: none; cursor: pointer; transition: all 0.15s; ${
-                activeViewMode === 'bodega' ? 'background: #facc15; color: #000;' : 'background: transparent; color: #facc15;'
-              }">
-                🏢 Bodega
-              </button>
-            </div>
-
-            <!-- PÍLDORAS DE TALLAS ABAJO EN 1 RENGLÓN MINI -->
-            <div id="stockViewContainer_${product.id}" style="display: inline-flex; flex-wrap: wrap; gap: 3px; align-items: center;">
-              ${initialStockHtml}
-            </div>
-
+          <!-- RENGLÓN 2: PÍLDORA UNIFICADA (UBICACIÓN + TODAS LAS TALLAS EN 1 SOLA PÍLDORA) -->
+          <div style="display: flex; align-items: center;">
+            ${unifiedPillHtml}
           </div>
 
         </div>
