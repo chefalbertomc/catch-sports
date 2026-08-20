@@ -79,7 +79,7 @@ if (btnLogout) {
   });
 }
 
-// Switch Tabs with History PushState & Phone Back Button Interception
+// Switch Tabs with History PushState & History Shield
 window.switchAdminTab = function(tabName, skipPushHistory = false) {
   const manageCard = document.getElementById('manageSection');
   const singleCard = document.getElementById('singleUploadCard');
@@ -90,7 +90,7 @@ window.switchAdminTab = function(tabName, skipPushHistory = false) {
   const bulkBtn = document.getElementById('tabBulkBtn');
 
   if (!skipPushHistory && history.pushState) {
-    history.pushState({ adminTab: tabName }, '', `#tab-${tabName}`);
+    history.pushState({ adminTab: tabName, adminLock: true }, '', `#tab-${tabName}`);
   }
 
   if (tabName === 'manage') {

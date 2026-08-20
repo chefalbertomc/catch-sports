@@ -18,6 +18,19 @@
       });
     }
 
+    // Shield History: Lock back button so it stays in admin.html forever
+    (function lockAdminHistory() {
+      if (window.history && window.history.pushState) {
+        window.history.pushState({ adminLock: true }, null, window.location.href);
+        window.addEventListener('popstate', function (e) {
+          window.history.pushState({ adminLock: true }, null, window.location.href);
+          if (typeof switchAdminTab === 'function') {
+            switchAdminTab('manage', true);
+          }
+        });
+      }
+    })();
+
     // Inline Master Admin Access Function
     function quickAdminAccess() {
       const loginSec = document.getElementById('loginSection');
@@ -432,8 +445,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   
-  <script src="js/firebase-config.js?v=800.0"></script>
-  <script src="js/teams.js?v=800.0"></script>
-  <script src="js/admin-v2.js?v=800.0"></script>
+  <script src="js/firebase-config.js?v=900.0"></script>
+  <script src="js/teams.js?v=900.0"></script>
+  <script src="js/admin-v2.js?v=900.0"></script>
 </body>
 </html>
