@@ -803,66 +803,36 @@ function updateStoreHeader() {
       if (storeSubtitle) storeSubtitle.textContent = `${tax.icon} ${tax.sport} — Liga ${tax.league}`;
     }
 
-    // Render Ultra-Badass Team Hero Banner right below top navbar!
+    // Render Ultra-Compact Team Hero Banner with Stadium Background Wallpaper!
     if (heroContainer) {
+      // Dynamic wallpaper background per team (for Steelers: dark gold stadium vibe)
+      let teamBgImage = 'linear-gradient(135deg, rgba(25, 20, 8, 0.85) 0%, rgba(10, 10, 12, 0.95) 100%), url("https://images.unsplash.com/photo-1566577739112-5180d4bf9390?auto=format&fit=crop&w=1200&q=80")';
+      if (tax.team.toLowerCase().includes('steelers')) {
+        teamBgImage = 'linear-gradient(135deg, rgba(25, 20, 5, 0.82) 0%, rgba(10, 10, 12, 0.95) 100%), url("https://images.unsplash.com/photo-1566577739112-5180d4bf9390?auto=format&fit=crop&w=1200&q=80")';
+      } else if (tax.sport.toLowerCase().includes('fútbol americano') || tax.sport.toLowerCase().includes('nfl')) {
+        teamBgImage = 'linear-gradient(135deg, rgba(15, 25, 15, 0.82) 0%, rgba(10, 10, 12, 0.95) 100%), url("https://images.unsplash.com/photo-1566577739112-5180d4bf9390?auto=format&fit=crop&w=1200&q=80")';
+      } else if (tax.sport.toLowerCase().includes('básquetbol') || tax.league.toLowerCase().includes('nba')) {
+        teamBgImage = 'linear-gradient(135deg, rgba(30, 15, 10, 0.82) 0%, rgba(10, 10, 12, 0.95) 100%), url("https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1200&q=80")';
+      }
+
       heroContainer.innerHTML = `
-        <section style="background: radial-gradient(circle at 50% 20%, #2b2612 0%, #0c0c0e 100%); border-bottom: 2px solid var(--accent-color); padding: 22px 14px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
-          <div class="container" style="max-width: 900px; padding: 0;">
+        <section style="background: ${teamBgImage}; background-size: cover; background-position: center; border-bottom: 2px solid var(--accent-color); padding: 10px 12px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.8);">
+          <div class="container" style="max-width: 900px; padding: 0; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
             
             <!-- Floating Team Logo Badge -->
-            <div style="margin-bottom: 8px; display: inline-block; position: relative;">
-              <img src="${tax.teamLogo}" style="width: 68px; height: 68px; object-fit: contain; filter: drop-shadow(0 6px 16px rgba(250, 204, 21, 0.45)); border-radius: 50%; background: rgba(0,0,0,0.5); padding: 6px; border: 2px solid var(--accent-color);" onerror="this.src='assets/catch_sports_logo.png'"/>
-            </div>
+            <img src="${tax.teamLogo}" style="width: 44px; height: 44px; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(250, 204, 21, 0.6)); border-radius: 50%; background: rgba(0,0,0,0.6); padding: 4px; border: 2px solid var(--accent-color);" onerror="this.src='assets/catch_sports_logo.png'"/>
 
-            <!-- Team Main Title -->
-            <h1 style="font-family: var(--font-display); font-size: clamp(20px, 5vw, 34px); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 4px; text-transform: uppercase; letter-spacing: -0.5px;">
-              COLECCIÓN OFICIAL <span style="color: var(--accent-color); text-shadow: 0 0 15px var(--accent-glow);">${tax.team.toUpperCase()}</span>
-            </h1>
-
-            <!-- Taxonomy Pill Subtitle -->
-            <p style="color: #ccc; font-size: 12px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;">
-              <span style="background: rgba(250, 204, 21, 0.15); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 900;">
-                ${tax.icon} ${tax.sport.toUpperCase()} — LIGA ${tax.league}
-              </span>
-              <span style="color: #666;">•</span>
-              <span style="color: #aaa;">Utilería y Ediciones Fanático 2026</span>
-            </p>
-
-            <!-- Ultra-Compact Dynamic Rotating Real Firestore Product Photos Grid (Filtered by Team!) -->
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 10px;" id="catCardsGridDesktop">
-              
-              <!-- Card 1: Jerseys -->
-              <div id="catCardJerseys" class="compact-cat-card" onclick="openDepartmentHub('jerseys')">
-                <div class="compact-cat-overlay">
-                  <div class="compact-cat-title">👕 Jerseys Oficiales</div>
-                  <div class="compact-cat-subtitle" id="subJerseys">Cargando jerseys de ${tax.team}...</div>
-                </div>
-              </div>
-
-              <!-- Card 2: Sudaderas -->
-              <div id="catCardHoodies" class="compact-cat-card" onclick="openDepartmentHub('chamarras')">
-                <div class="compact-cat-overlay">
-                  <div class="compact-cat-title">🧥 Sudaderas & Hoodies</div>
-                  <div class="compact-cat-subtitle" id="subHoodies">Cargando sudaderas de ${tax.team}...</div>
-                </div>
-              </div>
-
-              <!-- Card 3: Gorras -->
-              <div id="catCardCaps" class="compact-cat-card" onclick="openDepartmentHub('gorras')">
-                <div class="compact-cat-overlay">
-                  <div class="compact-cat-title">🧢 Gorras New Era</div>
-                  <div class="compact-cat-subtitle" id="subCaps">Cargando gorras de ${tax.team}...</div>
-                </div>
-              </div>
-
-              <!-- Card 4: Dama -->
-              <div id="catCardDama" class="compact-cat-card" onclick="setGenderFilter('dama', this)">
-                <div class="compact-cat-overlay">
-                  <div class="compact-cat-title">👩 Colección Dama</div>
-                  <div class="compact-cat-subtitle" id="subDama">Cargando ropa dama de ${tax.team}...</div>
-                </div>
-              </div>
-
+            <!-- Team Main Title & Subtitle -->
+            <div style="text-align: left;">
+              <h1 style="font-family: var(--font-display); font-size: clamp(15px, 4vw, 22px); font-weight: 900; color: #fff; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -0.5px;">
+                COLECCIÓN OFICIAL <span style="color: var(--accent-color); text-shadow: 0 0 10px var(--accent-glow);">${tax.team.toUpperCase()}</span>
+              </h1>
+              <p style="color: #ccc; font-size: 10px; font-weight: 700; margin: 2px 0 0; display: flex; align-items: center; gap: 6px;">
+                <span style="background: rgba(250, 204, 21, 0.2); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 1px 8px; border-radius: 12px; font-size: 9px; font-weight: 900;">
+                  ${tax.icon} ${tax.sport.toUpperCase()} — ${tax.league}
+                </span>
+                <span style="color: #aaa;">Utilería Fanático 2026</span>
+              </p>
             </div>
 
           </div>
