@@ -516,14 +516,22 @@ function onTeamSelectChange() {
   }
 }
 
-// Filters
-window.setGenderFilter = function(genderKey, btnEl) {
-  activeGenderFilter = genderKey;
-  document.querySelectorAll('.gender-nav-strip .filter-pill').forEach(p => p.classList.remove('active'));
-  if (btnEl) btnEl.classList.add('active');
+// Filters (Product Type: Jerseys, Sudaderas, Gorras, Dama)
+window.setProductTypeFilter = function(typeKey, btnEl) {
+  activeCategoryFilter = typeKey;
   
+  const strip = document.getElementById('productTypeFilterStrip');
+  if (strip) {
+    strip.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  }
+  if (btnEl) btnEl.classList.add('active');
+
   updateStoreHeader();
   renderProducts();
+};
+
+window.setGenderFilter = function(genderKey, btnEl) {
+  setProductTypeFilter(genderKey, btnEl);
 };
 
 // DYNAMIC COMPACT ROTATING REAL FIRESTORE PRODUCT PHOTOS SLIDESHOW ENGINE
@@ -1012,9 +1020,12 @@ function renderProducts() {
       if ((tax.sport || '').toLowerCase() !== wizardSportObj.sport.toLowerCase()) return false;
     }
 
-    // Gender filter
-    if (activeGenderFilter !== 'all' && (product.gender || 'caballero').toLowerCase() !== activeGenderFilter.toLowerCase()) {
-      return false;
+    // Product Type Filter (Jerseys, Sudaderas, Gorras, Dama)
+    if (activeCategoryFilter !== 'all') {
+      if (activeCategoryFilter === 'jerseys' && product.category !== 'jerseys') return false;
+      if (activeCategoryFilter === 'chamarras' && (product.category !== 'chamarras' && product.category !== 'sudaderas')) return false;
+      if (activeCategoryFilter === 'gorras' && product.category !== 'gorras') return false;
+      if (activeCategoryFilter === 'dama' && (product.gender !== 'dama' && product.category !== 'dama')) return false;
     }
     
     return true;

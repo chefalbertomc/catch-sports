@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Catch Sports — Tienda Oficial de Deportes & Utilería</title>
-  <link rel="stylesheet" href="css/styles.css?v=2300.0">
+  <link rel="stylesheet" href="css/styles.css?v=2400.0">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,22 +42,22 @@
   </nav>
 
   <!-- ================================================================= -->
-  <!-- SINGLE-LINE EXPANDABLE CASCADING BAR (TOP STICKY BAR)              -->
-  <!-- Deporte ➔ Ligas (logos chiquitos) ➔ Equipos (logos chiquitos)     -->
+  <!-- SINGLE-LINE EXPANDABLE CASCADING BAR (TOP STICKY BAR INTEGRADA)    -->
+  <!-- Deporte ➔ Ligas ➔ Equipos + Buscador Integrado                    -->
   <!-- ================================================================= -->
   <div class="mobile-league-scroll-bar" id="singleLineCascadingBar" style="position: sticky; top: 60px; z-index: 90; background: #0a0a0c; min-height: 44px;">
     <!-- Injected dynamically via JS -->
   </div>
 
-  <!-- DYNAMIC PORTAL CONTAINER -->
-  <div id="dynamicPortalHero" style="margin-bottom: 12px;">
+  <!-- DYNAMIC PORTAL HERO BANNER -->
+  <div id="dynamicPortalHero" style="margin-bottom: 8px;">
     <!-- Default General Portal Banner -->
-    <section style="background: radial-gradient(circle at 50% 30%, #242217 0%, #09090b 100%); border-bottom: 1px solid var(--border-gold); padding: 16px 12px; text-align: center;">
+    <section style="background: radial-gradient(circle at 50% 30%, #242217 0%, #09090b 100%); border-bottom: 1px solid var(--border-gold); padding: 14px 10px; text-align: center;">
       <div class="container" style="max-width: 950px; padding: 0;">
-        <span style="background: rgba(250, 204, 21, 0.15); border: 1px solid var(--accent-color); color: var(--accent-color); font-size: 10px; font-weight: 900; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 4px;">
-          ⭐ TIENDA OFICIAL DE UTILERÍA Y EDICIONES DE FANÁTICO 2026
+        <span style="background: rgba(250, 204, 21, 0.15); border: 1px solid var(--accent-color); color: var(--accent-color); font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-bottom: 4px;">
+          ⭐ TIENDA OFICIAL DE UTILERÍA 2026
         </span>
-        <h1 style="font-family: var(--font-display); font-size: clamp(16px, 3.8vw, 28px); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 2px; text-transform: uppercase;">
+        <h1 style="font-family: var(--font-display); font-size: clamp(15px, 3.6vw, 26px); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 2px; text-transform: uppercase;">
           EQUÍPATE CON LO OFICIAL DE TU <span style="color: var(--accent-color);">EQUIPO FAVORITO</span>
         </h1>
 
@@ -89,7 +89,7 @@
           </div>
 
           <!-- Card 4: Dama -->
-          <div id="catCardDama" class="compact-cat-card" onclick="setGenderFilter('dama', this)">
+          <div id="catCardDama" class="compact-cat-card" onclick="setProductTypeFilter('dama', this)">
             <div class="compact-cat-overlay">
               <div class="compact-cat-title">👩 Colección Dama</div>
               <div class="compact-cat-subtitle" id="subDama">Cargando prendas dama...</div>
@@ -104,40 +104,28 @@
   <!-- Main Content -->
   <main class="container" style="max-width: 1000px; padding: 0 8px;">
 
-    <!-- Toolbar & Gender Department Selector -->
-    <div id="catalogToolbar" style="display: block; margin-bottom: 12px;">
+    <!-- SEARCH & PRODUCT TYPE FILTER STRIP ("FILTRAR POR TIPO: JERSEYS, SUDADERAS, GORRAS, DAMA") -->
+    <div style="margin: 8px 0 12px;">
       
-      <!-- Gender Strip -->
-      <div class="gender-nav-strip">
-        <span style="font-size: 11px; font-weight: 800; color: #888; text-transform: uppercase;">FILTRAR:</span>
-        <button class="filter-pill active" onclick="setGenderFilter('all', this)">🔥 TODOS</button>
-        <button class="filter-pill" onclick="setGenderFilter('caballero', this)">👨 CABALLERO</button>
-        <button class="filter-pill" onclick="setGenderFilter('dama', this)">👩 DAMA</button>
-        <button class="filter-pill" onclick="setGenderFilter('nino', this)">🧒 NIÑO</button>
-        <button class="filter-pill" onclick="setGenderFilter('unisex', this)">🧢 GORRAS</button>
+      <!-- Compact Top Search Bar -->
+      <div class="search-box" style="margin-bottom: 8px;">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar artículo, modelo o jugador... (ej. Steelers, Jersey, Gorra)">
       </div>
 
-      <!-- Search Box & Direct Select -->
-      <div class="toolbar-container" style="margin: 8px 0;">
-        <div class="search-box">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" class="search-input" placeholder="Buscar artículo o equipo... (ej. Steelers, Jersey, Gorra)">
-        </div>
-        <div class="select-box">
-          <select id="teamFilterSelect" class="form-control" onchange="onTeamSelectChange()">
-            <!-- Populated dynamically -->
-          </select>
-        </div>
+      <!-- Product Type Filter Pills (Jerseys, Sudaderas, Gorras, Dama) -->
+      <div class="gender-nav-strip" id="productTypeFilterStrip">
+        <button class="filter-pill active" onclick="setProductTypeFilter('all', this)">🔥 TODOS</button>
+        <button class="filter-pill" onclick="setProductTypeFilter('jerseys', this)">👕 JERSEYS</button>
+        <button class="filter-pill" onclick="setProductTypeFilter('chamarras', this)">🧥 SUDADERAS & HOODIES</button>
+        <button class="filter-pill" onclick="setProductTypeFilter('gorras', this)">🧢 GORRAS NEW ERA</button>
+        <button class="filter-pill" onclick="setProductTypeFilter('dama', this)">👩 COLECCIÓN DAMA</button>
       </div>
+
     </div>
 
-    <!-- Section Title Header -->
-    <div class="section-header" style="margin-bottom: 10px;">
-      <div>
-        <h1 id="storeTitle" class="section-title" style="font-size: 18px;">CATÁLOGO <span style="color: var(--accent-color);">OFICIAL</span></h1>
-        <p id="storeSubtitle" class="section-subtitle" style="font-size: 11px;">Toca cualquier producto para abrir la vista completa en pantalla</p>
-      </div>
-    </div>
+    <!-- Hidden Team Select (for programatic sync) -->
+    <select id="teamFilterSelect" style="display: none;" onchange="onTeamSelectChange()"></select>
 
     <!-- Loading State -->
     <div id="loader" class="loader-container">
@@ -228,8 +216,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-  <script src="js/firebase-config.js?v=2300.0"></script>
-  <script src="js/teams.js?v=2300.0"></script>
-  <script src="js/app.js?v=2300.0"></script>
+  <script src="js/firebase-config.js?v=2400.0"></script>
+  <script src="js/teams.js?v=2400.0"></script>
+  <script src="js/app.js?v=2400.0"></script>
 </body>
 </html>
