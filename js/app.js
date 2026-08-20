@@ -815,16 +815,16 @@ function updateStoreHeader() {
               <!-- Large Team Logo Left -->
               <img src="${tax.teamLogo}" style="width: 56px; height: 56px; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(250, 204, 21, 0.6)); border-radius: 50%; background: #000; padding: 4px; border: 2px solid var(--accent-color); flex-shrink: 0;" onerror="this.src='assets/catch_sports_logo.png'"/>
 
-              <!-- Right Info Block -->
-              <div style="display: flex; flex-direction: column; width: 100%;">
+              <!-- Right Info Block (Right-Aligned Text: text-align: right) -->
+              <div style="display: flex; flex-direction: column; align-items: flex-end; text-align: right; width: 100%;">
                 
-                <!-- Renglón 1: COLECCIÓN OFICIAL -->
+                <!-- Renglón 1: COLECCIÓN OFICIAL (Alineado a la Derecha) -->
                 <div style="font-family: var(--font-display); font-size: 11px; font-weight: 800; color: #aaa; text-transform: uppercase; letter-spacing: 0.8px; line-height: 1;">
                   COLECCIÓN OFICIAL
                 </div>
 
-                <!-- Renglón 2: PITTSBURGH STEELERS (Nombre del Equipo en otro renglón) -->
-                <div style="font-family: var(--font-display); font-size: clamp(16px, 4.5vw, 22px); font-weight: 900; color: var(--accent-color); text-transform: uppercase; text-shadow: 0 0 10px var(--accent-glow); line-height: 1.15; margin-bottom: 4px;">
+                <!-- Renglón 2: PITTSBURGH STEELERS (Alineado a la Derecha) -->
+                <div style="font-family: var(--font-display); font-size: clamp(15px, 4.2vw, 22px); font-weight: 900; color: var(--accent-color); text-transform: uppercase; text-shadow: 0 0 10px var(--accent-glow); line-height: 1.15; margin-bottom: 4px;">
                   ${tax.team.toUpperCase()}
                 </div>
 
