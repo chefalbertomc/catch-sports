@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Catch Sports — Tienda Oficial de Deportes & Utilería</title>
-  <link rel="stylesheet" href="css/styles.css?v=2700.0">
+  <link rel="stylesheet" href="css/styles.css?v=2800.0">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,39 +20,43 @@
     🔥 CATCH SPORTS — LA TIENDA OFICIAL DE UTILERÍA Y FANÁTICOS EN MÉXICO | 🚚 ENVÍOS A TODO MÉXICO | 🛡️ PRODUCTOS 100% GARANTIZADOS | 📲 PEDIDOS DIRECTOS POR WHATSAPP
   </div>
 
-  <!-- Header Navbar (CATCH SPORTS + Buscador Integrado + Inicio + Carrito + Admin) -->
-  <nav class="navbar" style="padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;">
-    
-    <!-- Logo -->
-    <a href="index.html" class="logo-container" style="flex-shrink: 0;">
+  <!-- Header Navbar (CATCH SPORTS + Inicio + Buscar + Carrito + Admin) -->
+  <nav class="navbar">
+    <a href="index.html" class="logo-container">
       <div class="logo-icon">
-        <img src="assets/catch_sports_logo.png" alt="Catch Sports Logo" style="height: 30px; width: 30px; border-radius: 50%; object-fit: cover;">
+        <img src="assets/catch_sports_logo.png" alt="Catch Sports Logo" style="height: 34px; width: 34px; border-radius: 50%; object-fit: cover;">
       </div>
-      <div class="logo-text" style="font-size: 16px;">CATCH <span style="font-size: 16px;">SPORTS</span></div>
+      <div class="logo-text">CATCH <span>SPORTS</span></div>
     </a>
 
-    <!-- Compact Search Pill Inside Header Navbar (DENTRO DE LA MISMA BARRA SUPERIOR) -->
-    <div style="position: relative; flex: 1; max-width: 220px; min-width: 110px; flex-shrink: 1;">
-      <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: #888;">🔍</span>
-      <input type="text" id="searchInput" style="width: 100%; padding: 5px 8px 5px 28px; font-size: 11px; font-weight: 600; border-radius: 16px; background: #16161c; border: 1px solid rgba(250, 204, 21, 0.4); color: #fff; outline: none;" placeholder="Buscar...">
-    </div>
-
-    <!-- Quick Access Buttons -->
-    <div style="display: flex; gap: 5px; align-items: center; flex-shrink: 0;">
-      <button onclick="showAllProductsDirectly()" class="btn btn-outline" style="font-size: 10px; padding: 5px 9px; border-color: var(--accent-color); color: var(--accent-color); white-space: nowrap;">
+    <!-- Sticky Navigation Quick Access (EXACTA FILA DE BOTONES DE LA CAPTURA) -->
+    <div style="display: flex; gap: 6px; align-items: center;">
+      <button onclick="showAllProductsDirectly()" class="btn btn-outline" style="font-size: 11px; padding: 6px 12px; border-color: var(--accent-color); color: var(--accent-color);">
         🏠 Inicio
       </button>
-      <button class="cart-btn" onclick="toggleCartDrawer()" style="font-size: 10px; padding: 5px 9px; white-space: nowrap;">
-        🛒 Carrito <span id="cartBadge" class="cart-badge" style="font-size: 9px; padding: 1px 5px;">0</span>
+
+      <button onclick="toggleTopNavSearchBar()" id="btnToggleNavSearch" class="btn btn-outline" style="font-size: 11px; padding: 6px 12px; border-color: var(--accent-color); color: var(--accent-color);">
+        🔍 Buscar
       </button>
-      <a href="admin.html" target="_blank" rel="noopener" class="btn btn-outline" style="font-size: 10px; padding: 5px 8px; border-color: #555; white-space: nowrap;">Admin ↗</a>
+
+      <button class="cart-btn" onclick="toggleCartDrawer()">
+        🛒 Carrito <span id="cartBadge" class="cart-badge">0</span>
+      </button>
+      
+      <a href="admin.html" target="_blank" rel="noopener" class="btn btn-outline" style="font-size: 11px; padding: 6px 12px; border-color: #555;">Admin ↗</a>
     </div>
   </nav>
 
-  <!-- ================================================================= -->
-  <!-- SINGLE-LINE CASCADING BAR (DEPORTE -> LIGAS -> EQUIPOS)           -->
-  <!-- ================================================================= -->
-  <div class="mobile-league-scroll-bar" id="singleLineCascadingBar" style="position: sticky; top: 52px; z-index: 90; background: #0a0a0c; min-height: 38px; border-bottom: 1px solid rgba(250, 204, 21, 0.2); padding: 4px 8px;">
+  <!-- DESPLEGABLE BUSCADOR INTEGRADO (SE ACTIVA AL TOCAR 🔍 BUSCAR EN LA FILA DE BOTONES) -->
+  <div id="topNavSearchExpandable" style="display: none; background: #121216; padding: 8px 12px; border-bottom: 2px solid var(--accent-color); position: sticky; top: 60px; z-index: 95;">
+    <div style="position: relative; max-width: 600px; margin: 0 auto;">
+      <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--accent-color);">🔍</span>
+      <input type="text" id="searchInput" style="width: 100%; padding: 8px 12px 8px 36px; font-size: 12px; font-weight: 700; border-radius: 20px; background: #000; border: 1px solid var(--accent-color); color: #fff; outline: none;" placeholder="Escribe para buscar... (ej. Steelers, Jersey, Gorra)">
+    </div>
+  </div>
+
+  <!-- SINGLE-LINE CASCADING BAR (DEPORTE -> LIGAS -> EQUIPOS) -->
+  <div class="mobile-league-scroll-bar" id="singleLineCascadingBar" style="position: sticky; top: 60px; z-index: 90; background: #0a0a0c; min-height: 38px; border-bottom: 1px solid rgba(250, 204, 21, 0.2); padding: 4px 8px;">
     <!-- Injected dynamically via JS -->
   </div>
 
@@ -222,8 +226,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-  <script src="js/firebase-config.js?v=2700.0"></script>
-  <script src="js/teams.js?v=2700.0"></script>
-  <script src="js/app.js?v=2700.0"></script>
+  <script src="js/firebase-config.js?v=2800.0"></script>
+  <script src="js/teams.js?v=2800.0"></script>
+  <script src="js/app.js?v=2800.0"></script>
 </body>
 </html>

@@ -507,14 +507,19 @@ function populateTeamFilterSelect() {
   });
 }
 
-function onTeamSelectChange() {
-  const selectedId = teamFilterSelect.value;
-  if (selectedId === 'all') {
-    resetWizardToStep1();
-  } else {
-    selectWizardTeam(selectedId);
+// Top Navbar Search Toggle
+window.toggleTopNavSearchBar = function() {
+  const box = document.getElementById('topNavSearchExpandable');
+  const input = document.getElementById('searchInput');
+  if (box) {
+    if (box.style.display === 'none' || !box.style.display) {
+      box.style.display = 'block';
+      if (input) input.focus();
+    } else {
+      box.style.display = 'none';
+    }
   }
-}
+};
 
 // INTERACTIVE EXPANDABLE CATEGORY DROPDOWN DRAWER (Muestra artículos destacados para llamar la atención)
 let openCategoryDrawerKey = null;
