@@ -544,9 +544,10 @@ function updateCategorySlideshowNow() {
 
   catSlideIndex++;
   const products = allProducts && allProducts.length > 0 ? allProducts : [];
+  if (products.length === 0) return;
   
   // Filter base products according to currently selected Sport or Team!
-  const baseProducts = products.filter(p => {
+  let baseProducts = products.filter(p => {
     if (activeSportFilter !== 'all') {
       const taxonomy = typeof getFullTaxonomy !== 'undefined' ? getFullTaxonomy(p.team) : null;
       if (taxonomy && taxonomy.sportKey !== activeSportFilter) return false;
@@ -555,49 +556,44 @@ function updateCategorySlideshowNow() {
     return true;
   });
 
+  // If specific team/sport filter has no products yet, fallback to all products array!
+  if (baseProducts.length === 0) baseProducts = products;
+
   const jerseyProds = baseProducts.filter(p => p.category === 'jerseys' && p.imageUrl);
-  const hoodieProds = baseProducts.filter(p => p.category === 'chamarras' && p.imageUrl);
+  const hoodieProds = baseProducts.filter(p => (p.category === 'chamarras' || p.category === 'sudaderas') && p.imageUrl);
   const capProds = baseProducts.filter(p => p.category === 'gorras' && p.imageUrl);
   const damaProds = baseProducts.filter(p => (p.gender === 'dama' || p.category === 'dama') && p.imageUrl);
 
   // 1. Jersey Slide
-  if (jerseyProds.length > 0) {
-    const p = jerseyProds[catSlideIndex % jerseyProds.length];
+  const jList = jerseyProds.length > 0 ? jerseyProds : products.filter(p => p.category === 'jerseys' && p.imageUrl);
+  if (jList.length > 0) {
+    const p = jList[catSlideIndex % jList.length];
     if (cardJ) cardJ.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
     if (subJ) subJ.textContent = p.name;
-  } else {
-    if (cardJ) cardJ.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(10,10,12,0.9) 100%), url('assets/catch_sports_logo.png')`;
-    if (subJ) subJ.textContent = 'Ver Jerseys...';
   }
 
   // 2. Hoodie Slide
-  if (hoodieProds.length > 0) {
-    const p = hoodieProds[catSlideIndex % hoodieProds.length];
+  const hList = hoodieProds.length > 0 ? hoodieProds : products.filter(p => (p.category === 'chamarras' || p.category === 'sudaderas') && p.imageUrl);
+  if (hList.length > 0) {
+    const p = hList[catSlideIndex % hList.length];
     if (cardH) cardH.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
     if (subH) subH.textContent = p.name;
-  } else {
-    if (cardH) cardH.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(10,10,12,0.9) 100%), url('assets/catch_sports_logo.png')`;
-    if (subH) subH.textContent = 'Ver Sudaderas...';
   }
 
   // 3. Cap Slide
-  if (capProds.length > 0) {
-    const p = capProds[catSlideIndex % capProds.length];
+  const cList = capProds.length > 0 ? capProds : products.filter(p => p.category === 'gorras' && p.imageUrl);
+  if (cList.length > 0) {
+    const p = cList[catSlideIndex % cList.length];
     if (cardC) cardC.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
     if (subC) subC.textContent = p.name;
-  } else {
-    if (cardC) cardC.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(10,10,12,0.9) 100%), url('assets/catch_sports_logo.png')`;
-    if (subC) subC.textContent = 'Ver Gorras...';
   }
 
   // 4. Dama Slide
-  if (damaProds.length > 0) {
-    const p = damaProds[catSlideIndex % damaProds.length];
+  const dList = damaProds.length > 0 ? damaProds : products.filter(p => (p.gender === 'dama' || p.category === 'dama') && p.imageUrl);
+  if (dList.length > 0) {
+    const p = dList[catSlideIndex % dList.length];
     if (cardD) cardD.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
     if (subD) subD.textContent = p.name;
-  } else {
-    if (cardD) cardD.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(10,10,12,0.9) 100%), url('assets/catch_sports_logo.png')`;
-    if (subD) subD.textContent = 'Ver Colección Dama...';
   }
 }
 
@@ -803,6 +799,9 @@ window.addToCartFromCard = function(productId, defaultSize) {
 // Filter & Render Products
 function renderProducts() {
   initDOMReferences();
+  if (typeof updateCategorySlideshowNow === 'function') {
+    updateCategorySlideshowNow();
+  }
   if (!productGrid) return;
   productGrid.innerHTML = '';
   
