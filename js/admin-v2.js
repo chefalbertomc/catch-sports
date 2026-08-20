@@ -634,84 +634,88 @@ window.publishAllBulkProducts = async function() {
 
 
 
-// Dynamic Team Product Canvas Mockup Generator (100% Matching Team & Category)
-function createTeamProductMockupBase64(category, teamName, logoUrl) {
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 500;
-    canvas.height = 500;
-    const ctx = canvas.getContext('2d');
+// Dynamic Team Product Canvas Mockup Generator (Instant synchronous vector generation, no network CORS timeout)
+function createTeamProductMockupBase64(category, teamName) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 500;
+  canvas.height = 500;
+  const ctx = canvas.getContext('2d');
 
-    // 1. Dark Sleek Sporty Background Gradient
-    const grad = ctx.createRadialGradient(250, 230, 40, 250, 250, 320);
-    grad.addColorStop(0, '#1c1917');
-    grad.addColorStop(1, '#09090b');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 500, 500);
+  // 1. Dark Sleek Sporty Background Gradient
+  const grad = ctx.createRadialGradient(250, 230, 40, 250, 250, 320);
+  grad.addColorStop(0, '#1c1917');
+  grad.addColorStop(1, '#09090b');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 500, 500);
 
-    // Subtle Carbon Fiber Mesh Lines
-    ctx.strokeStyle = 'rgba(250, 204, 21, 0.08)';
-    ctx.lineWidth = 1;
-    for (let i = 0; i < 500; i += 20) {
-      ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 500); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(500, i); ctx.stroke();
-    }
+  // Subtle Carbon Fiber Mesh Lines
+  ctx.strokeStyle = 'rgba(250, 204, 21, 0.08)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 500; i += 20) {
+    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 500); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(500, i); ctx.stroke();
+  }
 
-    // 2. Outer Frame Border
-    ctx.strokeStyle = 'rgba(250, 204, 21, 0.4)';
-    ctx.lineWidth = 4;
-    ctx.strokeRect(12, 12, 476, 476);
+  // 2. Outer Frame Border
+  ctx.strokeStyle = 'rgba(250, 204, 21, 0.5)';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(12, 12, 476, 476);
 
-    // 3. Top Banner (Product Type)
-    ctx.fillStyle = 'var(--accent-color, #facc15)';
-    ctx.fillRect(12, 12, 476, 42);
-    ctx.fillStyle = '#000000';
-    ctx.font = '900 16px sans-serif';
-    ctx.textAlign = 'center';
-    
-    let typeTag = '👕 JERSEY OFICIAL SIDELINE';
-    if (category === 'chamarras') typeTag = '🧥 SUDADERA / HOODIE SIDELINE';
-    if (category === 'gorras') typeTag = '🧢 GORRA NEW ERA 59FIFTY';
-    if (category === 'dama') typeTag = '👩 JERSEY CORTE DAMA';
-    
-    ctx.fillText(typeTag, 250, 38);
+  // 3. Top Banner (Product Type)
+  ctx.fillStyle = '#facc15';
+  ctx.fillRect(12, 12, 476, 42);
+  ctx.fillStyle = '#000000';
+  ctx.font = '900 16px sans-serif';
+  ctx.textAlign = 'center';
+  
+  let typeTag = '👕 JERSEY OFICIAL SIDELINE';
+  if (category === 'chamarras') typeTag = '🧥 SUDADERA / HOODIE SIDELINE';
+  if (category === 'gorras') typeTag = '🧢 GORRA NEW ERA 59FIFTY';
+  if (category === 'dama') typeTag = '👩 JERSEY CORTE DAMA';
+  
+  ctx.fillText(typeTag, 250, 38);
 
-    // 4. Load Team Logo and draw centered
-    const img = new Image();
-    img.crossOrigin = 'Anonymous';
-    img.onload = () => {
-      const logoSize = category === 'gorras' ? 180 : 200;
-      ctx.shadowColor = 'rgba(0,0,0,0.9)';
-      ctx.shadowBlur = 25;
-      ctx.drawImage(img, (500 - logoSize)/2, (500 - logoSize)/2 - 10, logoSize, logoSize);
-      ctx.shadowBlur = 0;
+  // 4. Emblem Circle
+  ctx.beginPath();
+  ctx.arc(250, 230, 110, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(250, 204, 21, 0.08)';
+  ctx.fill();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = '#facc15';
+  ctx.stroke();
 
-      // Draw Team Name Footer
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '900 20px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(teamName.toUpperCase(), 250, 442);
+  // Emblem Category Icon
+  let icon = '👕';
+  if (category === 'chamarras') icon = '🧥';
+  if (category === 'gorras') icon = '🧢';
+  if (category === 'dama') icon = '👩';
+  ctx.font = '70px sans-serif';
+  ctx.fillText(icon, 250, 255);
 
-      ctx.fillStyle = 'rgba(250, 204, 21, 0.9)';
-      ctx.font = 'bold 11px sans-serif';
-      ctx.fillText('PRODUCTO OFICIAL DE UTILERÍA · CATCH SPORTS', 250, 466);
+  // 5. Draw Team Name Footer
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '900 18px sans-serif';
+  ctx.textAlign = 'center';
+  
+  // Wrap text if long
+  const words = teamName.toUpperCase().split(' ');
+  if (words.length > 2) {
+    ctx.fillText(words.slice(0, 2).join(' '), 250, 420);
+    ctx.fillText(words.slice(2).join(' '), 250, 442);
+  } else {
+    ctx.fillText(teamName.toUpperCase(), 250, 435);
+  }
 
-      resolve(canvas.toDataURL('image/jpeg', 0.85));
-    };
-    img.onerror = () => {
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '900 22px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(teamName.toUpperCase(), 250, 250);
-      resolve(canvas.toDataURL('image/jpeg', 0.85));
-    };
-    img.src = logoUrl || 'assets/catch_sports_logo.png';
-  });
+  ctx.fillStyle = 'rgba(250, 204, 21, 0.9)';
+  ctx.font = 'bold 11px sans-serif';
+  ctx.fillText('PRODUCTO OFICIAL DE UTILERÍA · CATCH SPORTS', 250, 466);
+
+  return canvas.toDataURL('image/jpeg', 0.85);
 }
 
-// Seed Demo Catalog Full (EVERY SPORT & EVERY TEAM: 100% MATCHING FOTOS)
+// Seed Demo Catalog Full (EVERY SPORT & EVERY TEAM: ALL ~330 PRODUCTS INSTANTLY)
 window.seedDemoCatalogFull = async function() {
-  if (!confirm("🌱 ¿Deseas inyectar el catálogo completo de prueba? Se crearán Jerseys, Sudaderas, Gorras y Damas con FOTOS Y LOGOS 100% COINCIDENTES para cada equipo (~250 productos).")) return;
+  if (!confirm("🌱 ¿Deseas inyectar el catálogo completo de prueba? Se crearán Jerseys, Sudaderas, Gorras y Damas para TODOS los 83 equipos (~330 productos).")) return;
 
   const btnSeed = document.getElementById('tabSeedBtn');
   if (btnSeed) btnSeed.disabled = true;
@@ -723,13 +727,12 @@ window.seedDemoCatalogFull = async function() {
     for (const sportObj of catalog) {
       for (const leagueObj of sportObj.leagues) {
         for (const teamObj of leagueObj.teams) {
-          const logoUrl = teamObj.logo || "assets/catch_sports_logo.png";
           
-          // Generate 4 100% matching product photos for this specific team!
-          const jerseyPhoto = await createTeamProductMockupBase64('jerseys', teamObj.name, logoUrl);
-          const hoodiePhoto = await createTeamProductMockupBase64('chamarras', teamObj.name, logoUrl);
-          const capPhoto = await createTeamProductMockupBase64('gorras', teamObj.name, logoUrl);
-          const damaPhoto = await createTeamProductMockupBase64('dama', teamObj.name, logoUrl);
+          // Synchronous instant base64 graphics for 100% reliable load!
+          const jerseyPhoto = createTeamProductMockupBase64('jerseys', teamObj.name);
+          const hoodiePhoto = createTeamProductMockupBase64('chamarras', teamObj.name);
+          const capPhoto = createTeamProductMockupBase64('gorras', teamObj.name);
+          const damaPhoto = createTeamProductMockupBase64('dama', teamObj.name);
 
           // 1. JERSEY OFICIAL CABALLERO
           itemsToInject.push({
@@ -833,7 +836,7 @@ window.seedDemoCatalogFull = async function() {
       return batch.commit();
     }));
 
-    alert(`✅ ¡Catálogo inyectado con FOTOS MOCKUP 100% COINCIDENTES! Se crearon ${itemsToInject.length} productos con fotos personalizadas para cada equipo.`);
+    alert(`✅ ¡Catálogo completo de ${itemsToInject.length} productos inyectado exitosamente!`);
     if (btnSeed) btnSeed.disabled = false;
     loadAdminProducts();
 
@@ -886,23 +889,23 @@ window.deleteAllProducts = async function() {
   }
 };
 
-// Load & Search Products
+// Load & Search Products (Unlimited snapshot listener with memory sorting)
 function loadAdminProducts() {
   const countEl = document.getElementById('adminProdCount');
   
-  db.collection('products').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+  db.collection('products').onSnapshot(snapshot => {
     currentProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    // Sort in memory by createdAt descending
+    currentProducts.sort((a, b) => {
+      const tA = a.createdAt ? (a.createdAt.seconds || 0) : 0;
+      const tB = b.createdAt ? (b.createdAt.seconds || 0) : 0;
+      return tB - tA;
+    });
     if (countEl) countEl.textContent = currentProducts.length;
     renderAdminCatalogSequenceNav();
     renderAdminProductsList(currentProducts);
   }, error => {
     console.error("Error loading products:", error);
-    db.collection('products').onSnapshot(fallbackSnap => {
-      currentProducts = fallbackSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      if (countEl) countEl.textContent = currentProducts.length;
-      renderAdminCatalogSequenceNav();
-      renderAdminProductsList(currentProducts);
-    });
   });
 }
 
