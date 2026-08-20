@@ -621,146 +621,113 @@ window.publishAllBulkProducts = async function() {
 
 
 
-// Seed Demo Catalog
-window.seedDemoCatalog = async function() {
-  if (!confirm("¿Deseas inyectar 8 productos de muestra con existencias reales únicas por talla a la base de datos?")) return;
+// Seed Demo Catalog Full (EVERY SPORT & EVERY TEAM)
+window.seedDemoCatalogFull = async function() {
+  if (!confirm("🌱 ¿Deseas inyectar un catálogo de muestra completo con artículos para TODOS los deportes y equipos (NFL, NBA, MLB, Fútbol, F1, etc.)?")) return;
 
-  const demoProducts = [
-    {
-      name: "Jersey Pittsburgh Steelers Home Oficial 2026",
-      team: "steelers",
-      gender: "caballero",
-      category: "jerseys",
-      badge: "exclusivo",
-      price: 1899,
-      originalPrice: 2299,
-      sizeStockMap: [
-        { size: "S", immediateQty: 2, warehouseQty: 5 },
-        { size: "M", immediateQty: 4, warehouseQty: 8 }
-      ],
-      description: "Jersey oficial de utilería con bordados premium en oro y negro de los Pittsburgh Steelers.",
-      imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/pit.png"
-    },
-    {
-      name: "Gorra New Era 59FIFTY Dallas Cowboys Star",
-      team: "nfl-cowboys",
-      gender: "unisex",
-      category: "gorras",
-      badge: "oferta",
-      price: 899,
-      originalPrice: 1199,
-      sizeStockMap: [
-        { size: "7 1/4", immediateQty: 5, warehouseQty: 10 },
-        { size: "7 3/8", immediateQty: 2, warehouseQty: 4 }
-      ],
-      description: "Gorra oficial New Era 59FIFTY cerrada de los Dallas Cowboys con visera plana.",
-      imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png"
-    },
-    {
-      name: "Chamarra San Francisco 49ers Sideline Heavy Hoodie",
-      team: "nfl-49ers",
-      gender: "caballero",
-      category: "chamarras",
-      badge: "nuevo",
-      price: 2199,
-      originalPrice: 2699,
-      sizeStockMap: [
-        { size: "M", immediateQty: 2, warehouseQty: 3 },
-        { size: "XL", immediateQty: 1, warehouseQty: 2 }
-      ],
-      description: "Chamarra rompevientos térmica oficial Nike Sideline de los San Francisco 49ers.",
-      imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/sf.png"
-    },
-    {
-      name: "Jersey Kansas City Chiefs Dama Patrick Mahomes #15",
-      team: "nfl-chiefs",
-      gender: "dama",
-      category: "jerseys",
-      badge: "exclusivo",
-      price: 1799,
-      originalPrice: 2099,
-      sizeStockMap: [
-        { size: "S", immediateQty: 3, warehouseQty: 4 },
-        { size: "M", immediateQty: 2, warehouseQty: 5 }
-      ],
-      description: "Jersey de damas corte entallado oficial de Patrick Mahomes con logo de los Campeones Chiefs.",
-      imageUrl: "https://a.espncdn.com/i/teamlogos/nfl/500/kc.png"
-    },
-    {
-      name: "Jersey Los Angeles Lakers LeBron James #23 Icon Edition",
-      team: "nba-lakers",
-      gender: "caballero",
-      category: "jerseys",
-      badge: "oferta",
-      price: 1699,
-      originalPrice: 1999,
-      sizeStockMap: [
-        { size: "M", immediateQty: 4, warehouseQty: 6 },
-        { size: "L", immediateQty: 3, warehouseQty: 5 }
-      ],
-      description: "Jersey oficial Nike Dri-FIT de LeBron James Icon Edition en color púrpura y oro.",
-      imageUrl: "https://a.espncdn.com/i/teamlogos/nba/500/lal.png"
-    },
-    {
-      name: "Gorra New York Yankees New Era 9FIFTY Snapback Navy",
-      team: "mlb-yankees",
-      gender: "unisex",
-      category: "gorras",
-      badge: "nuevo",
-      price: 799,
-      originalPrice: 999,
-      sizeStockMap: [
-        { size: "Unitalla", immediateQty: 10, warehouseQty: 25 }
-      ],
-      description: "Gorra clásica ajustable 9FIFTY con logo bordado 3D de los NY Yankees.",
-      imageUrl: "https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png"
-    },
-    {
-      name: "Jersey Real Madrid Local 2026/27 Adidas Champions",
-      team: "soc-realmadrid",
-      gender: "caballero",
-      category: "jerseys",
-      badge: "nuevo",
-      price: 1999,
-      originalPrice: 2399,
-      sizeStockMap: [
-        { size: "M", immediateQty: 6, warehouseQty: 12 },
-        { size: "L", immediateQty: 4, warehouseQty: 8 }
-      ],
-      description: "Jersey oficial de local en blanco puro con detalles dorados y parche de 15 Champions League.",
-      imageUrl: "https://a.espncdn.com/i/teamlogos/soccer/500/83.png"
-    },
-    {
-      name: "Chamarra Red Bull Racing F1 Checo Pérez #11 Official",
-      team: "f1-redbull",
-      gender: "caballero",
-      category: "chamarras",
-      badge: "exclusivo",
-      price: 2899,
-      originalPrice: 3499,
-      sizeStockMap: [
-        { size: "L", immediateQty: 2, warehouseQty: 3 }
-      ],
-      description: "Chamarra softshell oficial Castore de Red Bull Racing y Checo Pérez #11.",
-      imageUrl: "https://a.espncdn.com/i/teamlogos/leagues/500/f1.png"
-    }
-  ];
+  const btnSeed = document.getElementById('tabSeedBtn');
+  const countEl = document.getElementById('adminProdCount');
+  if (btnSeed) btnSeed.disabled = true;
 
   try {
-    const batch = db.batch();
-    for (const prod of demoProducts) {
-      const ref = db.collection('products').doc();
-      const sizesArray = prod.sizeStockMap.map(s => s.size);
-      batch.set(ref, {
-        ...prod,
-        sizes: sizesArray,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+    const itemsToInject = [];
+
+    catalog.forEach(sportObj => {
+      sportObj.leagues.forEach(leagueObj => {
+        leagueObj.teams.forEach(teamObj => {
+          // Generate 1-2 realistic sample products per team
+          const isJersey = Math.random() > 0.3;
+          const category = isJersey ? 'jerseys' : (Math.random() > 0.5 ? 'gorras' : 'chamarras');
+          const gender = Math.random() > 0.4 ? 'caballero' : (Math.random() > 0.5 ? 'dama' : 'unisex');
+          const badge = Math.random() > 0.5 ? 'exclusivo' : (Math.random() > 0.5 ? 'nuevo' : 'ninguno');
+          const price = isJersey ? 1899 : (category === 'chamarras' ? 2299 : 899);
+          const origPrice = price + 400;
+
+          itemsToInject.push({
+            name: `${category === 'jerseys' ? 'Jersey Oficial' : (category === 'gorras' ? 'Gorra New Era' : 'Chamarra Sideline')} ${teamObj.name}`,
+            team: teamObj.id,
+            gender: gender,
+            category: category,
+            badge: badge,
+            price: price,
+            originalPrice: origPrice,
+            sizeStockMap: [
+              { size: "S", immediateQty: Math.floor(Math.random() * 4) + 1, warehouseQty: Math.floor(Math.random() * 6) + 2 },
+              { size: "M", immediateQty: Math.floor(Math.random() * 5) + 1, warehouseQty: Math.floor(Math.random() * 8) + 3 },
+              { size: "L", immediateQty: Math.floor(Math.random() * 3) + 1, warehouseQty: Math.floor(Math.random() * 5) + 1 }
+            ],
+            sizes: ["S", "M", "L"],
+            description: `Artículo deportivo oficial de alta calidad de ${teamObj.name}.`,
+            imageUrl: teamObj.logo || "assets/catch_sports_logo.png",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        });
       });
+    });
+
+    // Write in chunks of 30 items
+    const chunkSize = 30;
+    for (let i = 0; i < itemsToInject.length; i += chunkSize) {
+      const chunk = itemsToInject.slice(i, i + chunkSize);
+      const batch = db.batch();
+      chunk.forEach(prod => {
+        const ref = db.collection('products').doc();
+        batch.set(ref, prod);
+      });
+      await batch.commit();
     }
-    await batch.commit();
-    alert("✅ ¡Productos de muestra inyectados exitosamente con existencias exactas por talla!");
+
+    alert(`✅ ¡Catálogo de prueba completo inyectado! Se crearon ${itemsToInject.length} productos abarcando todos los deportes y equipos.`);
+    if (btnSeed) btnSeed.disabled = false;
+    loadAdminProducts();
+
   } catch(e) {
+    console.error("Error al inyectar catálogo:", e);
     alert("Error al inyectar catálogo: " + e.message);
+    if (btnSeed) btnSeed.disabled = false;
+  }
+};
+
+// Master Delete All Products (Wipe Database Clean for Real Project Launch)
+window.deleteAllProducts = async function() {
+  if (!confirm("⚠️ ¿Estás SEGURO de que deseas BORRAR TODO EL CATÁLOGO?\n\nEsta acción eliminará TODOS los productos de la base de datos para dejarla lista para el proyecto real.")) return;
+  if (!confirm("🚨 CONFIRMACIÓN FINAL: Esta acción NO se puede deshacer. ¿Eliminar definitivamente todos los productos de la base de datos?")) return;
+
+  const btnWipe = document.getElementById('tabWipeBtn');
+  if (btnWipe) btnWipe.disabled = true;
+
+  try {
+    const snapshot = await db.collection('products').get();
+    if (snapshot.empty) {
+      alert("El catálogo ya está completamente vacío (0 productos).");
+      if (btnWipe) btnWipe.disabled = false;
+      return;
+    }
+
+    const docs = snapshot.docs;
+    const chunkSize = 400; // Batch limit is 500
+    
+    for (let i = 0; i < docs.length; i += chunkSize) {
+      const chunk = docs.slice(i, i + chunkSize);
+      const batch = db.batch();
+      chunk.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+    }
+
+    alert(`🗑️ ¡Base de datos vaciada con éxito! Se eliminaron ${docs.length} productos. El sistema está 100% listo para empezar con el proyecto real.`);
+    if (btnWipe) btnWipe.disabled = false;
+    currentProducts = [];
+    renderAdminCatalogSequenceNav();
+    renderAdminProductsList([]);
+    if (document.getElementById('adminProdCount')) document.getElementById('adminProdCount').textContent = '0';
+
+  } catch(e) {
+    console.error("Error al vaciar catálogo:", e);
+    alert("Error al vaciar catálogo: " + e.message);
+    if (btnWipe) btnWipe.disabled = false;
   }
 };
 
