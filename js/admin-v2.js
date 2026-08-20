@@ -58,12 +58,18 @@ document.getElementById('btnLogin')?.addEventListener('click', async () => {
 
 // Quick 1-Click Master Admin Access
 window.quickAdminAccess = function() {
-  loginSection.style.display = 'none';
-  adminSection.style.display = 'block';
-  document.getElementById('manageSection').style.display = 'block';
+  const loginSec = document.getElementById('loginSection');
+  const adminSec = document.getElementById('adminSection');
+  const manageSec = document.getElementById('manageSection');
+  const btnLogout = document.getElementById('btnLogout');
+
+  if (loginSec) loginSec.style.display = 'none';
+  if (adminSec) adminSec.style.display = 'block';
+  if (manageSec) manageSec.style.display = 'block';
   if (btnLogout) btnLogout.style.display = 'inline-block';
-  initAdminForm();
-  loadAdminProducts();
+
+  if (typeof initAdminForm === 'function') initAdminForm();
+  if (typeof loadAdminProducts === 'function') loadAdminProducts();
 };
 
 // Logout
