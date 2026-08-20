@@ -803,28 +803,38 @@ function updateStoreHeader() {
       if (storeSubtitle) storeSubtitle.textContent = `${tax.icon} ${tax.sport} — Liga ${tax.league}`;
     }
 
-    // Render Clean Team Header Pill (Large Logo Left + Title & Sport Right)
+    // Render Clean Team Header Pill (Logo Left + Line 1 COLECCIÓN OFICIAL, Line 2 Team Name, Line 3 Centered Pill)
     if (heroContainer) {
       heroContainer.innerHTML = `
         <section style="background: radial-gradient(circle at 50% 30%, #1f1b0f 0%, #09090b 100%); border-bottom: 2px solid var(--accent-color); padding: 12px 10px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.8);">
           <div class="container" style="max-width: 900px; padding: 0;">
             
-            <!-- Clean Header Card: Large Logo Left + Title/Sport Right -->
-            <div style="background: rgba(20, 18, 12, 0.85); border: 1px solid rgba(250, 204, 21, 0.4); border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; justify-content: flex-start; gap: 12px; text-align: left; margin-bottom: 8px;">
+            <!-- Clean Header Card: Logo Left + Right Typographic Layout -->
+            <div style="background: rgba(20, 18, 12, 0.9); border: 1px solid rgba(250, 204, 21, 0.4); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; justify-content: flex-start; gap: 12px; text-align: left; margin-bottom: 8px;">
               
               <!-- Large Team Logo Left -->
-              <img src="${tax.teamLogo}" style="width: 52px; height: 52px; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(250, 204, 21, 0.6)); border-radius: 50%; background: #000; padding: 4px; border: 2px solid var(--accent-color); flex-shrink: 0;" onerror="this.src='assets/catch_sports_logo.png'"/>
+              <img src="${tax.teamLogo}" style="width: 56px; height: 56px; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(250, 204, 21, 0.6)); border-radius: 50%; background: #000; padding: 4px; border: 2px solid var(--accent-color); flex-shrink: 0;" onerror="this.src='assets/catch_sports_logo.png'"/>
 
-              <!-- Right Info: Single Line Title + Subtitle -->
-              <div>
-                <h1 style="font-family: var(--font-display); font-size: clamp(14px, 3.8vw, 20px); font-weight: 900; color: #fff; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -0.3px;">
-                  COLECCIÓN OFICIAL <span style="color: var(--accent-color); text-shadow: 0 0 10px var(--accent-glow);">${tax.team.toUpperCase()}</span>
-                </h1>
-                <p style="color: #ccc; font-size: 11px; font-weight: 700; margin: 3px 0 0; display: flex; align-items: center; gap: 6px;">
-                  <span style="background: rgba(250, 204, 21, 0.15); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 1px 8px; border-radius: 12px; font-size: 9px; font-weight: 900;">
-                    ${tax.icon} ${tax.sport.toUpperCase()} — ${tax.league}
+              <!-- Right Info Block -->
+              <div style="display: flex; flex-direction: column; width: 100%;">
+                
+                <!-- Renglón 1: COLECCIÓN OFICIAL -->
+                <div style="font-family: var(--font-display); font-size: 11px; font-weight: 800; color: #aaa; text-transform: uppercase; letter-spacing: 0.8px; line-height: 1;">
+                  COLECCIÓN OFICIAL
+                </div>
+
+                <!-- Renglón 2: PITTSBURGH STEELERS (Nombre del Equipo en otro renglón) -->
+                <div style="font-family: var(--font-display); font-size: clamp(16px, 4.5vw, 22px); font-weight: 900; color: var(--accent-color); text-transform: uppercase; text-shadow: 0 0 10px var(--accent-glow); line-height: 1.15; margin-bottom: 4px;">
+                  ${tax.team.toUpperCase()}
+                </div>
+
+                <!-- Renglón 3: Pastilla FÚTBOL AMERICANO — LIGA NFL (Alineada al Centro!) -->
+                <div style="display: flex; justify-content: center; width: 100%; margin-top: 2px;">
+                  <span style="background: rgba(250, 204, 21, 0.15); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 2px 10px; border-radius: 12px; font-size: 10px; font-weight: 900; text-align: center; display: inline-block;">
+                    ${tax.icon} ${tax.sport.toUpperCase()} — LIGA ${tax.league}
                   </span>
-                </p>
+                </div>
+
               </div>
 
             </div>
