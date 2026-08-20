@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Catch Sports — Tienda Oficial de Deportes & Utilería</title>
-  <link rel="stylesheet" href="css/styles.css?v=2600.0">
+  <link rel="stylesheet" href="css/styles.css?v=2700.0">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,47 +20,40 @@
     🔥 CATCH SPORTS — LA TIENDA OFICIAL DE UTILERÍA Y FANÁTICOS EN MÉXICO | 🚚 ENVÍOS A TODO MÉXICO | 🛡️ PRODUCTOS 100% GARANTIZADOS | 📲 PEDIDOS DIRECTOS POR WHATSAPP
   </div>
 
-  <!-- Header Navbar (CATCH SPORTS + Inicio + Carrito + Admin) -->
-  <nav class="navbar">
-    <a href="index.html" class="logo-container">
+  <!-- Header Navbar (CATCH SPORTS + Buscador Integrado + Inicio + Carrito + Admin) -->
+  <nav class="navbar" style="padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;">
+    
+    <!-- Logo -->
+    <a href="index.html" class="logo-container" style="flex-shrink: 0;">
       <div class="logo-icon">
-        <img src="assets/catch_sports_logo.png" alt="Catch Sports Logo" style="height: 34px; width: 34px; border-radius: 50%; object-fit: cover;">
+        <img src="assets/catch_sports_logo.png" alt="Catch Sports Logo" style="height: 30px; width: 30px; border-radius: 50%; object-fit: cover;">
       </div>
-      <div class="logo-text">CATCH <span>SPORTS</span></div>
+      <div class="logo-text" style="font-size: 16px;">CATCH <span style="font-size: 16px;">SPORTS</span></div>
     </a>
 
-    <!-- Sticky Navigation Quick Access -->
-    <div style="display: flex; gap: 8px; align-items: center;">
-      <button onclick="showAllProductsDirectly()" class="btn btn-outline" style="font-size: 11px; padding: 6px 12px; border-color: var(--accent-color); color: var(--accent-color);">
+    <!-- Compact Search Pill Inside Header Navbar (DENTRO DE LA MISMA BARRA SUPERIOR) -->
+    <div style="position: relative; flex: 1; max-width: 220px; min-width: 110px; flex-shrink: 1;">
+      <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: #888;">🔍</span>
+      <input type="text" id="searchInput" style="width: 100%; padding: 5px 8px 5px 28px; font-size: 11px; font-weight: 600; border-radius: 16px; background: #16161c; border: 1px solid rgba(250, 204, 21, 0.4); color: #fff; outline: none;" placeholder="Buscar...">
+    </div>
+
+    <!-- Quick Access Buttons -->
+    <div style="display: flex; gap: 5px; align-items: center; flex-shrink: 0;">
+      <button onclick="showAllProductsDirectly()" class="btn btn-outline" style="font-size: 10px; padding: 5px 9px; border-color: var(--accent-color); color: var(--accent-color); white-space: nowrap;">
         🏠 Inicio
       </button>
-      <button class="cart-btn" onclick="toggleCartDrawer()">
-        🛒 Carrito <span id="cartBadge" class="cart-badge">0</span>
+      <button class="cart-btn" onclick="toggleCartDrawer()" style="font-size: 10px; padding: 5px 9px; white-space: nowrap;">
+        🛒 Carrito <span id="cartBadge" class="cart-badge" style="font-size: 9px; padding: 1px 5px;">0</span>
       </button>
-      <a href="admin.html" target="_blank" rel="noopener" class="btn btn-outline" style="font-size: 11px; padding: 6px 12px; border-color: #555;">Admin ↗</a>
+      <a href="admin.html" target="_blank" rel="noopener" class="btn btn-outline" style="font-size: 10px; padding: 5px 8px; border-color: #555; white-space: nowrap;">Admin ↗</a>
     </div>
   </nav>
 
   <!-- ================================================================= -->
-  <!-- CONTENEDOR SUPERIOR FIJO (ENTRE CATCH SPORTS/INICIO Y EL MENÚ DE LIGAS/EQUIPOS) -->
-  <!-- 1. Buscador (Píldora integrada entre CATCH SPORTS/INICIO y el Menú) -->
-  <!-- 2. Menú de Deportes / Ligas / Equipos (singleLineCascadingBar)     -->
+  <!-- SINGLE-LINE CASCADING BAR (DEPORTE -> LIGAS -> EQUIPOS)           -->
   <!-- ================================================================= -->
-  <div style="position: sticky; top: 60px; z-index: 90; background: #0a0a0c; border-bottom: 1px solid rgba(250, 204, 21, 0.25);">
-    
-    <!-- 1. BUSCADOR INTEGRADO (ENTRE CATCH SPORTS/INICIO Y EL MENÚ DE LIGAS/EQUIPOS) -->
-    <div style="padding: 6px 10px 4px;">
-      <div class="search-box" style="margin: 0;">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" class="search-input" style="padding: 8px 14px 8px 38px; font-size: 12px; border-radius: 20px; background: #141418; border: 1px solid rgba(250, 204, 21, 0.4);" placeholder="Buscar producto, equipo o jugador... (ej. Steelers, Jersey, Gorra)">
-      </div>
-    </div>
-
-    <!-- 2. MENÚ PARA ESCOGER DEPORTE, LIGAS Y EQUIPOS (singleLineCascadingBar) -->
-    <div class="mobile-league-scroll-bar" id="singleLineCascadingBar" style="min-height: 40px; padding: 2px 8px 6px;">
-      <!-- Injected dynamically via JS -->
-    </div>
-
+  <div class="mobile-league-scroll-bar" id="singleLineCascadingBar" style="position: sticky; top: 52px; z-index: 90; background: #0a0a0c; min-height: 38px; border-bottom: 1px solid rgba(250, 204, 21, 0.2); padding: 4px 8px;">
+    <!-- Injected dynamically via JS -->
   </div>
 
   <!-- DYNAMIC PORTAL HERO BANNER -->
@@ -119,7 +112,7 @@
   <main class="container" style="max-width: 1000px; padding: 0 8px;">
 
     <!-- PRODUCT TYPE DROPDOWN FILTER STRIP (BOTONES DESPLEGABLES CON ARTÍCULOS DESTACADOS) -->
-    <div style="margin: 8px 0 12px;">
+    <div style="margin: 6px 0 10px;">
       
       <!-- Interactive Dropdown Category Pills Strip -->
       <div class="gender-nav-strip" id="productTypeFilterStrip">
@@ -229,8 +222,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-  <script src="js/firebase-config.js?v=2600.0"></script>
-  <script src="js/teams.js?v=2600.0"></script>
-  <script src="js/app.js?v=2600.0"></script>
+  <script src="js/firebase-config.js?v=2700.0"></script>
+  <script src="js/teams.js?v=2700.0"></script>
+  <script src="js/app.js?v=2700.0"></script>
 </body>
 </html>
