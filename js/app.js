@@ -805,8 +805,28 @@ window.TEAM_COLORS_MAP = {
   'bulls': { primary: '#CE1141', name: 'Chicago Bulls', glow: 'rgba(206, 17, 65, 0.6)' },
   'celtics': { primary: '#007A33', name: 'Boston Celtics', glow: 'rgba(0, 122, 51, 0.6)' },
   'warriors': { primary: '#FFC72C', name: 'Golden State Warriors', glow: 'rgba(255, 199, 44, 0.6)' },
+  
+  // LIGA MX ALL 18 TEAMS
   'america': { primary: '#FEE100', name: 'Club América', glow: 'rgba(254, 225, 0, 0.6)' },
-  'chivas': { primary: '#E30613', name: 'Guadalajara Chivas', glow: 'rgba(227, 6, 19, 0.6)' },
+  'chivas': { primary: '#E30613', name: 'Chivas Guadalajara', glow: 'rgba(227, 6, 19, 0.6)' },
+  'cruzazul': { primary: '#00509E', name: 'Cruz Azul', glow: 'rgba(0, 80, 158, 0.6)' },
+  'pumas': { primary: '#D1A153', name: 'Pumas UNAM', glow: 'rgba(209, 161, 83, 0.6)' },
+  'tigres': { primary: '#F1A80A', name: 'Tigres UANL', glow: 'rgba(241, 168, 10, 0.6)' },
+  'monterrey': { primary: '#0A192F', name: 'Rayados de Monterrey', glow: 'rgba(10, 25, 47, 0.6)' },
+  'toluca': { primary: '#D31115', name: 'Toluca FC', glow: 'rgba(211, 17, 21, 0.6)' },
+  'leon': { primary: '#006837', name: 'Club León', glow: 'rgba(0, 104, 55, 0.6)' },
+  'santos': { primary: '#006C35', name: 'Santos Laguna', glow: 'rgba(0, 108, 53, 0.6)' },
+  'pachuca': { primary: '#003B70', name: 'Pachuca', glow: 'rgba(0, 59, 112, 0.6)' },
+  'atlas': { primary: '#D31115', name: 'Atlas FC', glow: 'rgba(211, 17, 21, 0.6)' },
+  'puebla': { primary: '#002E6D', name: 'Club Puebla', glow: 'rgba(0, 46, 109, 0.6)' },
+  'tijuana': { primary: '#D31115', name: 'Xolos de Tijuana', glow: 'rgba(211, 17, 21, 0.6)' },
+  'necaxa': { primary: '#E30613', name: 'Rayos del Necaxa', glow: 'rgba(227, 6, 19, 0.6)' },
+  'sanluis': { primary: '#D31115', name: 'Atlético de San Luis', glow: 'rgba(211, 17, 21, 0.6)' },
+  'mazatlan': { primary: '#502A7E', name: 'Mazatlán FC', glow: 'rgba(80, 42, 126, 0.6)' },
+  'juarez': { primary: '#22B14C', name: 'Bravos de Juárez', glow: 'rgba(34, 177, 76, 0.6)' },
+  'queretaro': { primary: '#00509E', name: 'Gallos Blancos de Querétaro', glow: 'rgba(0, 80, 158, 0.6)' },
+
+  // EUROPEAN / OTHER
   'realmadrid': { primary: '#FEBE10', name: 'Real Madrid', glow: 'rgba(254, 190, 16, 0.6)' },
   'barcelona': { primary: '#004D98', name: 'FC Barcelona', glow: 'rgba(0, 77, 152, 0.6)' }
 };

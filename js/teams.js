@@ -102,7 +102,19 @@ const SPORTS_CATALOG = [
           { id: "soc-cruzazul", name: "Cruz Azul", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/229.png" },
           { id: "soc-pumas", name: "Pumas UNAM", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/233.png" },
           { id: "soc-tigres", name: "Tigres UANL", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/235.png" },
-          { id: "soc-monterrey", name: "Rayados de Monterrey", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/230.png" }
+          { id: "soc-monterrey", name: "Rayados de Monterrey", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/230.png" },
+          { id: "soc-toluca", name: "Toluca FC", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/234.png" },
+          { id: "soc-leon", name: "Club León", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/7144.png" },
+          { id: "soc-santos", name: "Santos Laguna", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/231.png" },
+          { id: "soc-pachuca", name: "Pachuca", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/232.png" },
+          { id: "soc-atlas", name: "Atlas FC", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/226.png" },
+          { id: "soc-puebla", name: "Club Puebla", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/393.png" },
+          { id: "soc-tijuana", name: "Xolos de Tijuana", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/12519.png" },
+          { id: "soc-necaxa", name: "Rayos del Necaxa", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/1040.png" },
+          { id: "soc-sanluis", name: "Atlético de San Luis", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/18873.png" },
+          { id: "soc-mazatlan", name: "Mazatlán FC", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/20708.png" },
+          { id: "soc-juarez", name: "Bravos de Juárez", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/17454.png" },
+          { id: "soc-queretaro", name: "Gallos Blancos de Querétaro", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/3909.png" }
         ]
       },
       {
