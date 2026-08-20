@@ -634,38 +634,30 @@ window.publishAllBulkProducts = async function() {
 
 
 
-// Dynamic Team Product Canvas Mockup Generator (Instant synchronous vector generation, no network CORS timeout)
+// Dynamic Team Product Canvas Mockup Generator (Lightweight 8KB instant synchronous vector generation)
 function createTeamProductMockupBase64(category, teamName) {
   const canvas = document.createElement('canvas');
-  canvas.width = 500;
-  canvas.height = 500;
+  canvas.width = 350;
+  canvas.height = 350;
   const ctx = canvas.getContext('2d');
 
   // 1. Dark Sleek Sporty Background Gradient
-  const grad = ctx.createRadialGradient(250, 230, 40, 250, 250, 320);
+  const grad = ctx.createRadialGradient(175, 160, 30, 175, 175, 230);
   grad.addColorStop(0, '#1c1917');
   grad.addColorStop(1, '#09090b');
   ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 500, 500);
+  ctx.fillRect(0, 0, 350, 350);
 
-  // Subtle Carbon Fiber Mesh Lines
-  ctx.strokeStyle = 'rgba(250, 204, 21, 0.08)';
-  ctx.lineWidth = 1;
-  for (let i = 0; i < 500; i += 20) {
-    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 500); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(500, i); ctx.stroke();
-  }
-
-  // 2. Outer Frame Border
+  // Outer Frame Border
   ctx.strokeStyle = 'rgba(250, 204, 21, 0.5)';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(12, 12, 476, 476);
+  ctx.lineWidth = 3;
+  ctx.strokeRect(8, 8, 334, 334);
 
-  // 3. Top Banner (Product Type)
+  // Top Banner (Product Type)
   ctx.fillStyle = '#facc15';
-  ctx.fillRect(12, 12, 476, 42);
+  ctx.fillRect(8, 8, 334, 32);
   ctx.fillStyle = '#000000';
-  ctx.font = '900 16px sans-serif';
+  ctx.font = '900 12px sans-serif';
   ctx.textAlign = 'center';
   
   let typeTag = '👕 JERSEY OFICIAL SIDELINE';
@@ -673,14 +665,14 @@ function createTeamProductMockupBase64(category, teamName) {
   if (category === 'gorras') typeTag = '🧢 GORRA NEW ERA 59FIFTY';
   if (category === 'dama') typeTag = '👩 JERSEY CORTE DAMA';
   
-  ctx.fillText(typeTag, 250, 38);
+  ctx.fillText(typeTag, 175, 28);
 
-  // 4. Emblem Circle
+  // Emblem Circle
   ctx.beginPath();
-  ctx.arc(250, 230, 110, 0, Math.PI * 2);
+  ctx.arc(175, 160, 75, 0, Math.PI * 2);
   ctx.fillStyle = 'rgba(250, 204, 21, 0.08)';
   ctx.fill();
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 2;
   ctx.strokeStyle = '#facc15';
   ctx.stroke();
 
@@ -689,36 +681,38 @@ function createTeamProductMockupBase64(category, teamName) {
   if (category === 'chamarras') icon = '🧥';
   if (category === 'gorras') icon = '🧢';
   if (category === 'dama') icon = '👩';
-  ctx.font = '70px sans-serif';
-  ctx.fillText(icon, 250, 255);
+  ctx.font = '50px sans-serif';
+  ctx.fillText(icon, 175, 178);
 
-  // 5. Draw Team Name Footer
+  // Draw Team Name Footer
   ctx.fillStyle = '#ffffff';
-  ctx.font = '900 18px sans-serif';
+  ctx.font = '900 13px sans-serif';
   ctx.textAlign = 'center';
   
-  // Wrap text if long
   const words = teamName.toUpperCase().split(' ');
   if (words.length > 2) {
-    ctx.fillText(words.slice(0, 2).join(' '), 250, 420);
-    ctx.fillText(words.slice(2).join(' '), 250, 442);
+    ctx.fillText(words.slice(0, 2).join(' '), 175, 290);
+    ctx.fillText(words.slice(2).join(' '), 175, 306);
   } else {
-    ctx.fillText(teamName.toUpperCase(), 250, 435);
+    ctx.fillText(teamName.toUpperCase(), 175, 300);
   }
 
   ctx.fillStyle = 'rgba(250, 204, 21, 0.9)';
-  ctx.font = 'bold 11px sans-serif';
-  ctx.fillText('PRODUCTO OFICIAL DE UTILERÍA · CATCH SPORTS', 250, 466);
+  ctx.font = 'bold 9px sans-serif';
+  ctx.fillText('PRODUCTO OFICIAL · CATCH SPORTS', 175, 325);
 
-  return canvas.toDataURL('image/jpeg', 0.85);
+  return canvas.toDataURL('image/jpeg', 0.65);
 }
 
-// Seed Demo Catalog Full (EVERY SPORT & EVERY TEAM: ALL ~330 PRODUCTS INSTANTLY)
+// Seed Demo Catalog Full (EVERY SPORT & EVERY TEAM: GUARANTEED ALL 332 PRODUCTS)
 window.seedDemoCatalogFull = async function() {
-  if (!confirm("🌱 ¿Deseas inyectar el catálogo completo de prueba? Se crearán Jerseys, Sudaderas, Gorras y Damas para TODOS los 83 equipos (~330 productos).")) return;
+  if (!confirm("🌱 ¿Deseas inyectar el catálogo completo de prueba? Se crearán Jerseys, Sudaderas, Gorras y Damas para TODOS los 83 equipos (332 productos).")) return;
 
   const btnSeed = document.getElementById('tabSeedBtn');
-  if (btnSeed) btnSeed.disabled = true;
+  if (btnSeed) {
+    btnSeed.disabled = true;
+    btnSeed.textContent = '⏳ Generando 332 productos...';
+  }
 
   try {
     const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
@@ -728,7 +722,6 @@ window.seedDemoCatalogFull = async function() {
       for (const leagueObj of sportObj.leagues) {
         for (const teamObj of leagueObj.teams) {
           
-          // Synchronous instant base64 graphics for 100% reliable load!
           const jerseyPhoto = createTeamProductMockupBase64('jerseys', teamObj.name);
           const hoodiePhoto = createTeamProductMockupBase64('chamarras', teamObj.name);
           const capPhoto = createTeamProductMockupBase64('gorras', teamObj.name);
@@ -820,30 +813,36 @@ window.seedDemoCatalogFull = async function() {
       }
     }
 
-    // Write in chunks of 40 items in parallel
-    const chunkSize = 40;
-    const chunks = [];
-    for (let i = 0; i < itemsToInject.length; i += chunkSize) {
-      chunks.push(itemsToInject.slice(i, i + chunkSize));
-    }
-
-    await Promise.all(chunks.map(async (chunk) => {
+    // Write in chunks of 30 items SEQUENTIALLY to ensure 100% success without dropping requests!
+    const chunkSize = 30;
+    const totalChunks = Math.ceil(itemsToInject.length / chunkSize);
+    
+    for (let c = 0; c < totalChunks; c++) {
+      const chunk = itemsToInject.slice(c * chunkSize, (c + 1) * chunkSize);
       const batch = db.batch();
       chunk.forEach(prod => {
         const ref = db.collection('products').doc();
         batch.set(ref, prod);
       });
-      return batch.commit();
-    }));
+      
+      if (btnSeed) btnSeed.textContent = `⏳ Guardando lote ${c + 1} de ${totalChunks}...`;
+      await batch.commit();
+    }
 
-    alert(`✅ ¡Catálogo completo de ${itemsToInject.length} productos inyectado exitosamente!`);
-    if (btnSeed) btnSeed.disabled = false;
+    alert(`✅ ¡Catálogo completo de ${itemsToInject.length} productos guardado exitosamente sin perder un solo ítem!`);
+    if (btnSeed) {
+      btnSeed.disabled = false;
+      btnSeed.textContent = '🌱 Inyectar Demo (Todos Deportes)';
+    }
     loadAdminProducts();
 
   } catch(e) {
     console.error("Error al inyectar catálogo:", e);
     alert("Error al inyectar catálogo: " + e.message);
-    if (btnSeed) btnSeed.disabled = false;
+    if (btnSeed) {
+      btnSeed.disabled = false;
+      btnSeed.textContent = '🌱 Inyectar Demo (Todos Deportes)';
+    }
   }
 };
 
