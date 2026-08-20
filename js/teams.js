@@ -203,7 +203,7 @@ const STORE_BANK_DETAILS = {
   phoneWhatsApp: "524423376955"
 };
 
-// Full taxonomy breadcrumb lookup with official team/league logos (Fuzzy team ID matching)
+// Full taxonomy breadcrumb lookup with official team/league logos (Exact & Prefix-Stripped Team ID Matching)
 function getFullTaxonomy(teamId) {
   if (!teamId || teamId === 'all') {
     return {
@@ -217,20 +217,15 @@ function getFullTaxonomy(teamId) {
   }
 
   const cleanId = teamId.toLowerCase().trim();
+  const strippedClean = cleanId.replace(/^(soc|nfl|nba|mlb|f1|cat)-/, '');
 
   for (const s of SPORTS_CATALOG) {
     for (const l of s.leagues) {
       const team = l.teams.find(t => {
         const tid = t.id.toLowerCase();
-        return tid === cleanId || 
-               tid === 'soc-' + cleanId || 
-               tid === 'nfl-' + cleanId || 
-               tid === 'nba-' + cleanId || 
-               tid === 'mlb-' + cleanId || 
-               cleanId === 'soc-' + tid || 
-               cleanId === 'nfl-' + tid ||
-               tid.includes(cleanId) || 
-               cleanId.includes(tid);
+        if (tid === cleanId) return true;
+        const strippedTid = tid.replace(/^(soc|nfl|nba|mlb|f1|cat)-/, '');
+        return strippedTid === strippedClean;
       });
       if (team) {
         return {

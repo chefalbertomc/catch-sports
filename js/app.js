@@ -833,9 +833,14 @@ window.TEAM_COLORS_MAP = {
 
 function getTeamOfficialColors(teamId) {
   if (!teamId) return { primary: '#facb15', glow: 'rgba(250, 204, 21, 0.4)' };
-  const key = teamId.toLowerCase();
+  const cleanId = teamId.toLowerCase().trim();
+  const strippedKey = cleanId.replace(/^(soc|nfl|nba|mlb|f1|cat)-/, '');
+
+  if (window.TEAM_COLORS_MAP[strippedKey]) {
+    return window.TEAM_COLORS_MAP[strippedKey];
+  }
   for (const k in window.TEAM_COLORS_MAP) {
-    if (key.includes(k)) return window.TEAM_COLORS_MAP[k];
+    if (strippedKey === k || cleanId === k) return window.TEAM_COLORS_MAP[k];
   }
   return { primary: '#facb15', glow: 'rgba(250, 204, 21, 0.4)' };
 }
