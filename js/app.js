@@ -803,10 +803,10 @@ function updateStoreHeader() {
       if (storeSubtitle) storeSubtitle.textContent = `${tax.icon} ${tax.sport} — Liga ${tax.league}`;
     }
 
-    // Render Ultra-Compact Team Hero Banner with GUARANTEED Inline SVG Stadium Floodlights & Yard Lines!
+    // Render Ultra-Compact Team Hero Banner with Stadium Lights AND the 4 Category Cards Grid!
     if (heroContainer) {
       heroContainer.innerHTML = `
-        <section style="position: relative; background: #07090e; border-bottom: 2px solid var(--accent-color); padding: 14px 12px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.8); min-height: 75px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+        <section style="position: relative; background: #07090e; border-bottom: 2px solid var(--accent-color); padding: 14px 12px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.8); overflow: hidden;">
           
           <!-- GUARANTEED HIGH-IMPACT STADIUM FLOODLIGHTS & STADIUM FIELD SVG BACKDROP -->
           <div style="position: absolute; inset: 0; pointer-events: none; opacity: 0.85; z-index: 1;">
@@ -824,14 +824,10 @@ function updateStoreHeader() {
                 </radialGradient>
               </defs>
 
-              <!-- Stadium Dark Night Sky & Turf Field -->
               <rect width="100%" height="100%" fill="#07080c"/>
-              
-              <!-- Stadium Floodlight Beams -->
               <rect width="100%" height="100%" fill="url(#lightBeamGold)"/>
               <rect width="100%" height="100%" fill="url(#lightBeamWhite)"/>
 
-              <!-- Stadium Turf Yard Lines & Field Graphics -->
               <line x1="0" y1="95%" x2="100%" y2="95%" stroke="rgba(250,204,21,0.4)" stroke-width="2"/>
               <line x1="12%" y1="0" x2="12%" y2="100%" stroke="rgba(250,204,21,0.2)" stroke-width="1.5" stroke-dasharray="3,3"/>
               <line x1="32%" y1="0" x2="32%" y2="100%" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
@@ -841,22 +837,51 @@ function updateStoreHeader() {
             </svg>
           </div>
 
-          <div class="container" style="position: relative; z-index: 2; max-width: 900px; padding: 0; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
+          <div class="container" style="position: relative; z-index: 2; max-width: 900px; padding: 0;">
             
-            <!-- Floating Team Logo Badge -->
-            <img src="${tax.teamLogo}" style="width: 48px; height: 48px; object-fit: contain; filter: drop-shadow(0 4px 14px rgba(250, 204, 21, 0.8)); border-radius: 50%; background: rgba(0,0,0,0.75); padding: 4px; border: 2px solid var(--accent-color);" onerror="this.src='assets/catch_sports_logo.png'"/>
+            <!-- Floating Team Logo Badge & Header -->
+            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px;">
+              <img src="${tax.teamLogo}" style="width: 44px; height: 44px; object-fit: contain; filter: drop-shadow(0 4px 14px rgba(250, 204, 21, 0.8)); border-radius: 50%; background: rgba(0,0,0,0.75); padding: 4px; border: 2px solid var(--accent-color);" onerror="this.src='assets/catch_sports_logo.png'"/>
 
-            <!-- Team Main Title & Subtitle -->
-            <div style="text-align: left;">
-              <h1 style="font-family: var(--font-display); font-size: clamp(15px, 4.2vw, 22px); font-weight: 900; color: #fff; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; text-shadow: 0 2px 10px rgba(0,0,0,0.9);">
-                COLECCIÓN OFICIAL <span style="color: var(--accent-color); text-shadow: 0 0 15px var(--accent-glow);">${tax.team.toUpperCase()}</span>
-              </h1>
-              <p style="color: #eee; font-size: 10px; font-weight: 700; margin: 3px 0 0; display: flex; align-items: center; gap: 6px;">
-                <span style="background: rgba(0, 0, 0, 0.85); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 2px 8px; border-radius: 12px; font-size: 9px; font-weight: 900;">
-                  ${tax.icon} ${tax.sport.toUpperCase()} — ${tax.league}
-                </span>
-                <span style="color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.9);">🏟️ Estilo Estadio 2026</span>
-              </p>
+              <div style="text-align: left;">
+                <h1 style="font-family: var(--font-display); font-size: clamp(15px, 4.2vw, 22px); font-weight: 900; color: #fff; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; text-shadow: 0 2px 10px rgba(0,0,0,0.9);">
+                  COLECCIÓN OFICIAL <span style="color: var(--accent-color); text-shadow: 0 0 15px var(--accent-glow);">${tax.team.toUpperCase()}</span>
+                </h1>
+                <p style="color: #eee; font-size: 10px; font-weight: 700; margin: 3px 0 0; display: flex; align-items: center; gap: 6px;">
+                  <span style="background: rgba(0, 0, 0, 0.85); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 2px 8px; border-radius: 12px; font-size: 9px; font-weight: 900;">
+                    ${tax.icon} ${tax.sport.toUpperCase()} — ${tax.league}
+                  </span>
+                  <span style="color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.9);">🏟️ Estilo Estadio 2026</span>
+                </p>
+              </div>
+            </div>
+
+            <!-- DYNAMIC 4 CATEGORY CARDS GRID FOR THE ACTIVE TEAM -->
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 8px;" id="catCardsGridDesktop">
+              <div id="catCardJerseys" class="compact-cat-card" onclick="openDepartmentHub('jerseys')">
+                <div class="compact-cat-overlay">
+                  <div class="compact-cat-title">👕 Jerseys Oficiales</div>
+                  <div class="compact-cat-subtitle" id="subJerseys">Cargando jerseys de ${tax.team}...</div>
+                </div>
+              </div>
+              <div id="catCardHoodies" class="compact-cat-card" onclick="openDepartmentHub('chamarras')">
+                <div class="compact-cat-overlay">
+                  <div class="compact-cat-title">🧥 Sudaderas & Hoodies</div>
+                  <div class="compact-cat-subtitle" id="subHoodies">Cargando sudaderas de ${tax.team}...</div>
+                </div>
+              </div>
+              <div id="catCardCaps" class="compact-cat-card" onclick="openDepartmentHub('gorras')">
+                <div class="compact-cat-overlay">
+                  <div class="compact-cat-title">🧢 Gorras New Era</div>
+                  <div class="compact-cat-subtitle" id="subCaps">Cargando gorras de ${tax.team}...</div>
+                </div>
+              </div>
+              <div id="catCardDama" class="compact-cat-card" onclick="toggleDropdownCategory('dama')">
+                <div class="compact-cat-overlay">
+                  <div class="compact-cat-title">👩 Colección Dama</div>
+                  <div class="compact-cat-subtitle" id="subDama">Cargando prendas dama...</div>
+                </div>
+              </div>
             </div>
 
           </div>
