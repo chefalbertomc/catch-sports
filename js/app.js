@@ -452,27 +452,8 @@ window.setGenderFilter = function(genderKey, btnEl) {
   renderProducts();
 };
 
-// DYNAMIC COMPACT ROTATING SLIDESHOW ENGINE
+// DYNAMIC COMPACT ROTATING REAL FIRESTORE PRODUCT PHOTOS SLIDESHOW ENGINE
 let catSlideIndex = 0;
-const catSlidesData = {
-  jerseys: [
-    { title: '👕 Jerseys Oficiales', sub: 'Steelers, América, Real Madrid...', bg: 'https://a.espncdn.com/i/teamlogos/soccer/500/227.png' },
-    { title: '👕 Jerseys Oficiales', sub: 'Dallas Cowboys & Lakers Sideline', bg: 'https://a.espncdn.com/i/teamlogos/nfl/500/dal.png' },
-    { title: '👕 Jerseys Oficiales', sub: 'San Francisco 49ers Home', bg: 'https://a.espncdn.com/i/teamlogos/nfl/500/sf.png' }
-  ],
-  chamarras: [
-    { title: '🧥 Sudaderas & Hoodies', sub: 'Red Bull Racing & Checo Pérez', bg: 'https://a.espncdn.com/i/teamlogos/nfl/500/pit.png' },
-    { title: '🧥 Sudaderas & Hoodies', sub: 'Kansas City Chiefs Fleece', bg: 'https://a.espncdn.com/i/teamlogos/nfl/500/kc.png' }
-  ],
-  gorras: [
-    { title: '🧢 Gorras New Era', sub: 'NY Yankees 59FIFTY Cerrada', bg: 'https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png' },
-    { title: '🧢 Gorras New Era', sub: 'LA Dodgers Snapback 9FIFTY', bg: 'https://a.espncdn.com/i/teamlogos/mlb/500/lad.png' }
-  ],
-  dama: [
-    { title: '👩 Colección Dama', sub: 'Steelers & Lakers Corte Entallado', bg: 'https://a.espncdn.com/i/teamlogos/nba/500/lal.png' },
-    { title: '👩 Colección Dama', sub: 'Club América Edición Especial', bg: 'https://a.espncdn.com/i/teamlogos/soccer/500/227.png' }
-  ]
-};
 
 function initCategorySlideshowEngine() {
   const cardJ = document.getElementById('catCardJerseys');
@@ -489,34 +470,41 @@ function initCategorySlideshowEngine() {
 
   function updateSlides() {
     catSlideIndex++;
+    const products = allProducts && allProducts.length > 0 ? allProducts : [];
     
-    // Jersey Slide
-    const sJ = catSlidesData.jerseys[catSlideIndex % catSlidesData.jerseys.length];
-    if (cardJ) {
-      cardJ.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(10,10,12,0.9) 100%), url('${sJ.bg}')`;
-    }
-    if (subJ) subJ.textContent = sJ.sub;
+    // Filter real Firestore products for each category
+    const jerseyProds = products.filter(p => p.category === 'jerseys' && p.imageUrl);
+    const hoodieProds = products.filter(p => p.category === 'chamarras' && p.imageUrl);
+    const capProds = products.filter(p => p.category === 'gorras' && p.imageUrl);
+    const damaProds = products.filter(p => (p.gender === 'dama' || p.category === 'dama') && p.imageUrl);
 
-    // Hoodie Slide
-    const sH = catSlidesData.chamarras[catSlideIndex % catSlidesData.chamarras.length];
-    if (cardH) {
-      cardH.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(10,10,12,0.9) 100%), url('${sH.bg}')`;
+    // 1. Jersey Slide
+    if (jerseyProds.length > 0) {
+      const p = jerseyProds[catSlideIndex % jerseyProds.length];
+      if (cardJ) cardJ.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
+      if (subJ) subJ.textContent = p.name;
     }
-    if (subH) subH.textContent = sH.sub;
 
-    // Cap Slide
-    const sC = catSlidesData.gorras[catSlideIndex % catSlidesData.gorras.length];
-    if (cardC) {
-      cardC.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(10,10,12,0.9) 100%), url('${sC.bg}')`;
+    // 2. Hoodie Slide
+    if (hoodieProds.length > 0) {
+      const p = hoodieProds[catSlideIndex % hoodieProds.length];
+      if (cardH) cardH.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
+      if (subH) subH.textContent = p.name;
     }
-    if (subC) subC.textContent = sC.sub;
 
-    // Dama Slide
-    const sD = catSlidesData.dama[catSlideIndex % catSlidesData.dama.length];
-    if (cardD) {
-      cardD.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(10,10,12,0.9) 100%), url('${sD.bg}')`;
+    // 3. Cap Slide
+    if (capProds.length > 0) {
+      const p = capProds[catSlideIndex % capProds.length];
+      if (cardC) cardC.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
+      if (subC) subC.textContent = p.name;
     }
-    if (subD) subD.textContent = sD.sub;
+
+    // 4. Dama Slide
+    if (damaProds.length > 0) {
+      const p = damaProds[catSlideIndex % damaProds.length];
+      if (cardD) cardD.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
+      if (subD) subD.textContent = p.name;
+    }
   }
 
   updateSlides();
