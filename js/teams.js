@@ -88,7 +88,7 @@ const SPORTS_CATALOG = [
     ]
   },
   {
-    sport: "Fútbol Socca",
+    sport: "Fútbol",
     sportKey: "soccer",
     icon: "⚽",
     leagueLogo: "https://a.espncdn.com/i/teamlogos/leagues/500/mex.1.png",
