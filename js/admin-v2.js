@@ -483,123 +483,50 @@ function resizeImage(file, maxWidth, maxHeight) {
   });
 }
 
-// Bulk Upload Logic
+// Bulk Upload Logic (Instant Upload to Sin Categoría)
 const bulkInput = document.getElementById('bulkImagesInput');
 if (bulkInput) {
   bulkInput.addEventListener('change', async (e) => {
     const files = Array.from(e.target.files);
     if (!files || files.length === 0) return;
 
+    const previewContainer = document.getElementById('bulkPreviewContainer');
+    const gridPreview = document.getElementById('bulkGridPreview');
+    const countEl = document.getElementById('bulkCount');
     const statusEl = document.getElementById('bulkPublishStatus');
+
     if (statusEl) {
       statusEl.style.color = '#fff';
-      statusEl.textContent = 'Procesando imágenes subidas...';
+      statusEl.textContent = '⏳ Procesando y optimizando fotos...';
     }
 
     bulkItems = [];
-    const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
-    let allTeams = [];
-    catalog.forEach(s => {
-      s.leagues.forEach(l => {
-        l.teams.forEach(t => allTeams.push({ id: t.id, name: t.name }));
-      });
-    });
-    const defaultTeamId = allTeams[0] ? allTeams[0].id : 'steelers';
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const base64 = await resizeImage(file, 800, 800);
-      const cleanName = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+      const cleanName = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ").toUpperCase();
       
       bulkItems.push({
         id: 'bulk_' + i,
         base64: base64,
-        name: cleanName.toUpperCase() || `PRODUCTO ${i + 1}`,
-        team: defaultTeamId,
-        gender: 'caballero',
-        price: 1299,
-        stockQty: 5
+        name: cleanName || `ARTÍCULO PENDIENTE ${i + 1}`
       });
     }
 
-    renderBulkTable();
+    if (countEl) countEl.textContent = bulkItems.length;
+    if (gridPreview) {
+      gridPreview.innerHTML = bulkItems.map(item => `
+        <div style="position: relative; border-radius: 4px; overflow: hidden; border: 1px solid var(--accent-color);">
+          <img src="${item.base64}" style="width: 100%; height: 50px; object-fit: cover; display: block;">
+        </div>
+      `).join('');
+    }
+
+    if (previewContainer) previewContainer.style.display = 'block';
     if (statusEl) statusEl.textContent = '';
   });
 }
-
-function renderBulkTable() {
-  const container = document.getElementById('bulkTableContainer');
-  const tbody = document.getElementById('bulkTableBody');
-  const countEl = document.getElementById('bulkCount');
-
-  if (!container || !tbody) return;
-
-  if (bulkItems.length === 0) {
-    container.style.display = 'none';
-    return;
-  }
-
-  container.style.display = 'block';
-  if (countEl) countEl.textContent = bulkItems.length;
-
-  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
-  let teamsOptionsHtml = '';
-  catalog.forEach(s => {
-    s.leagues.forEach(l => {
-      teamsOptionsHtml += `<optgroup label="${s.icon} ${s.sport} — ${l.league}">`;
-      l.teams.forEach(t => {
-        teamsOptionsHtml += `<option value="${t.id}">${t.name}</option>`;
-      });
-      teamsOptionsHtml += `</optgroup>`;
-    });
-  });
-
-  tbody.innerHTML = bulkItems.map((item, idx) => `
-    <tr style="border-bottom: 1px solid var(--border-color);">
-      <td style="padding: 10px;">
-        <img src="${item.base64}" style="width: 46px; height: 46px; object-fit: cover; border-radius: 6px; border: 1px solid var(--accent-color);">
-      </td>
-      <td style="padding: 10px;">
-        <input type="text" class="form-control" style="padding: 6px; font-size: 12px;" value="${item.name}" onchange="updateBulkItem(${idx}, 'name', this.value)">
-      </td>
-      <td style="padding: 10px;">
-        <select class="form-control" style="padding: 6px; font-size: 12px;" onchange="updateBulkItem(${idx}, 'team', this.value)">
-          ${teamsOptionsHtml}
-        </select>
-      </td>
-      <td style="padding: 10px;">
-        <select class="form-control" style="padding: 6px; font-size: 12px;" onchange="updateBulkItem(${idx}, 'gender', this.value)">
-          <option value="caballero" ${item.gender === 'caballero' ? 'selected' : ''}>👨 Caballero</option>
-          <option value="dama" ${item.gender === 'dama' ? 'selected' : ''}>👩 Dama</option>
-          <option value="nino" ${item.gender === 'nino' ? 'selected' : ''}>🧒 Niño</option>
-          <option value="unisex" ${item.gender === 'unisex' ? 'selected' : ''}>🧢 Unisex</option>
-        </select>
-      </td>
-      <td style="padding: 10px;">
-        <input type="number" class="form-control" style="padding: 6px; font-size: 12px; width: 90px;" value="${item.price}" onchange="updateBulkItem(${idx}, 'price', parseFloat(this.value))">
-      </td>
-      <td style="padding: 10px;">
-        <input type="number" class="form-control" style="padding: 6px; font-size: 12px; width: 70px;" value="${item.stockQty}" onchange="updateBulkItem(${idx}, 'stockQty', parseInt(this.value))">
-      </td>
-      <td style="padding: 10px; text-align: center;">
-        <button type="button" onclick="removeBulkItem(${idx})" style="background: transparent; border: none; color: #ef4444; font-size: 16px; cursor: pointer;">✕</button>
-      </td>
-    </tr>
-  `).join('');
-}
-
-window.updateBulkItem = function(idx, field, value) {
-  if (bulkItems[idx]) {
-    bulkItems[idx][field] = value;
-  }
-};
-
-window.removeBulkItem = function(idx) {
-  if (bulkItems[idx]) {
-    bulkItems.splice(idx, 1);
-    renderBulkTable();
-  }
-};
 
 window.publishAllBulkProducts = async function() {
   if (bulkItems.length === 0) return;
@@ -610,7 +537,7 @@ window.publishAllBulkProducts = async function() {
   if (btnPublish) btnPublish.disabled = true;
   if (statusEl) {
     statusEl.style.color = '#fff';
-    statusEl.textContent = `⏳ Publicando ${bulkItems.length} productos en lote...`;
+    statusEl.textContent = `⏳ Subiendo ${bulkItems.length} fotos a inventario como Sin Categoría...`;
   }
 
   try {
@@ -619,20 +546,20 @@ window.publishAllBulkProducts = async function() {
     for (const item of bulkItems) {
       const docRef = db.collection('products').doc();
       const defaultSizeStock = [
-        { size: "M", immediateQty: 2, warehouseQty: 3 }
+        { size: "M", immediateQty: 1, warehouseQty: 0 }
       ];
 
       batch.set(docRef, {
         name: item.name,
-        team: item.team,
-        gender: item.gender,
-        category: 'jerseys',
+        team: 'sin-categoria',
+        gender: 'caballero',
+        category: 'sin-categoria',
         badge: 'ninguno',
-        price: item.price,
+        price: 0,
         originalPrice: null,
         sizeStockMap: defaultSizeStock,
-        sizes: defaultSizeStock.map(s => s.size),
-        description: 'Artículo deportivo oficial de alta calidad.',
+        sizes: ["M"],
+        description: 'Producto subido masivamente. Pendiente de clasificar deporte, equipo y existencias.',
         imageUrl: item.base64,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
@@ -642,12 +569,36 @@ window.publishAllBulkProducts = async function() {
 
     if (statusEl) {
       statusEl.style.color = '#4ade80';
-      statusEl.textContent = `✅ ¡${bulkItems.length} productos publicados exitosamente!`;
+      statusEl.textContent = `✅ ¡${bulkItems.length} fotos subidas exitosamente como "Sin Categoría"!`;
     }
 
+    const uploadedCount = bulkItems.length;
     bulkItems = [];
-    renderBulkTable();
     if (document.getElementById('bulkImagesInput')) document.getElementById('bulkImagesInput').value = '';
+    if (document.getElementById('bulkPreviewContainer')) document.getElementById('bulkPreviewContainer').style.display = 'none';
+
+    setTimeout(() => {
+      if (btnPublish) btnPublish.disabled = false;
+      if (statusEl) statusEl.textContent = '';
+      
+      // Auto switch to Manage tab filtered by Sin Categoría
+      switchAdminTab('manage');
+      adminFilterSportKey = 'sin-categoria';
+      renderAdminCatalogSequenceNav();
+      renderAdminProductsList(currentProducts);
+
+      alert(`✅ ¡${uploadedCount} prendas agregadas como "Sin Categoría"! Las tienes en pantalla para clasificarlas una por una cuando gustes.`);
+    }, 1500);
+
+  } catch(e) {
+    console.error('Error in bulk publish:', e);
+    if (statusEl) {
+      statusEl.style.color = '#ff6b6b';
+      statusEl.textContent = '❌ Error al subir: ' + e.message;
+    }
+    if (btnPublish) btnPublish.disabled = false;
+  }
+};
 
     setTimeout(() => {
       if (btnPublish) btnPublish.disabled = false;
@@ -844,13 +795,19 @@ function renderAdminCatalogSequenceNav() {
 
   if (!sportSelect) return;
   const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+  const uncatCount = (currentProducts || []).filter(p => p.category === 'sin-categoria' || p.team === 'sin-categoria' || !p.team).length;
 
-  // 1. DEPORTE DROPDOWN
+  // 1. DEPORTE DROPDOWN (CON OPCIÓN SIN CATEGORÍA)
+  const uncatOption = uncatCount > 0 
+    ? `<option value="sin-categoria" ${adminFilterSportKey === 'sin-categoria' ? 'selected' : ''}>⚠️ Sin Categoría / Pendientes (${uncatCount})</option>` 
+    : `<option value="sin-categoria" ${adminFilterSportKey === 'sin-categoria' ? 'selected' : ''}>⚠️ Sin Categoría / Pendientes (0)</option>`;
+
   sportSelect.innerHTML = '<option value="">1. Selecciona Deporte...</option>' + 
+    uncatOption +
     catalog.map(s => `<option value="${s.sportKey}" ${adminFilterSportKey === s.sportKey ? 'selected' : ''}>${s.icon} ${s.sport}</option>`).join('');
 
   // 2. LIGA DROPDOWN
-  if (adminFilterSportKey) {
+  if (adminFilterSportKey && adminFilterSportKey !== 'sin-categoria') {
     const sportObj = catalog.find(s => s.sportKey === adminFilterSportKey);
     if (sportObj && sportObj.leagues.length > 0) {
       if (leagueWrapper) leagueWrapper.style.display = 'block';
@@ -1057,7 +1014,9 @@ function renderAdminProductsList(products) {
   let filtered = products;
 
   // Filter by Admin 5-Step Sequence Selector
-  if (adminFilterGenderId) {
+  if (adminFilterSportKey === 'sin-categoria') {
+    filtered = filtered.filter(p => p.category === 'sin-categoria' || p.team === 'sin-categoria' || !p.team);
+  } else if (adminFilterGenderId) {
     filtered = filtered.filter(p => (p.team === adminFilterTeamId || !adminFilterTeamId) && (p.category === adminFilterCategoryId || !adminFilterCategoryId) && p.gender === adminFilterGenderId);
   } else if (adminFilterCategoryId) {
     filtered = filtered.filter(p => (p.team === adminFilterTeamId || !adminFilterTeamId) && p.category === adminFilterCategoryId);
@@ -1089,16 +1048,20 @@ function renderAdminProductsList(products) {
   }
   
   list.innerHTML = filtered.map(product => {
-    let sportIcon = '🏈';
+    const isUncat = product.category === 'sin-categoria' || product.team === 'sin-categoria' || !product.team;
+    
+    let sportIcon = isUncat ? '⚠️' : '🏈';
     let leagueName = 'NFL';
-    let teamName = typeof getTeamName !== 'undefined' ? getTeamName(product.team) : product.team;
+    let teamName = isUncat ? 'SIN CLASIFICAR' : (typeof getTeamName !== 'undefined' ? getTeamName(product.team) : product.team);
 
-    for (const s of catalog) {
-      for (const l of s.leagues) {
-        if (l.teams.some(t => t.id === product.team)) {
-          sportIcon = s.icon || '🏆';
-          leagueName = l.league;
-          break;
+    if (!isUncat) {
+      for (const s of catalog) {
+        for (const l of s.leagues) {
+          if (l.teams.some(t => t.id === product.team)) {
+            sportIcon = s.icon || '🏆';
+            leagueName = l.league;
+            break;
+          }
         }
       }
     }
@@ -1109,7 +1072,7 @@ function renderAdminProductsList(products) {
     const unifiedPillHtml = getUnifiedStockPillHtml(product, activeViewMode);
 
     return `
-      <div style="display: flex; align-items: center; gap: 8px; padding: 5px 8px; background: #111; border-radius: 8px; border: 1px solid #282828; margin-bottom: 3px;">
+      <div style="display: flex; align-items: center; gap: 8px; padding: 5px 8px; background: ${isUncat ? 'rgba(239, 68, 68, 0.08)' : '#111'}; border-radius: 8px; border: 1px solid ${isUncat ? '#ef4444' : '#282828'}; margin-bottom: 3px;">
         
         <!-- FOTO MINIATURA (34px x 34px) -->
         <img src="${product.imageUrl}" style="width: 34px; height: 34px; object-fit: cover; border-radius: 5px; border: 1px solid var(--accent-color); flex-shrink: 0;" onerror="this.src='https://via.placeholder.com/100'">
@@ -1120,7 +1083,7 @@ function renderAdminProductsList(products) {
           <!-- RENGLÓN 1: DEPORTE + EQUIPO — NOMBRE (GÉNERO) + BOTONES ACCIÓN -->
           <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-bottom: 2px;">
             <div style="font-size: 11px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              <span style="color: var(--accent-color);">${sportIcon} ${teamName}</span>
+              <span style="color: ${isUncat ? '#ef4444' : 'var(--accent-color)'};">${sportIcon} ${teamName}</span>
               <span style="color: #555;">—</span>
               <span style="color: #fff; font-weight: 900;">${product.name}</span>
               <span style="color: #aaa; font-weight: 600; font-size: 10px; margin-left: 3px;">(${cleanGenderText})</span>
@@ -1192,6 +1155,9 @@ window.startEditingProduct = function(id) {
       onAdminLeagueChange();
       document.getElementById('prodTeam').value = prod.team;
     }
+  } else {
+    if (document.getElementById('prodSport')) document.getElementById('prodSport').value = '';
+    onAdminSportChange();
   }
 
   // Pre-fill text inputs

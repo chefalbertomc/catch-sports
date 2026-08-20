@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Admin - Catch Sports</title>
-  <link rel="stylesheet" href="css/styles.css?v=25.0">
+  <link rel="stylesheet" href="css/styles.css?v=40.0">
   
   <script>
     if ('serviceWorker' in navigator) {
@@ -83,7 +83,7 @@
             📦 Catálogo e Inventario Publicado (<span id="adminProdCount">0</span>)
           </h2>
           <p class="text-secondary" style="font-size: 12px; margin-bottom: 0;">
-            Selecciona las listas desplegables para consultar existencias o editar artículos.
+            Selecciona las listas desplegables para consultar existencias o clasificar artículos pendientes.
           </p>
         </div>
 
@@ -305,43 +305,31 @@
         </form>
       </div>
 
-      <!-- VISTA 3: CARGA MASIVA POR BLOQUE -->
+      <!-- VISTA 3: CARGA MASIVA DE FOTOS (SIN CLASIFICAR) -->
       <div id="bulkUploadCard" class="admin-card" style="display: none; padding: 16px; margin-bottom: 16px;">
-        <h2 style="font-size: 18px; color: var(--accent-color); margin-bottom: 6px;">⚡ Carga Masiva por Fotos</h2>
+        <h2 style="font-size: 18px; color: var(--accent-color); margin-bottom: 6px;">⚡ Carga Masiva Directa por Fotos</h2>
         <p class="text-secondary" style="font-size: 12px; margin-bottom: 14px;">
-          Selecciona varias fotos simultáneamente para editar los detalles en línea y publicarlas juntas.
+          Selecciona todas las fotos que quieras. Se subirán automáticamente a tu inventario como <strong>"⚠️ Sin Categoría"</strong> para que puedas editarlas y clasificarlas una por una cuando quieras.
         </p>
 
         <div class="form-group" style="margin-bottom: 12px;">
-          <input type="file" id="bulkImagesInput" class="form-control" multiple accept="image/*" style="padding: 10px; border: 2px dashed var(--accent-color);">
+          <input type="file" id="bulkImagesInput" class="form-control" multiple accept="image/*" style="padding: 14px; border: 2px dashed var(--accent-color); background: rgba(250, 204, 21, 0.05); text-align: center; cursor: pointer;">
         </div>
 
-        <div id="bulkTableContainer" style="display: none; margin-top: 14px;">
-          <h3 style="font-size: 14px; color: #fff; margin-bottom: 8px;">Edición Rápida en Línea (<span id="bulkCount" style="color: var(--accent-color);">0</span> productos)</h3>
-          
-          <div style="overflow-x: auto; margin-bottom: 14px; border: 1px solid var(--border-color); border-radius: 8px;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-              <thead>
-                <tr style="background: rgba(250, 204, 21, 0.1); color: var(--accent-color); text-align: left;">
-                  <th style="padding: 8px;">Foto</th>
-                  <th style="padding: 8px;">Nombre</th>
-                  <th style="padding: 8px;">Equipo</th>
-                  <th style="padding: 8px;">Dept</th>
-                  <th style="padding: 8px;">Precio</th>
-                  <th style="padding: 8px;">Stock</th>
-                  <th style="padding: 8px;">Quitar</th>
-                </tr>
-              </thead>
-              <tbody id="bulkTableBody">
-                <!-- Inline rows -->
-              </tbody>
-            </table>
+        <div id="bulkPreviewContainer" style="display: none; margin-top: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h3 style="font-size: 13px; color: #fff; margin: 0;">Fotos listar para subir (<span id="bulkCount" style="color: var(--accent-color);">0</span>)</h3>
+          </div>
+
+          <!-- MINI PREVIEW GRID -->
+          <div id="bulkGridPreview" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; max-height: 200px; overflow-y: auto; padding: 8px; background: #000; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px;">
+            <!-- Thumbnail grid -->
           </div>
 
           <div id="bulkPublishStatus" style="font-size: 13px; margin-bottom: 10px; font-weight: bold;"></div>
 
-          <button type="button" id="btnPublishBulk" onclick="publishAllBulkProducts()" class="btn btn-whatsapp" style="width: 100%; font-size: 14px; padding: 10px;">
-            🚀 Publicar Todos los Productos →
+          <button type="button" id="btnPublishBulk" onclick="publishAllBulkProducts()" class="btn btn-whatsapp" style="width: 100%; font-size: 14px; padding: 12px;">
+            🚀 Subir Todo al Inventario (Como Sin Categoría) →
           </button>
         </div>
       </div>
@@ -417,8 +405,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   
-  <script src="js/firebase-config.js?v=35.0"></script>
-  <script src="js/teams.js?v=35.0"></script>
-  <script src="js/admin-v2.js?v=35.0"></script>
+  <script src="js/firebase-config.js?v=40.0"></script>
+  <script src="js/teams.js?v=40.0"></script>
+  <script src="js/admin-v2.js?v=40.0"></script>
 </body>
 </html>
