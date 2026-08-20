@@ -621,12 +621,11 @@ window.publishAllBulkProducts = async function() {
 
 
 
-// Seed Demo Catalog Full (EVERY SPORT & EVERY TEAM)
+// Seed Demo Catalog Full (EVERY SPORT & EVERY TEAM: JERSEYS, SUDADERAS, GORRAS & DAMAS)
 window.seedDemoCatalogFull = async function() {
-  if (!confirm("🌱 ¿Deseas inyectar un catálogo de muestra completo con artículos para TODOS los deportes y equipos (NFL, NBA, MLB, Fútbol, F1, etc.)?")) return;
+  if (!confirm("🌱 ¿Deseas inyectar el catálogo completo de prueba? Se crearán Jerseys, Sudaderas, Gorras y prendas de Dama para TODOS los equipos (~250 productos).")) return;
 
   const btnSeed = document.getElementById('tabSeedBtn');
-  const countEl = document.getElementById('adminProdCount');
   if (btnSeed) btnSeed.disabled = true;
 
   try {
@@ -636,49 +635,112 @@ window.seedDemoCatalogFull = async function() {
     catalog.forEach(sportObj => {
       sportObj.leagues.forEach(leagueObj => {
         leagueObj.teams.forEach(teamObj => {
-          // Generate 1-2 realistic sample products per team
-          const isJersey = Math.random() > 0.3;
-          const category = isJersey ? 'jerseys' : (Math.random() > 0.5 ? 'gorras' : 'chamarras');
-          const gender = Math.random() > 0.4 ? 'caballero' : (Math.random() > 0.5 ? 'dama' : 'unisex');
-          const badge = Math.random() > 0.5 ? 'exclusivo' : (Math.random() > 0.5 ? 'nuevo' : 'ninguno');
-          const price = isJersey ? 1899 : (category === 'chamarras' ? 2299 : 899);
-          const origPrice = price + 400;
-
+          const logoUrl = teamObj.logo || "assets/catch_sports_logo.png";
+          
+          // 1. JERSEY OFICIAL CABALLERO
           itemsToInject.push({
-            name: `${category === 'jerseys' ? 'Jersey Oficial' : (category === 'gorras' ? 'Gorra New Era' : 'Chamarra Sideline')} ${teamObj.name}`,
+            name: `Jersey Oficial Home ${teamObj.name}`,
             team: teamObj.id,
-            gender: gender,
-            category: category,
-            badge: badge,
-            price: price,
-            originalPrice: origPrice,
+            gender: 'caballero',
+            category: 'jerseys',
+            badge: 'nuevo',
+            price: 1899,
+            originalPrice: 2299,
             sizeStockMap: [
-              { size: "S", immediateQty: Math.floor(Math.random() * 4) + 1, warehouseQty: Math.floor(Math.random() * 6) + 2 },
-              { size: "M", immediateQty: Math.floor(Math.random() * 5) + 1, warehouseQty: Math.floor(Math.random() * 8) + 3 },
-              { size: "L", immediateQty: Math.floor(Math.random() * 3) + 1, warehouseQty: Math.floor(Math.random() * 5) + 1 }
+              { size: "S", immediateQty: Math.floor(Math.random() * 4) + 2, warehouseQty: Math.floor(Math.random() * 6) + 4 },
+              { size: "M", immediateQty: Math.floor(Math.random() * 6) + 3, warehouseQty: Math.floor(Math.random() * 10) + 5 },
+              { size: "L", immediateQty: Math.floor(Math.random() * 5) + 2, warehouseQty: Math.floor(Math.random() * 8) + 3 },
+              { size: "XL", immediateQty: Math.floor(Math.random() * 3) + 1, warehouseQty: Math.floor(Math.random() * 5) + 2 }
             ],
-            sizes: ["S", "M", "L"],
-            description: `Artículo deportivo oficial de alta calidad de ${teamObj.name}.`,
-            imageUrl: teamObj.logo || "assets/catch_sports_logo.png",
+            sizes: ["S", "M", "L", "XL"],
+            description: `Jersey oficial bordado de utilería Nike/Adidas/Puma de los ${teamObj.name}. Tela de alto rendimiento transpirable.`,
+            imageUrl: logoUrl,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
+
+          // 2. SUDADERA / HOODIE SIDELINE
+          itemsToInject.push({
+            name: `Sudadera / Hoodie Sideline Fleece ${teamObj.name}`,
+            team: teamObj.id,
+            gender: 'unisex',
+            category: 'chamarras',
+            badge: 'exclusivo',
+            price: 2199,
+            originalPrice: 2599,
+            sizeStockMap: [
+              { size: "M", immediateQty: Math.floor(Math.random() * 4) + 2, warehouseQty: Math.floor(Math.random() * 6) + 3 },
+              { size: "L", immediateQty: Math.floor(Math.random() * 5) + 3, warehouseQty: Math.floor(Math.random() * 8) + 4 },
+              { size: "XL", immediateQty: Math.floor(Math.random() * 3) + 1, warehouseQty: Math.floor(Math.random() * 5) + 2 }
+            ],
+            sizes: ["M", "L", "XL"],
+            description: `Chamarra sudadera oficial con gorro y felpa térmica de los ${teamObj.name}. Edición Sideline 2026.`,
+            imageUrl: logoUrl,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+          // 3. GORRA NEW ERA
+          itemsToInject.push({
+            name: `Gorra New Era 59FIFTY Oficial ${teamObj.name}`,
+            team: teamObj.id,
+            gender: 'unisex',
+            category: 'gorras',
+            badge: 'oferta',
+            price: 899,
+            originalPrice: 1099,
+            sizeStockMap: [
+              { size: "7 1/4", immediateQty: Math.floor(Math.random() * 5) + 3, warehouseQty: Math.floor(Math.random() * 8) + 5 },
+              { size: "7 3/8", immediateQty: Math.floor(Math.random() * 6) + 4, warehouseQty: Math.floor(Math.random() * 10) + 6 },
+              { size: "7 1/2", immediateQty: Math.floor(Math.random() * 4) + 2, warehouseQty: Math.floor(Math.random() * 6) + 3 },
+              { size: "Ajustable", immediateQty: Math.floor(Math.random() * 8) + 5, warehouseQty: Math.floor(Math.random() * 12) + 8 }
+            ],
+            sizes: ["7 1/4", "7 3/8", "7 1/2", "Ajustable"],
+            description: `Gorra oficial New Era 59FIFTY/9FIFTY de los ${teamObj.name} con logo bordado en 3D de alta densidad.`,
+            imageUrl: logoUrl,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+          // 4. JERSEY CORTE DAMA
+          itemsToInject.push({
+            name: `Jersey Dama Edición Especial ${teamObj.name}`,
+            team: teamObj.id,
+            gender: 'dama',
+            category: 'jerseys',
+            badge: 'edicion-limitada',
+            price: 1699,
+            originalPrice: 1999,
+            sizeStockMap: [
+              { size: "XS Dama", immediateQty: Math.floor(Math.random() * 3) + 1, warehouseQty: Math.floor(Math.random() * 4) + 2 },
+              { size: "S Dama", immediateQty: Math.floor(Math.random() * 4) + 2, warehouseQty: Math.floor(Math.random() * 6) + 3 },
+              { size: "M Dama", immediateQty: Math.floor(Math.random() * 5) + 3, warehouseQty: Math.floor(Math.random() * 8) + 4 },
+              { size: "L Dama", immediateQty: Math.floor(Math.random() * 3) + 1, warehouseQty: Math.floor(Math.random() * 4) + 2 }
+            ],
+            sizes: ["XS Dama", "S Dama", "M Dama", "L Dama"],
+            description: `Jersey corte especial para dama de los ${teamObj.name}. Ajuste silueta deportiva con cuello en V.`,
+            imageUrl: logoUrl,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
         });
       });
     });
 
-    // Write in chunks of 30 items
-    const chunkSize = 30;
+    // Write in chunks of 40 items in parallel
+    const chunkSize = 40;
+    const chunks = [];
     for (let i = 0; i < itemsToInject.length; i += chunkSize) {
-      const chunk = itemsToInject.slice(i, i + chunkSize);
+      chunks.push(itemsToInject.slice(i, i + chunkSize));
+    }
+
+    await Promise.all(chunks.map(async (chunk) => {
       const batch = db.batch();
       chunk.forEach(prod => {
         const ref = db.collection('products').doc();
         batch.set(ref, prod);
       });
-      await batch.commit();
-    }
+      return batch.commit();
+    }));
 
-    alert(`✅ ¡Catálogo de prueba completo inyectado! Se crearon ${itemsToInject.length} productos abarcando todos los deportes y equipos.`);
+    alert(`✅ ¡Catálogo completo inyectado! Se crearon ${itemsToInject.length} productos (Jerseys Caballero, Sudaderas, Gorras y Jerseys Dama para TODOS los equipos).`);
     if (btnSeed) btnSeed.disabled = false;
     loadAdminProducts();
 
