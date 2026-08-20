@@ -269,7 +269,7 @@ function renderSingleLineCascadingBar() {
       </span>
       ${wizardSportObj.leagues.map(l => `
         <button onclick="onSingleLineLeagueClick('${l.league}')" class="league-dock-chip ${wizardLeagueObj && wizardLeagueObj.league === l.league ? 'active' : ''}">
-          <img src="${l.leagueLogo}" style="width: 18px; height: 18px; object-fit: contain;" onerror="this.src='assets/catch_sports_logo.png'"/>
+          <img src="${l.leagueLogo}" referrerpolicy="no-referrer" style="width: 18px; height: 18px; object-fit: contain;" onerror="this.src='assets/catch_sports_logo.png'"/>
           ${l.league}
         </button>
       `).join('')}
@@ -287,7 +287,7 @@ function renderSingleLineCascadingBar() {
       </button>
       ${wizardLeagueObj.teams.map(t => `
         <button onclick="onSingleLineTeamClick('${t.id}')" class="league-dock-chip ${activeTeamFilter === t.id ? 'active' : ''}">
-          <img src="${t.logo}" style="width: 18px; height: 18px; object-fit: contain;" onerror="this.src='assets/catch_sports_logo.png'"/>
+          <img src="${t.logo}" referrerpolicy="no-referrer" style="width: 18px; height: 18px; object-fit: contain;" onerror="this.src='assets/catch_sports_logo.png'"/>
           ${t.name}
         </button>
       `).join('')}
@@ -869,7 +869,7 @@ function updateStoreHeader() {
             <div style="background: rgba(20, 18, 12, 0.95); border: 2px solid ${colors.primary}; border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; justify-content: flex-start; gap: 12px; text-align: left; margin-bottom: 8px; box-shadow: 0 4px 16px ${colors.glow};">
               
               <!-- Giant Team Logo Left (100px sin Círculo Amarillo) -->
-              <img src="${tax.teamLogo}" style="width: 100px; height: 100px; object-fit: contain; filter: drop-shadow(0 6px 16px rgba(0,0,0,0.9)); flex-shrink: 0; margin-right: 2px;" onerror="this.src='assets/catch_sports_logo.png'"/>
+              <img src="${tax.teamLogo}" referrerpolicy="no-referrer" style="width: 100px; height: 100px; object-fit: contain; filter: drop-shadow(0 6px 16px rgba(0,0,0,0.9)); flex-shrink: 0; margin-right: 2px;" onerror="this.src='assets/catch_sports_logo.png'"/>
 
               <!-- Right Info Block (Right-Aligned Text: text-align: right) -->
               <div style="display: flex; flex-direction: column; align-items: flex-end; text-align: right; width: 100%;">
@@ -884,10 +884,10 @@ function updateStoreHeader() {
                   ${tax.team.toUpperCase()}
                 </div>
 
-                <!-- Renglón 3: Pastilla FÚTBOL AMERICANO — LIGA NFL (Alineada al Centro!) -->
+                <!-- Renglón 3: Pastilla FÚTBOL — LIGA MX (Alineada al Centro!) -->
                 <div style="display: flex; justify-content: center; width: 100%; margin-top: 2px;">
                   <span style="background: ${colors.primary}22; border: 1.5px solid ${colors.primary}; color: ${colors.primary}; padding: 3px 12px; border-radius: 12px; font-size: 10px; font-weight: 900; text-align: center; display: inline-block;">
-                    ${tax.icon} ${tax.sport.toUpperCase()} — LIGA ${tax.league}
+                    ${tax.icon} ${tax.sport.toUpperCase()} — ${tax.league.toLowerCase().startsWith('liga') ? tax.league.toUpperCase() : 'LIGA ' + tax.league.toUpperCase()}
                   </span>
                 </div>
 
