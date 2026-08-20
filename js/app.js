@@ -803,36 +803,59 @@ function updateStoreHeader() {
       if (storeSubtitle) storeSubtitle.textContent = `${tax.icon} ${tax.sport} — Liga ${tax.league}`;
     }
 
-    // Render Ultra-Compact Team Hero Banner with Visible Stadium Background Wallpaper!
+    // Render Ultra-Compact Team Hero Banner with GUARANTEED Inline SVG Stadium Floodlights & Yard Lines!
     if (heroContainer) {
-      // High-resolution stadium backdrop photos with light dark overlay so stadium is 100% visible!
-      let stadiumPhotoUrl = 'https://images.unsplash.com/photo-1566577739112-5180d4bf9390?auto=format&fit=crop&w=1200&q=80'; // Bright NFL Stadium Lights
-      
-      if (tax.team.toLowerCase().includes('steelers')) {
-        stadiumPhotoUrl = 'https://images.unsplash.com/photo-1566577739112-5180d4bf9390?auto=format&fit=crop&w=1200&q=80'; // Acrisure Stadium Vibe
-      } else if (tax.sport.toLowerCase().includes('básquetbol') || tax.league.toLowerCase().includes('nba')) {
-        stadiumPhotoUrl = 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1200&q=80'; // NBA Arena
-      }
-
-      const teamBgImage = `linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(10, 10, 12, 0.75) 100%), url("${stadiumPhotoUrl}")`;
-
       heroContainer.innerHTML = `
-        <section style="background-image: ${teamBgImage}; background-size: cover; background-position: center center; border-bottom: 2px solid var(--accent-color); padding: 14px 12px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.8); min-height: 75px; display: flex; align-items: center; justify-content: center;">
-          <div class="container" style="max-width: 900px; padding: 0; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
+        <section style="position: relative; background: #07090e; border-bottom: 2px solid var(--accent-color); padding: 14px 12px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.8); min-height: 75px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+          
+          <!-- GUARANTEED HIGH-IMPACT STADIUM FLOODLIGHTS & STADIUM FIELD SVG BACKDROP -->
+          <div style="position: absolute; inset: 0; pointer-events: none; opacity: 0.85; z-index: 1;">
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+              <defs>
+                <radialGradient id="lightBeamGold" cx="20%" cy="10%" r="75%">
+                  <stop offset="0%" stop-color="#facb15" stop-opacity="0.75"/>
+                  <stop offset="50%" stop-color="#141418" stop-opacity="0.2"/>
+                  <stop offset="100%" stop-color="#050508" stop-opacity="0"/>
+                </radialGradient>
+                <radialGradient id="lightBeamWhite" cx="80%" cy="10%" r="75%">
+                  <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6"/>
+                  <stop offset="50%" stop-color="#facb15" stop-opacity="0.15"/>
+                  <stop offset="100%" stop-color="#050508" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+
+              <!-- Stadium Dark Night Sky & Turf Field -->
+              <rect width="100%" height="100%" fill="#07080c"/>
+              
+              <!-- Stadium Floodlight Beams -->
+              <rect width="100%" height="100%" fill="url(#lightBeamGold)"/>
+              <rect width="100%" height="100%" fill="url(#lightBeamWhite)"/>
+
+              <!-- Stadium Turf Yard Lines & Field Graphics -->
+              <line x1="0" y1="95%" x2="100%" y2="95%" stroke="rgba(250,204,21,0.4)" stroke-width="2"/>
+              <line x1="12%" y1="0" x2="12%" y2="100%" stroke="rgba(250,204,21,0.2)" stroke-width="1.5" stroke-dasharray="3,3"/>
+              <line x1="32%" y1="0" x2="32%" y2="100%" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
+              <line x1="50%" y1="0" x2="50%" y2="100%" stroke="rgba(250,204,21,0.45)" stroke-width="3"/>
+              <line x1="68%" y1="0" x2="68%" y2="100%" stroke="rgba(255,255,255,0.25)" stroke-width="2"/>
+              <line x1="88%" y1="0" x2="88%" y2="100%" stroke="rgba(250,204,21,0.2)" stroke-width="1.5" stroke-dasharray="3,3"/>
+            </svg>
+          </div>
+
+          <div class="container" style="position: relative; z-index: 2; max-width: 900px; padding: 0; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
             
             <!-- Floating Team Logo Badge -->
-            <img src="${tax.teamLogo}" style="width: 48px; height: 48px; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(250, 204, 21, 0.7)); border-radius: 50%; background: rgba(0,0,0,0.7); padding: 4px; border: 2px solid var(--accent-color);" onerror="this.src='assets/catch_sports_logo.png'"/>
+            <img src="${tax.teamLogo}" style="width: 48px; height: 48px; object-fit: contain; filter: drop-shadow(0 4px 14px rgba(250, 204, 21, 0.8)); border-radius: 50%; background: rgba(0,0,0,0.75); padding: 4px; border: 2px solid var(--accent-color);" onerror="this.src='assets/catch_sports_logo.png'"/>
 
             <!-- Team Main Title & Subtitle -->
             <div style="text-align: left;">
-              <h1 style="font-family: var(--font-display); font-size: clamp(15px, 4.2vw, 22px); font-weight: 900; color: #fff; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; text-shadow: 0 2px 8px rgba(0,0,0,0.9);">
-                COLECCIÓN OFICIAL <span style="color: var(--accent-color); text-shadow: 0 0 12px var(--accent-glow);">${tax.team.toUpperCase()}</span>
+              <h1 style="font-family: var(--font-display); font-size: clamp(15px, 4.2vw, 22px); font-weight: 900; color: #fff; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; text-shadow: 0 2px 10px rgba(0,0,0,0.9);">
+                COLECCIÓN OFICIAL <span style="color: var(--accent-color); text-shadow: 0 0 15px var(--accent-glow);">${tax.team.toUpperCase()}</span>
               </h1>
               <p style="color: #eee; font-size: 10px; font-weight: 700; margin: 3px 0 0; display: flex; align-items: center; gap: 6px;">
-                <span style="background: rgba(0, 0, 0, 0.75); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 2px 8px; border-radius: 12px; font-size: 9px; font-weight: 900;">
+                <span style="background: rgba(0, 0, 0, 0.85); border: 1px solid var(--accent-color); color: var(--accent-color); padding: 2px 8px; border-radius: 12px; font-size: 9px; font-weight: 900;">
                   ${tax.icon} ${tax.sport.toUpperCase()} — ${tax.league}
                 </span>
-                <span style="color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.9);">Utilería Fanático 2026</span>
+                <span style="color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.9);">🏟️ Estilo Estadio 2026</span>
               </p>
             </div>
 
