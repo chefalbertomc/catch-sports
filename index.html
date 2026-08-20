@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Catch Sports — Tienda Oficial de Deportes & Utilería</title>
-  <link rel="stylesheet" href="css/styles.css?v=1400.0">
+  <link rel="stylesheet" href="css/styles.css?v=1500.0">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,75 +41,89 @@
     </div>
   </nav>
 
-  <!-- Fanatics-Style Floating Dock (Ligas Oficiales Nav) -->
-  <section style="background: #0d0d0f; border-bottom: 1px solid rgba(250, 204, 21, 0.25); padding: 12px 0; sticky; top: 60px; z-index: 90; backdrop-filter: blur(12px);">
-    <div class="container" style="display: flex; gap: 12px; justify-content: center; align-items: center; overflow-x: auto; padding: 0 12px; -webkit-overflow-scrolling: touch;">
-      <span style="font-size: 10px; font-weight: 900; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; margin-right: 4px;">
-        ⚡ VER PORTAL:
+  <!-- Fanatics-Style Floating Dock (Aligned to left so NFL pill is 100% visible) -->
+  <section style="background: #0d0d0f; border-bottom: 1px solid rgba(250, 204, 21, 0.25); padding: 10px 0; position: sticky; top: 60px; z-index: 90; backdrop-filter: blur(12px);">
+    <div class="container" style="display: flex; gap: 8px; justify-content: flex-start; align-items: center; overflow-x: auto; padding: 0 16px; -webkit-overflow-scrolling: touch;">
+      <span style="font-size: 10px; font-weight: 900; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; margin-right: 4px; flex-shrink: 0;">
+        ⚡ LIGAS:
       </span>
       
       <button onclick="openLeagueHub('nfl')" class="league-dock-chip" id="dock-nfl">
-        <span style="font-size: 16px;">🏈</span> NFL <span class="badge-dot">32</span>
+        <span style="font-size: 14px;">🏈</span> NFL <span class="badge-dot">32</span>
       </button>
 
       <button onclick="openLeagueHub('nba')" class="league-dock-chip" id="dock-nba">
-        <span style="font-size: 16px;">🏀</span> NBA <span class="badge-dot">12</span>
+        <span style="font-size: 14px;">🏀</span> NBA <span class="badge-dot">12</span>
       </button>
 
       <button onclick="openLeagueHub('mlb')" class="league-dock-chip" id="dock-mlb">
-        <span style="font-size: 16px;">⚾</span> MLB <span class="badge-dot">8</span>
+        <span style="font-size: 14px;">⚾</span> MLB <span class="badge-dot">8</span>
       </button>
 
       <button onclick="openLeagueHub('soccer')" class="league-dock-chip" id="dock-soccer">
-        <span style="font-size: 16px;">⚽</span> FÚTBOL <span class="badge-dot">13</span>
+        <span style="font-size: 14px;">⚽</span> FÚTBOL <span class="badge-dot">13</span>
       </button>
 
       <button onclick="openLeagueHub('f1')" class="league-dock-chip" id="dock-f1">
-        <span style="font-size: 16px;">🏎️</span> F1 RACING <span class="badge-dot">5</span>
+        <span style="font-size: 14px;">🏎️</span> F1 RACING <span class="badge-dot">5</span>
       </button>
 
       <button onclick="openDepartmentHub('jerseys')" class="league-dock-chip" id="dock-jerseys">
-        <span style="font-size: 16px;">👕</span> JERSEYS
+        <span style="font-size: 14px;">👕</span> JERSEYS
       </button>
     </div>
   </section>
 
   <!-- DYNAMIC PORTAL CONTAINER (Se renderiza dinámicamente según la liga/departamento activo) -->
-  <div id="dynamicPortalHero" style="margin-bottom: 24px;">
+  <div id="dynamicPortalHero" style="margin-bottom: 20px;">
     <!-- Default General Portal Banner -->
-    <section style="background: radial-gradient(circle at 50% 30%, #242217 0%, #09090b 100%); border-bottom: 1px solid var(--border-gold); padding: 36px 16px; text-align: center;">
-      <div class="container" style="max-width: 900px;">
-        <span style="background: rgba(250, 204, 21, 0.15); border: 1px solid var(--accent-color); color: var(--accent-color); font-size: 11px; font-weight: 900; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 12px;">
+    <section style="background: radial-gradient(circle at 50% 30%, #242217 0%, #09090b 100%); border-bottom: 1px solid var(--border-gold); padding: 24px 16px; text-align: center;">
+      <div class="container" style="max-width: 950px;">
+        <span style="background: rgba(250, 204, 21, 0.15); border: 1px solid var(--accent-color); color: var(--accent-color); font-size: 10px; font-weight: 900; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 8px;">
           ⭐ TIENDA OFICIAL DE UTILERÍA Y EDICIONES DE FANÁTICO 2026
         </span>
-        <h1 style="font-family: var(--font-display); font-size: clamp(26px, 5vw, 44px); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 10px; text-transform: uppercase;">
+        <h1 style="font-family: var(--font-display); font-size: clamp(20px, 4vw, 34px); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 6px; text-transform: uppercase;">
           EQUÍPATE CON LO OFICIAL DE TU <span style="color: var(--accent-color);">EQUIPO FAVORITO</span>
         </h1>
-        <p style="color: #bbb; font-size: 14px; max-width: 650px; margin: 0 auto 20px; line-height: 1.4;">
-          Jerseys oficiales bordados, sudaderas Sideline fleece, gorras New Era 59FIFTY cerradas y ropa exclusiva para caballero y dama.
+        <p style="color: #aaa; font-size: 12px; max-width: 600px; margin: 0 auto 16px; line-height: 1.3;">
+          Jerseys oficiales bordados, sudaderas Sideline fleece, gorras New Era y ropa para caballero y dama.
         </p>
 
-        <!-- Dynamic Department Quick Cards -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 20px;">
-          <div onclick="openDepartmentHub('jerseys')" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
-            <div style="font-size: 28px; margin-bottom: 4px;">👕</div>
-            <div style="font-weight: 800; font-size: 12px; color: #fff;">Jerseys Oficiales</div>
+        <!-- Ultra-Compact Dynamic Rotating Category Cards Grid (4 Cards) -->
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px;" id="catCardsGridDesktop">
+          
+          <!-- Card 1: Jerseys -->
+          <div id="catCardJerseys" class="compact-cat-card" onclick="openDepartmentHub('jerseys')">
+            <div class="compact-cat-overlay">
+              <div class="compact-cat-title">👕 Jerseys Oficiales</div>
+              <div class="compact-cat-subtitle" id="subJerseys">Steelers, América, Real Madrid...</div>
+            </div>
           </div>
 
-          <div onclick="openDepartmentHub('chamarras')" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
-            <div style="font-size: 28px; margin-bottom: 4px;">🧥</div>
-            <div style="font-weight: 800; font-size: 12px; color: #fff;">Sudaderas & Hoodies</div>
+          <!-- Card 2: Sudaderas -->
+          <div id="catCardHoodies" class="compact-cat-card" onclick="openDepartmentHub('chamarras')">
+            <div class="compact-cat-overlay">
+              <div class="compact-cat-title">🧥 Sudaderas & Hoodies</div>
+              <div class="compact-cat-subtitle" id="subHoodies">Red Bull Racing, Cowboys Fleece...</div>
+            </div>
           </div>
 
-          <div onclick="openDepartmentHub('gorras')" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
-            <div style="font-size: 28px; margin-bottom: 4px;">🧢</div>
-            <div style="font-weight: 800; font-size: 12px; color: #fff;">Gorras New Era</div>
+          <!-- Card 3: Gorras -->
+          <div id="catCardCaps" class="compact-cat-card" onclick="openDepartmentHub('gorras')">
+            <div class="compact-cat-overlay">
+              <div class="compact-cat-title">🧢 Gorras New Era</div>
+              <div class="compact-cat-subtitle" id="subCaps">Yankees 59FIFTY, Dodgers Snapback...</div>
+            </div>
           </div>
 
-          <div onclick="setGenderFilter('dama', this)" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
-            <div style="font-size: 28px; margin-bottom: 4px;">👩</div>
-            <div style="font-weight: 800; font-size: 12px; color: #fff;">Colección Dama</div>
+          <!-- Card 4: Dama -->
+          <div id="catCardDama" class="compact-cat-card" onclick="setGenderFilter('dama', this)">
+            <div class="compact-cat-overlay">
+              <div class="compact-cat-title">👩 Colección Dama</div>
+              <div class="compact-cat-subtitle" id="subDama">Steelers & Lakers Corte Entallado...</div>
+            </div>
           </div>
+
         </div>
       </div>
     </section>
@@ -271,8 +285,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-  <script src="js/firebase-config.js?v=1400.0"></script>
-  <script src="js/teams.js?v=1400.0"></script>
-  <script src="js/app.js?v=1400.0"></script>
+  <script src="js/firebase-config.js?v=1500.0"></script>
+  <script src="js/teams.js?v=1500.0"></script>
+  <script src="js/app.js?v=1500.0"></script>
 </body>
 </html>
