@@ -121,13 +121,18 @@ const SPORTS_CATALOG = [
         league: "Europeas / UEFA",
         leagueLogo: "https://a.espncdn.com/i/teamlogos/leagues/500/uefa.champions.png",
         teams: [
-          { id: "soc-realmadrid", name: "Real Madrid", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/83.png" },
-          { id: "soc-barcelona", name: "FC Barcelona", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/86.png" },
+          { id: "soc-realmadrid", name: "Real Madrid", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/86.png" },
+          { id: "soc-barcelona", name: "FC Barcelona", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/83.png" },
           { id: "soc-manutd", name: "Manchester United", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/360.png" },
           { id: "soc-mancity", name: "Manchester City", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/382.png" },
+          { id: "soc-liverpool", name: "Liverpool FC", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/364.png" },
+          { id: "soc-chelsea", name: "Chelsea FC", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/363.png" },
+          { id: "soc-arsenal", name: "Arsenal FC", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/359.png" },
           { id: "soc-bayern", name: "Bayern Munich", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/132.png" },
-          { id: "soc-psg", name: "PSG", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/160.png" },
-          { id: "soc-juventus", name: "Juventus", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/111.png" }
+          { id: "soc-psg", name: "Paris Saint-Germain", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/160.png" },
+          { id: "soc-juventus", name: "Juventus", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/111.png" },
+          { id: "soc-inter", name: "Inter de Milán", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/110.png" },
+          { id: "soc-acmilan", name: "AC Milan", logo: "https://a.espncdn.com/i/teamlogos/soccer/500/103.png" }
         ]
       }
     ]
@@ -142,11 +147,11 @@ const SPORTS_CATALOG = [
         league: "Fórmula 1",
         leagueLogo: "https://a.espncdn.com/i/teamlogos/leagues/500/f1.png",
         teams: [
-          { id: "f1-redbull", name: "Red Bull Racing", logo: "assets/catch_sports_logo.png" },
-          { id: "f1-ferrari", name: "Scuderia Ferrari", logo: "assets/catch_sports_logo.png" },
-          { id: "f1-mercedes", name: "Mercedes-AMG Petronas", logo: "assets/catch_sports_logo.png" },
-          { id: "f1-mclaren", name: "McLaren", logo: "assets/catch_sports_logo.png" },
-          { id: "f1-checoperez", name: "Checo Pérez", logo: "assets/catch_sports_logo.png" }
+          { id: "f1-redbull", name: "Red Bull Racing", logo: "https://upload.wikimedia.org/wikipedia/commons/a/aa/Red_Bull_Racing_logo.svg" },
+          { id: "f1-ferrari", name: "Scuderia Ferrari", logo: "https://upload.wikimedia.org/wikipedia/en/d/dc/Scuderia_Ferrari_Logo.svg" },
+          { id: "f1-mercedes", name: "Mercedes-AMG Petronas", logo: "https://upload.wikimedia.org/wikipedia/commons/f/fb/Mercedes_AMG_Petronas_F1_Logo.svg" },
+          { id: "f1-mclaren", name: "McLaren", logo: "https://upload.wikimedia.org/wikipedia/commons/3/30/McLaren_racing_logo.svg" },
+          { id: "f1-checoperez", name: "Checo Pérez", logo: "https://upload.wikimedia.org/wikipedia/commons/a/aa/Red_Bull_Racing_logo.svg" }
         ]
       }
     ]
