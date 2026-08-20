@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Admin - Catch Sports</title>
-  <link rel="stylesheet" href="css/styles.css?v=11.0">
+  <link rel="stylesheet" href="css/styles.css?v=20.0">
   
   <script>
     if ('serviceWorker' in navigator) {
@@ -334,10 +334,17 @@
 
       </div>
       
-      <!-- PRODUCT CARDS LIST -->
+      <!-- PRODUCT CARDS LIST (EMPTY BY DEFAULT IN HTML) -->
       <div id="adminProductList" style="display: flex; flex-direction: column; gap: 8px;">
-        <p class="text-secondary" style="font-size: 12px;">Cargando productos...</p>
+        <div style="padding: 24px; text-align: center; background: rgba(250, 204, 21, 0.04); border: 1px dashed var(--accent-color); border-radius: 12px; margin-top: 8px;">
+          <div style="font-size: 28px; margin-bottom: 6px;">🎯</div>
+          <div style="font-weight: 800; color: var(--accent-color); font-size: 14px;">Selecciona el Deporte en la lista desplegable de arriba</div>
+          <p style="color: #aaa; font-size: 12px; margin-top: 4px; margin-bottom: 0;">
+            Elige Deporte ➔ Liga ➔ Equipo para desplegar los artículos correspondientes.
+          </p>
+        </div>
       </div>
+
     </div>
   </main>
 
@@ -409,8 +416,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   
-  <script src="js/firebase-config.js?v=12.0"></script>
-  <script src="js/teams.js?v=12.0"></script>
-  <script src="js/admin.js?v=12.0"></script>
+  <script src="js/firebase-config.js?v=99.0"></script>
+  <script src="js/teams.js?v=99.0"></script>
+  <script src="js/admin-v2.js?v=99.0"></script>
 </body>
 </html>
