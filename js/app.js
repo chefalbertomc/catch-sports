@@ -848,8 +848,8 @@ function updateStoreHeader() {
             <!-- Clean Header Card: Logo Left + Right Typographic Layout -->
             <div style="background: rgba(20, 18, 12, 0.95); border: 2px solid ${colors.primary}; border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; justify-content: flex-start; gap: 12px; text-align: left; margin-bottom: 8px; box-shadow: 0 4px 16px ${colors.glow};">
               
-              <!-- Large Team Logo Left -->
-              <img src="${tax.teamLogo}" style="width: 58px; height: 58px; object-fit: contain; filter: drop-shadow(0 4px 12px ${colors.glow}); border-radius: 50%; background: #000; padding: 4px; border: 2px solid ${colors.primary}; flex-shrink: 0;" onerror="this.src='assets/catch_sports_logo.png'"/>
+              <!-- Large Team Logo Left (Sin Círculo Amarillo, Ocupa Casi Toda la Altura) -->
+              <img src="${tax.teamLogo}" style="width: 72px; height: 72px; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.9)); flex-shrink: 0;" onerror="this.src='assets/catch_sports_logo.png'"/>
 
               <!-- Right Info Block (Right-Aligned Text: text-align: right) -->
               <div style="display: flex; flex-direction: column; align-items: flex-end; text-align: right; width: 100%;">
