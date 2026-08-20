@@ -516,22 +516,116 @@ function onTeamSelectChange() {
   }
 }
 
-// Filters (Product Type: Jerseys, Sudaderas, Gorras, Dama)
-window.setProductTypeFilter = function(typeKey, btnEl) {
-  activeCategoryFilter = typeKey;
-  
+// INTERACTIVE EXPANDABLE CATEGORY DROPDOWN DRAWER (Muestra artículos destacados para llamar la atención)
+let openCategoryDrawerKey = null;
+
+window.toggleDropdownCategory = function(typeKey, btnEl) {
+  const drawer = document.getElementById('categoryDropdownDrawer');
   const strip = document.getElementById('productTypeFilterStrip');
+
+  // If clicking currently open drawer or 'all', close it
+  if (openCategoryDrawerKey === typeKey || typeKey === 'all') {
+    openCategoryDrawerKey = null;
+    if (drawer) drawer.style.display = 'none';
+    activeCategoryFilter = 'all';
+    
+    if (strip) {
+      strip.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      document.getElementById('btnType-all')?.classList.add('active');
+    }
+
+    updateStoreHeader();
+    renderProducts();
+    return;
+  }
+
+  // Open drawer for typeKey
+  openCategoryDrawerKey = typeKey;
+  activeCategoryFilter = typeKey;
+
+  // Highlight pill
   if (strip) {
     strip.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    const targetBtn = btnEl || document.getElementById(`btnType-${typeKey}`);
+    if (targetBtn) targetBtn.classList.add('active');
   }
-  if (btnEl) btnEl.classList.add('active');
+
+  // Get featured products for this category to catch attention!
+  const products = allProducts && allProducts.length > 0 ? allProducts : [];
+  const baseProducts = products.filter(p => {
+    if (activeTeamFilter !== 'all' && (p.team || '').toLowerCase() !== activeTeamFilter.toLowerCase()) return false;
+    if (activeSportFilter !== 'all') {
+      const tax = typeof getFullTaxonomy !== 'undefined' ? getFullTaxonomy(p.team) : null;
+      if (tax && tax.sportKey !== activeSportFilter) return false;
+    }
+    return true;
+  });
+
+  let categoryItems = baseProducts.filter(p => {
+    if (typeKey === 'jerseys') return p.category === 'jerseys' && p.imageUrl;
+    if (typeKey === 'chamarras') return (p.category === 'chamarras' || p.category === 'sudaderas') && p.imageUrl;
+    if (typeKey === 'gorras') return p.category === 'gorras' && p.imageUrl;
+    if (typeKey === 'dama') return (p.gender === 'dama' || p.category === 'dama') && p.imageUrl;
+    return true;
+  });
+
+  // Fallback if team has no items in specific category yet
+  if (categoryItems.length === 0) {
+    categoryItems = products.filter(p => {
+      if (typeKey === 'jerseys') return p.category === 'jerseys' && p.imageUrl;
+      if (typeKey === 'chamarras') return (p.category === 'chamarras' || p.category === 'sudaderas') && p.imageUrl;
+      if (typeKey === 'gorras') return p.category === 'gorras' && p.imageUrl;
+      if (typeKey === 'dama') return (p.gender === 'dama' || p.category === 'dama') && p.imageUrl;
+      return true;
+    });
+  }
+
+  const featured = categoryItems.slice(0, 3);
+
+  let label = 'JERSEYS OFICIALES DESTACADOS';
+  if (typeKey === 'chamarras') label = 'SUDADERAS & HOODIES FLEECE DESTACADOS';
+  if (typeKey === 'gorras') label = 'GORRAS NEW ERA 59FIFTY DESTACADAS';
+  if (typeKey === 'dama') label = 'COLECCIÓN DAMA DESTACADA';
+
+  if (drawer) {
+    drawer.style.display = 'block';
+    drawer.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-size: 11px; font-weight: 900; color: var(--accent-color); text-transform: uppercase;">
+          🌟 ${label} (MIRA ESTOS MODELOS)
+        </span>
+        <button onclick="toggleDropdownCategory('all')" style="background: none; border: none; color: #888; font-size: 13px; cursor: pointer; font-weight: 800;">✕ Cerrar</button>
+      </div>
+
+      <!-- 3 FEATURED ATTENTION-GRABBING ARTICLES -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+        ${featured.map(item => `
+          <div onclick="openProductDetailModal('${item.id}')" style="background: #09090b; border: 1px solid rgba(250, 204, 21, 0.4); border-radius: 10px; padding: 6px; text-align: center; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+            <img src="${item.imageUrl}" style="width: 100%; height: 80px; object-fit: contain; background: #000; border-radius: 6px; margin-bottom: 4px;" onerror="this.src='assets/catch_sports_logo.png'"/>
+            <div style="font-size: 10px; font-weight: 800; color: #fff; line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 2px;">${item.name}</div>
+            <div style="font-size: 11px; font-weight: 900; color: var(--accent-color);">$${item.price} MXN</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div style="text-align: center; margin-top: 10px;">
+        <button onclick="renderProducts()" class="btn btn-outline" style="font-size: 11px; padding: 4px 12px; border-color: var(--accent-color); color: var(--accent-color);">
+          ⚡ Ver los ${categoryItems.length} artículos en la lista de abajo ↓
+        </button>
+      </div>
+    `;
+  }
 
   updateStoreHeader();
   renderProducts();
 };
 
+window.setProductTypeFilter = function(typeKey, btnEl) {
+  toggleDropdownCategory(typeKey, btnEl);
+};
+
 window.setGenderFilter = function(genderKey, btnEl) {
-  setProductTypeFilter(genderKey, btnEl);
+  toggleDropdownCategory(genderKey, btnEl);
 };
 
 // DYNAMIC COMPACT ROTATING REAL FIRESTORE PRODUCT PHOTOS SLIDESHOW ENGINE

@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Catch Sports — Tienda Oficial de Deportes & Utilería</title>
-  <link rel="stylesheet" href="css/styles.css?v=2400.0">
+  <link rel="stylesheet" href="css/styles.css?v=2500.0">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,11 +42,24 @@
   </nav>
 
   <!-- ================================================================= -->
-  <!-- SINGLE-LINE EXPANDABLE CASCADING BAR (TOP STICKY BAR INTEGRADA)    -->
+  <!-- SINGLE-LINE EXPANDABLE CASCADING BAR (DEBAJO DEL CARRITO)          -->
   <!-- Deporte ➔ Ligas ➔ Equipos + Buscador Integrado                    -->
   <!-- ================================================================= -->
-  <div class="mobile-league-scroll-bar" id="singleLineCascadingBar" style="position: sticky; top: 60px; z-index: 90; background: #0a0a0c; min-height: 44px;">
-    <!-- Injected dynamically via JS -->
+  <div style="position: sticky; top: 60px; z-index: 90; background: #0a0a0c; border-bottom: 1px solid rgba(250, 204, 21, 0.2);">
+    
+    <!-- 1. Cascading Sports / Leagues / Teams Line -->
+    <div class="mobile-league-scroll-bar" id="singleLineCascadingBar" style="min-height: 40px; padding-bottom: 4px;">
+      <!-- Injected dynamically via JS -->
+    </div>
+
+    <!-- 2. Integrated Search Bar (Píldora Buscador justo debajo del Carrito) -->
+    <div style="padding: 4px 8px 8px;">
+      <div class="search-box" style="margin: 0;">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" style="padding: 8px 12px 8px 36px; font-size: 12px; border-radius: 20px; background: #141418; border-color: #333;" placeholder="Buscar producto, equipo o jugador... (ej. Steelers, Jersey, Gorra)">
+      </div>
+    </div>
+
   </div>
 
   <!-- DYNAMIC PORTAL HERO BANNER -->
@@ -89,7 +102,7 @@
           </div>
 
           <!-- Card 4: Dama -->
-          <div id="catCardDama" class="compact-cat-card" onclick="setProductTypeFilter('dama', this)">
+          <div id="catCardDama" class="compact-cat-card" onclick="toggleDropdownCategory('dama')">
             <div class="compact-cat-overlay">
               <div class="compact-cat-title">👩 Colección Dama</div>
               <div class="compact-cat-subtitle" id="subDama">Cargando prendas dama...</div>
@@ -104,22 +117,21 @@
   <!-- Main Content -->
   <main class="container" style="max-width: 1000px; padding: 0 8px;">
 
-    <!-- SEARCH & PRODUCT TYPE FILTER STRIP ("FILTRAR POR TIPO: JERSEYS, SUDADERAS, GORRAS, DAMA") -->
+    <!-- PRODUCT TYPE DROPDOWN FILTER STRIP (BOTONES DESPLEGABLES CON ARTÍCULOS DESTACADOS) -->
     <div style="margin: 8px 0 12px;">
       
-      <!-- Compact Top Search Bar -->
-      <div class="search-box" style="margin-bottom: 8px;">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="Buscar artículo, modelo o jugador... (ej. Steelers, Jersey, Gorra)">
+      <!-- Interactive Dropdown Category Pills Strip -->
+      <div class="gender-nav-strip" id="productTypeFilterStrip">
+        <button class="filter-pill active" id="btnType-all" onclick="toggleDropdownCategory('all', this)">🔥 TODOS</button>
+        <button class="filter-pill" id="btnType-jerseys" onclick="toggleDropdownCategory('jerseys', this)">👕 JERSEYS ▼</button>
+        <button class="filter-pill" id="btnType-chamarras" onclick="toggleDropdownCategory('chamarras', this)">🧥 SUDADERAS & HOODIES ▼</button>
+        <button class="filter-pill" id="btnType-gorras" onclick="toggleDropdownCategory('gorras', this)">🧢 GORRAS NEW ERA ▼</button>
+        <button class="filter-pill" id="btnType-dama" onclick="toggleDropdownCategory('dama', this)">👩 COLECCIÓN DAMA ▼</button>
       </div>
 
-      <!-- Product Type Filter Pills (Jerseys, Sudaderas, Gorras, Dama) -->
-      <div class="gender-nav-strip" id="productTypeFilterStrip">
-        <button class="filter-pill active" onclick="setProductTypeFilter('all', this)">🔥 TODOS</button>
-        <button class="filter-pill" onclick="setProductTypeFilter('jerseys', this)">👕 JERSEYS</button>
-        <button class="filter-pill" onclick="setProductTypeFilter('chamarras', this)">🧥 SUDADERAS & HOODIES</button>
-        <button class="filter-pill" onclick="setProductTypeFilter('gorras', this)">🧢 GORRAS NEW ERA</button>
-        <button class="filter-pill" onclick="setProductTypeFilter('dama', this)">👩 COLECCIÓN DAMA</button>
+      <!-- DESPLEGABLE CON ARTÍCULOS DESTACADOS QUE LLAMAN LA ATENCIÓN -->
+      <div id="categoryDropdownDrawer" style="display: none; background: #141418; border: 2px solid var(--accent-color); border-radius: 14px; padding: 14px; margin-top: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
+        <!-- Injected dynamically via JS when a category is tapped -->
       </div>
 
     </div>
@@ -216,8 +228,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-  <script src="js/firebase-config.js?v=2400.0"></script>
-  <script src="js/teams.js?v=2400.0"></script>
-  <script src="js/app.js?v=2400.0"></script>
+  <script src="js/firebase-config.js?v=2500.0"></script>
+  <script src="js/teams.js?v=2500.0"></script>
+  <script src="js/app.js?v=2500.0"></script>
 </body>
 </html>
