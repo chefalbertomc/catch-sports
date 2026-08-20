@@ -606,21 +606,7 @@ window.publishAllBulkProducts = async function() {
   }
 };
 
-    setTimeout(() => {
-      if (btnPublish) btnPublish.disabled = false;
-      if (statusEl) statusEl.textContent = '';
-      switchAdminTab('single');
-    }, 2500);
 
-  } catch(e) {
-    console.error('Error in bulk publish:', e);
-    if (statusEl) {
-      statusEl.style.color = '#ff6b6b';
-      statusEl.textContent = '❌ Error al publicar en lote: ' + e.message;
-    }
-    if (btnPublish) btnPublish.disabled = false;
-  }
-};
 
 // Seed Demo Catalog
 window.seedDemoCatalog = async function() {
