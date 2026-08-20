@@ -228,6 +228,17 @@ window.resetWizardToStep1 = function() {
   renderProducts();
 };
 
+window.setCategoryFilterDirect = function(catId) {
+  activeCategoryFilter = catId;
+  activeTeamFilter = 'all';
+  activeSportFilter = 'all';
+  activeGenderFilter = 'all';
+  
+  updateStoreHeader();
+  renderProducts();
+  document.getElementById('catalogToolbar')?.scrollIntoView({ behavior: 'smooth' });
+};
+
 window.showAllProductsDirectly = function() {
   activeTeamFilter = 'all';
   activeSportFilter = 'all';
