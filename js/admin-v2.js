@@ -79,8 +79,8 @@ if (btnLogout) {
   });
 }
 
-// Switch Tabs
-window.switchAdminTab = function(tabName) {
+// Switch Tabs with History PushState & Phone Back Button Interception
+window.switchAdminTab = function(tabName, skipPushHistory = false) {
   const manageCard = document.getElementById('manageSection');
   const singleCard = document.getElementById('singleUploadCard');
   const bulkCard = document.getElementById('bulkUploadCard');
@@ -88,6 +88,10 @@ window.switchAdminTab = function(tabName) {
   const manageBtn = document.getElementById('tabManageBtn');
   const singleBtn = document.getElementById('tabSingleBtn');
   const bulkBtn = document.getElementById('tabBulkBtn');
+
+  if (!skipPushHistory && history.pushState) {
+    history.pushState({ adminTab: tabName }, '', `#tab-${tabName}`);
+  }
 
   if (tabName === 'manage') {
     if (manageCard) manageCard.style.display = 'block';
@@ -112,6 +116,15 @@ window.switchAdminTab = function(tabName) {
     if (bulkBtn) bulkBtn.className = 'btn active';
   }
 };
+
+// Intercept Physical Phone / Browser Back Button to stay inside Admin
+window.addEventListener('popstate', (e) => {
+  if (e.state && e.state.adminTab) {
+    switchAdminTab(e.state.adminTab, true);
+  } else {
+    switchAdminTab('manage', true);
+  }
+});
 
 // Populate Admin Cascading Select Inputs (Deporte > Liga > Equipo)
 function initAdminForm() {
