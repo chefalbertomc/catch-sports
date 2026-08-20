@@ -6,8 +6,8 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>Catch Sports — Tienda Oficial de Deportes</title>
-  <link rel="stylesheet" href="css/styles.css?v=1300.0">
+  <title>Catch Sports — Tienda Oficial de Deportes & Utilería</title>
+  <link rel="stylesheet" href="css/styles.css?v=1400.0">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,7 +29,11 @@
       <div class="logo-text">CATCH <span>SPORTS</span></div>
     </a>
 
-    <div class="nav-actions">
+    <!-- Sticky Navigation Quick Access -->
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <button onclick="showAllProductsDirectly()" class="btn btn-outline" style="font-size: 11px; padding: 6px 12px; border-color: var(--accent-color); color: var(--accent-color);">
+        🏠 Inicio
+      </button>
       <button class="cart-btn" onclick="toggleCartDrawer()">
         🛒 Carrito <span id="cartBadge" class="cart-badge">0</span>
       </button>
@@ -37,115 +41,82 @@
     </div>
   </nav>
 
-  <!-- Fanatics-Style Official Leagues Quick Circle Bar ("Shop By League") -->
-  <section style="background: #111; border-bottom: 1px solid rgba(250, 204, 21, 0.2); padding: 14px 0; overflow-x: auto; -webkit-overflow-scrolling: touch;">
-    <div class="container" style="display: flex; gap: 16px; justify-content: center; align-items: center; min-width: max-content; padding: 0 16px;">
-      <span style="font-size: 11px; font-weight: 900; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; margin-right: 4px;">
-        🎯 LIGAS OFICIALES:
+  <!-- Fanatics-Style Floating Dock (Ligas Oficiales Nav) -->
+  <section style="background: #0d0d0f; border-bottom: 1px solid rgba(250, 204, 21, 0.25); padding: 12px 0; sticky; top: 60px; z-index: 90; backdrop-filter: blur(12px);">
+    <div class="container" style="display: flex; gap: 12px; justify-content: center; align-items: center; overflow-x: auto; padding: 0 12px; -webkit-overflow-scrolling: touch;">
+      <span style="font-size: 10px; font-weight: 900; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; margin-right: 4px;">
+        ⚡ VER PORTAL:
       </span>
       
-      <div onclick="selectWizardSport('nfl')" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px;">
-        <div style="width: 48px; height: 48px; border-radius: 50%; background: #1c1c1c; border: 2px solid var(--accent-color); display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 0 10px rgba(250, 204, 21, 0.2);">
-          🏈
-        </div>
-        <span style="font-size: 11px; font-weight: 800; color: #fff;">NFL</span>
-      </div>
+      <button onclick="openLeagueHub('nfl')" class="league-dock-chip" id="dock-nfl">
+        <span style="font-size: 16px;">🏈</span> NFL <span class="badge-dot">32</span>
+      </button>
 
-      <div onclick="selectWizardSport('nba')" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px;">
-        <div style="width: 48px; height: 48px; border-radius: 50%; background: #1c1c1c; border: 2px solid #38bdf8; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-          🏀
-        </div>
-        <span style="font-size: 11px; font-weight: 800; color: #fff;">NBA</span>
-      </div>
+      <button onclick="openLeagueHub('nba')" class="league-dock-chip" id="dock-nba">
+        <span style="font-size: 16px;">🏀</span> NBA <span class="badge-dot">12</span>
+      </button>
 
-      <div onclick="selectWizardSport('mlb')" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px;">
-        <div style="width: 48px; height: 48px; border-radius: 50%; background: #1c1c1c; border: 2px solid #ef4444; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-          ⚾
-        </div>
-        <span style="font-size: 11px; font-weight: 800; color: #fff;">MLB</span>
-      </div>
+      <button onclick="openLeagueHub('mlb')" class="league-dock-chip" id="dock-mlb">
+        <span style="font-size: 16px;">⚾</span> MLB <span class="badge-dot">8</span>
+      </button>
 
-      <div onclick="selectWizardSport('soccer')" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px;">
-        <div style="width: 48px; height: 48px; border-radius: 50%; background: #1c1c1c; border: 2px solid #22c55e; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-          ⚽
-        </div>
-        <span style="font-size: 11px; font-weight: 800; color: #fff;">FÚTBOL</span>
-      </div>
+      <button onclick="openLeagueHub('soccer')" class="league-dock-chip" id="dock-soccer">
+        <span style="font-size: 16px;">⚽</span> FÚTBOL <span class="badge-dot">13</span>
+      </button>
 
-      <div onclick="selectWizardSport('f1')" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px;">
-        <div style="width: 48px; height: 48px; border-radius: 50%; background: #1c1c1c; border: 2px solid #a855f7; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-          🏎️
-        </div>
-        <span style="font-size: 11px; font-weight: 800; color: #fff;">F1</span>
-      </div>
+      <button onclick="openLeagueHub('f1')" class="league-dock-chip" id="dock-f1">
+        <span style="font-size: 16px;">🏎️</span> F1 RACING <span class="badge-dot">5</span>
+      </button>
 
-      <div onclick="selectWizardSport('general')" style="display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px;">
-        <div style="width: 48px; height: 48px; border-radius: 50%; background: #1c1c1c; border: 2px solid #aaa; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-          🎒
-        </div>
-        <span style="font-size: 11px; font-weight: 800; color: #fff;">GEAR</span>
-      </div>
+      <button onclick="openDepartmentHub('jerseys')" class="league-dock-chip" id="dock-jerseys">
+        <span style="font-size: 16px;">👕</span> JERSEYS
+      </button>
     </div>
   </section>
 
-  <!-- Fanatics-Style Visual Hero Billboard ("Hot Market Showcase") -->
-  <section style="background: radial-gradient(circle at 50% 30%, #242217 0%, #09090b 100%); border-bottom: 1px solid var(--border-gold); padding: 32px 16px; margin-bottom: 24px;">
-    <div class="container" style="max-width: 1000px; text-align: center;">
-      <span style="background: rgba(250, 204, 21, 0.15); border: 1px solid var(--accent-color); color: var(--accent-color); font-size: 11px; font-weight: 900; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 12px;">
-        ⭐ TIENDA OFICIAL DE UTILERÍA Y EDICIONES DE FANÁTICO 2026
-      </span>
-      <h1 style="font-family: var(--font-display); font-size: clamp(26px, 5vw, 42px); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 10px; text-transform: uppercase;">
-        EQUÍPATE CON LO OFICIAL DE TU <span style="color: var(--accent-color);">EQUIPO FAVORITO</span>
-      </h1>
-      <p style="color: #bbb; font-size: 14px; max-width: 650px; margin: 0 auto 20px; line-height: 1.4;">
-        Jerseys oficiales bordados, sudaderas Sideline fleece, gorras New Era 59FIFTY cerradas y ropa exclusiva para caballero y dama.
-      </p>
+  <!-- DYNAMIC PORTAL CONTAINER (Se renderiza dinámicamente según la liga/departamento activo) -->
+  <div id="dynamicPortalHero" style="margin-bottom: 24px;">
+    <!-- Default General Portal Banner -->
+    <section style="background: radial-gradient(circle at 50% 30%, #242217 0%, #09090b 100%); border-bottom: 1px solid var(--border-gold); padding: 36px 16px; text-align: center;">
+      <div class="container" style="max-width: 900px;">
+        <span style="background: rgba(250, 204, 21, 0.15); border: 1px solid var(--accent-color); color: var(--accent-color); font-size: 11px; font-weight: 900; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 12px;">
+          ⭐ TIENDA OFICIAL DE UTILERÍA Y EDICIONES DE FANÁTICO 2026
+        </span>
+        <h1 style="font-family: var(--font-display); font-size: clamp(26px, 5vw, 44px); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 10px; text-transform: uppercase;">
+          EQUÍPATE CON LO OFICIAL DE TU <span style="color: var(--accent-color);">EQUIPO FAVORITO</span>
+        </h1>
+        <p style="color: #bbb; font-size: 14px; max-width: 650px; margin: 0 auto 20px; line-height: 1.4;">
+          Jerseys oficiales bordados, sudaderas Sideline fleece, gorras New Era 59FIFTY cerradas y ropa exclusiva para caballero y dama.
+        </p>
 
-      <!-- Quick Action Chips (Fanatics Style) -->
-      <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-        <button onclick="selectWizardSport('nfl')" class="btn" style="padding: 10px 18px; font-size: 12px; font-weight: 800;">🏈 SHOP NFL GEAR</button>
-        <button onclick="setCategoryFilterDirect('chamarras')" class="btn btn-outline" style="padding: 10px 18px; font-size: 12px; border-color: var(--accent-color); color: var(--accent-color);">🧥 SUDADERA & HOODIES</button>
-        <button onclick="setCategoryFilterDirect('gorras')" class="btn btn-outline" style="padding: 10px 18px; font-size: 12px; border-color: #38bdf8; color: #38bdf8;">🧢 GORRAS NEW ERA</button>
+        <!-- Dynamic Department Quick Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 20px;">
+          <div onclick="openDepartmentHub('jerseys')" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
+            <div style="font-size: 28px; margin-bottom: 4px;">👕</div>
+            <div style="font-weight: 800; font-size: 12px; color: #fff;">Jerseys Oficiales</div>
+          </div>
+
+          <div onclick="openDepartmentHub('chamarras')" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
+            <div style="font-size: 28px; margin-bottom: 4px;">🧥</div>
+            <div style="font-weight: 800; font-size: 12px; color: #fff;">Sudaderas & Hoodies</div>
+          </div>
+
+          <div onclick="openDepartmentHub('gorras')" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
+            <div style="font-size: 28px; margin-bottom: 4px;">🧢</div>
+            <div style="font-weight: 800; font-size: 12px; color: #fff;">Gorras New Era</div>
+          </div>
+
+          <div onclick="setGenderFilter('dama', this)" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
+            <div style="font-size: 28px; margin-bottom: 4px;">👩</div>
+            <div style="font-weight: 800; font-size: 12px; color: #fff;">Colección Dama</div>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <!-- Main Content -->
   <main class="container" style="max-width: 1000px; padding: 0 12px;">
-    
-    <!-- Fanatics Department Tiles ("Comprar por Departamento") -->
-    <section style="margin-bottom: 24px;">
-      <div style="font-size: 13px; font-weight: 900; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; text-align: center;">
-        🏷️ EXPLORAR POR DEPARTAMENTO
-      </div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
-        
-        <div onclick="setCategoryFilterDirect('jerseys')" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
-          <div style="font-size: 32px; margin-bottom: 4px;">👕</div>
-          <div style="font-weight: 800; font-size: 13px; color: #fff;">Jerseys Oficiales</div>
-          <div style="font-size: 10px; color: #aaa; margin-top: 2px;">Home, Away & Alternate</div>
-        </div>
-
-        <div onclick="setCategoryFilterDirect('chamarras')" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
-          <div style="font-size: 32px; margin-bottom: 4px;">🧥</div>
-          <div style="font-weight: 800; font-size: 13px; color: #fff;">Sudaderas & Hoodies</div>
-          <div style="font-size: 10px; color: #aaa; margin-top: 2px;">Colección Sideline Fleece</div>
-        </div>
-
-        <div onclick="setCategoryFilterDirect('gorras')" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
-          <div style="font-size: 32px; margin-bottom: 4px;">🧢</div>
-          <div style="font-weight: 800; font-size: 13px; color: #fff;">Gorras New Era</div>
-          <div style="font-size: 10px; color: #aaa; margin-top: 2px;">59FIFTY & 9FIFTY Snapback</div>
-        </div>
-
-        <div onclick="setGenderFilter('dama', this)" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
-          <div style="font-size: 32px; margin-bottom: 4px;">👩</div>
-          <div style="font-weight: 800; font-size: 13px; color: #fff;">Colección Dama</div>
-          <div style="font-size: 10px; color: #aaa; margin-top: 2px;">Corte Entallado Deportivo</div>
-        </div>
-
-      </div>
-    </section>
 
     <!-- SECUENCIA GUIADA OBLIGATORIA (DEPORTE > LIGA > EQUIPO) -->
     <section class="wizard-container" id="flowWizardContainer" style="border: 2px solid var(--accent-color); border-radius: 16px; padding: 20px; background: rgba(250, 204, 21, 0.03); margin-bottom: 24px;">
@@ -300,8 +271,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-  <script src="js/firebase-config.js?v=1300.0"></script>
-  <script src="js/teams.js?v=1300.0"></script>
-  <script src="js/app.js?v=1300.0"></script>
+  <script src="js/firebase-config.js?v=1400.0"></script>
+  <script src="js/teams.js?v=1400.0"></script>
+  <script src="js/app.js?v=1400.0"></script>
 </body>
 </html>

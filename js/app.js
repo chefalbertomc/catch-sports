@@ -228,15 +228,120 @@ window.resetWizardToStep1 = function() {
   renderProducts();
 };
 
-window.setCategoryFilterDirect = function(catId) {
-  activeCategoryFilter = catId;
+// DYNAMIC LEAGUE HUB PORTAL ROUTER SYSTEM
+window.openLeagueHub = function(sportKey) {
+  activeSportFilter = sportKey;
   activeTeamFilter = 'all';
-  activeSportFilter = 'all';
+  activeCategoryFilter = 'all';
   activeGenderFilter = 'all';
+
+  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+  const sportObj = catalog.find(s => s.sportKey === sportKey);
   
+  if (!sportObj) return;
+
+  wizardSportObj = sportObj;
+  wizardLeagueObj = sportObj.leagues[0] || null;
+  wizardTeamObj = null;
+  currentWizardStep = 3;
+
+  // Highlight dock pill
+  document.querySelectorAll('.league-dock-chip').forEach(c => c.classList.remove('active'));
+  document.getElementById(`dock-${sportKey}`)?.classList.add('active');
+
+  // Render Dynamic Full-Page Hero Portal Header
+  const heroContainer = document.getElementById('dynamicPortalHero');
+  if (heroContainer) {
+    const teamsList = sportObj.leagues.flatMap(l => l.teams);
+    
+    heroContainer.innerHTML = `
+      <section style="background: radial-gradient(circle at 50% 30%, #201d16 0%, #09090b 100%); border-bottom: 2px solid var(--accent-color); padding: 32px 16px;">
+        <div class="container" style="max-width: 950px; text-align: center;">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+            <button onclick="showAllProductsDirectly()" class="btn btn-outline" style="font-size: 11px; padding: 6px 14px;">
+              ← Volver al Portal Principal
+            </button>
+            <span style="font-size: 11px; font-weight: 900; color: var(--accent-color); text-transform: uppercase;">
+              ${sportObj.icon} PORTAL OFICIAL DE ${sportObj.sport.toUpperCase()}
+            </span>
+          </div>
+
+          <h1 style="font-family: var(--font-display); font-size: clamp(24px, 4.5vw, 38px); font-weight: 900; color: #fff; text-transform: uppercase; margin-bottom: 8px;">
+            PORTAL OFICIAL <span style="color: var(--accent-color);">${sportObj.sport.toUpperCase()}</span> (${teamsList.length} EQUIPOS)
+          </h1>
+          <p style="color: #aaa; font-size: 13px; margin-bottom: 20px;">
+            Selecciona tu franquicia favorita de ${sportObj.sport} o explora toda la colección de utilería y fanáticos.
+          </p>
+
+          <!-- Quick Team Badge Selector Strip -->
+          <div style="display: flex; gap: 10px; overflow-x: auto; padding: 8px 0; -webkit-overflow-scrolling: touch; justify-content: flex-start; max-width: 100%;">
+            ${teamsList.map(t => `
+              <div onclick="selectWizardTeam('${t.id}')" style="background: #141414; border: 1px solid #333; border-radius: 10px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; white-space: nowrap; flex-shrink: 0;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#333'">
+                <img src="${t.logo}" style="width: 24px; height: 24px; object-fit: contain;" onerror="this.src='assets/catch_sports_logo.png'"/>
+                <span style="font-size: 11px; font-weight: 800; color: #fff;">${t.name}</span>
+              </div>
+            `).join('')}
+          </div>
+
+        </div>
+      </section>
+    `;
+  }
+
+  renderWizardStep();
   updateStoreHeader();
   renderProducts();
-  document.getElementById('catalogToolbar')?.scrollIntoView({ behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.openDepartmentHub = function(categoryKey) {
+  activeCategoryFilter = categoryKey;
+  activeSportFilter = 'all';
+  activeTeamFilter = 'all';
+  activeGenderFilter = 'all';
+
+  document.querySelectorAll('.league-dock-chip').forEach(c => c.classList.remove('active'));
+  document.getElementById(`dock-${categoryKey}`)?.classList.add('active');
+
+  let title = 'JERSEYS OFICIALES DE UTILERÍA';
+  let icon = '👕';
+  if (categoryKey === 'chamarras') { title = 'SUDADERAS & HOODIES FLEECE'; icon = '🧥'; }
+  if (categoryKey === 'gorras') { title = 'GORRAS NEW ERA 59FIFTY & 9FIFTY'; icon = '🧢'; }
+
+  const heroContainer = document.getElementById('dynamicPortalHero');
+  if (heroContainer) {
+    heroContainer.innerHTML = `
+      <section style="background: radial-gradient(circle at 50% 30%, #201d16 0%, #09090b 100%); border-bottom: 2px solid var(--accent-color); padding: 32px 16px;">
+        <div class="container" style="max-width: 950px; text-align: center;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+            <button onclick="showAllProductsDirectly()" class="btn btn-outline" style="font-size: 11px; padding: 6px 14px;">
+              ← Volver al Portal Principal
+            </button>
+            <span style="font-size: 11px; font-weight: 900; color: var(--accent-color); text-transform: uppercase;">
+              ${icon} DEPARTAMENTO ESPECIALIZADO
+            </span>
+          </div>
+
+          <h1 style="font-family: var(--font-display); font-size: clamp(24px, 4.5vw, 36px); font-weight: 900; color: #fff; text-transform: uppercase; margin-bottom: 8px;">
+            COLECCIÓN <span style="color: var(--accent-color);">${title}</span>
+          </h1>
+          <p style="color: #aaa; font-size: 13px;">
+            Encuentra todas las ediciones de ${title.toLowerCase()} clasificadas por equipo y talla.
+          </p>
+        </div>
+      </section>
+    `;
+  }
+
+  renderWizardStep();
+  updateStoreHeader();
+  renderProducts();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.setCategoryFilterDirect = function(catId) {
+  openDepartmentHub(catId);
 };
 
 window.showAllProductsDirectly = function() {
@@ -244,12 +349,61 @@ window.showAllProductsDirectly = function() {
   activeSportFilter = 'all';
   activeCategoryFilter = 'all';
   activeGenderFilter = 'all';
+  wizardSportObj = null;
+  wizardLeagueObj = null;
+  wizardTeamObj = null;
+  currentWizardStep = 1;
   if (teamFilterSelect) teamFilterSelect.value = 'all';
   
+  document.querySelectorAll('.league-dock-chip').forEach(c => c.classList.remove('active'));
   document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+
+  // Reset General Portal Banner
+  const heroContainer = document.getElementById('dynamicPortalHero');
+  if (heroContainer) {
+    heroContainer.innerHTML = `
+      <section style="background: radial-gradient(circle at 50% 30%, #242217 0%, #09090b 100%); border-bottom: 1px solid var(--border-gold); padding: 36px 16px; text-align: center;">
+        <div class="container" style="max-width: 900px;">
+          <span style="background: rgba(250, 204, 21, 0.15); border: 1px solid var(--accent-color); color: var(--accent-color); font-size: 11px; font-weight: 900; padding: 4px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 12px;">
+            ⭐ TIENDA OFICIAL DE UTILERÍA Y EDICIONES DE FANÁTICO 2026
+          </span>
+          <h1 style="font-family: var(--font-display); font-size: clamp(26px, 5vw, 44px); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 10px; text-transform: uppercase;">
+            EQUÍPATE CON LO OFICIAL DE TU <span style="color: var(--accent-color);">EQUIPO FAVORITO</span>
+          </h1>
+          <p style="color: #bbb; font-size: 14px; max-width: 650px; margin: 0 auto 20px; line-height: 1.4;">
+            Jerseys oficiales bordados, sudaderas Sideline fleece, gorras New Era 59FIFTY cerradas y ropa exclusiva para caballero y dama.
+          </p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 20px;">
+            <div onclick="openDepartmentHub('jerseys')" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
+              <div style="font-size: 28px; margin-bottom: 4px;">👕</div>
+              <div style="font-weight: 800; font-size: 12px; color: #fff;">Jerseys Oficiales</div>
+            </div>
+
+            <div onclick="openDepartmentHub('chamarras')" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
+              <div style="font-size: 28px; margin-bottom: 4px;">🧥</div>
+              <div style="font-weight: 800; font-size: 12px; color: #fff;">Sudaderas & Hoodies</div>
+            </div>
+
+            <div onclick="openDepartmentHub('gorras')" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
+              <div style="font-size: 28px; margin-bottom: 4px;">🧢</div>
+              <div style="font-weight: 800; font-size: 12px; color: #fff;">Gorras New Era</div>
+            </div>
+
+            <div onclick="setGenderFilter('dama', this)" style="background: #141414; border: 1px solid #282828; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.borderColor='var(--accent-color)'" onmouseout="this.style.borderColor='#282828'">
+              <div style="font-size: 28px; margin-bottom: 4px;">👩</div>
+              <div style="font-weight: 800; font-size: 12px; color: #fff;">Colección Dama</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
+  renderWizardStep();
   updateStoreHeader();
   renderProducts();
-  document.getElementById('catalogToolbar')?.scrollIntoView({ behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 // Setup Team Dropdown Select (Structured by Sport > League > Team)
