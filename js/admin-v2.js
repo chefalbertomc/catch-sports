@@ -119,6 +119,9 @@ window.switchAdminTab = function(tabName, skipPushHistory = false) {
 
 // Intercept Physical Phone / Browser Back Button to stay inside Admin
 window.addEventListener('popstate', (e) => {
+  if (window.history && window.history.pushState) {
+    window.history.pushState({ adminLock: true }, null, window.location.href);
+  }
   if (e.state && e.state.adminTab) {
     switchAdminTab(e.state.adminTab, true);
   } else {

@@ -21,7 +21,10 @@
     // Shield History: Lock back button so it stays in admin.html forever
     (function lockAdminHistory() {
       if (window.history && window.history.pushState) {
+        // Erase index.html from history stack so back button can NEVER return to store
+        window.history.replaceState({ adminLock: true }, null, window.location.href);
         window.history.pushState({ adminLock: true }, null, window.location.href);
+        
         window.addEventListener('popstate', function (e) {
           window.history.pushState({ adminLock: true }, null, window.location.href);
           if (typeof switchAdminTab === 'function') {
@@ -445,8 +448,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   
-  <script src="js/firebase-config.js?v=1100.0"></script>
-  <script src="js/teams.js?v=1100.0"></script>
-  <script src="js/admin-v2.js?v=1100.0"></script>
+  <script src="js/firebase-config.js?v=1200.0"></script>
+  <script src="js/teams.js?v=1200.0"></script>
+  <script src="js/admin-v2.js?v=1200.0"></script>
 </body>
 </html>
