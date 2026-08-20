@@ -608,6 +608,64 @@ function initCategorySlideshowEngine() {
   setInterval(updateCategorySlideshowNow, 3200);
 }
 
+// URL PARAMETER DEEP-LINKING ENGINE (Para credenciales Steelers FanID y enlaces externos)
+function checkUrlDeepLinkParameters() {
+  const params = new URLSearchParams(window.location.search);
+  const teamParam = params.get('team');
+  const sportParam = params.get('sport');
+  const catParam = params.get('category');
+
+  // 1. Direct Team Link (ej. ?team=steelers en Credencial FanID)
+  if (teamParam) {
+    const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+    let foundTeam = null;
+    let foundLeague = null;
+    let foundSport = null;
+
+    for (const s of catalog) {
+      for (const l of s.leagues) {
+        const t = l.teams.find(tm => tm.id.toLowerCase() === teamParam.toLowerCase() || tm.name.toLowerCase().includes(teamParam.toLowerCase()));
+        if (t) {
+          foundTeam = t;
+          foundLeague = l;
+          foundSport = s;
+          break;
+        }
+      }
+      if (foundTeam) break;
+    }
+
+    if (foundTeam) {
+      wizardSportObj = foundSport;
+      wizardLeagueObj = foundLeague;
+      wizardTeamObj = foundTeam;
+      activeSportFilter = foundSport.sportKey;
+      activeTeamFilter = foundTeam.id;
+      cascadingLevel = 3; // Nivel 3 Equipos
+      renderSingleLineCascadingBar();
+      updateStoreHeader();
+      renderProducts();
+      return;
+    }
+  }
+
+  // 2. Direct Sport Link (ej. ?sport=nfl)
+  if (sportParam) {
+    if (typeof onSingleLineSportClick === 'function') {
+      onSingleLineSportClick(sportParam);
+    }
+    return;
+  }
+
+  // 3. Direct Category Link (ej. ?category=jerseys)
+  if (catParam) {
+    if (typeof openDepartmentHub === 'function') {
+      openDepartmentHub(catParam);
+    }
+    return;
+  }
+}
+
 // Search & Selector Initializer
 document.addEventListener('DOMContentLoaded', () => {
   initDOMReferences();
@@ -615,6 +673,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof renderSingleLineCascadingBar === 'function') {
     renderSingleLineCascadingBar();
   }
+  checkUrlDeepLinkParameters();
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       searchQuery = e.target.value.toLowerCase().trim();
