@@ -621,32 +621,84 @@ window.publishAllBulkProducts = async function() {
 
 
 
-// Real High-Quality Apparel Photos for Demo Seed
-const REAL_PRODUCT_PHOTOS = {
-  jerseys: [
-    "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=600&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1580087433295-ab2600c1030e?w=600&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=600&auto=format&fit=crop"
-  ],
-  chamarras: [
-    "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1509967419530-da38b4704bc6?w=600&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop"
-  ],
-  gorras: [
-    "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1521369984125-650286b62777?w=600&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?w=600&auto=format&fit=crop"
-  ],
-  dama: [
-    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&auto=format&fit=crop"
-  ]
-};
+// Dynamic Team Product Canvas Mockup Generator (100% Matching Team & Category)
+function createTeamProductMockupBase64(category, teamName, logoUrl) {
+  return new Promise((resolve) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 500;
+    canvas.height = 500;
+    const ctx = canvas.getContext('2d');
 
-// Seed Demo Catalog Full (EVERY SPORT & EVERY TEAM: REAL APPAREL PHOTOS)
+    // 1. Dark Sleek Sporty Background Gradient
+    const grad = ctx.createRadialGradient(250, 230, 40, 250, 250, 320);
+    grad.addColorStop(0, '#1c1917');
+    grad.addColorStop(1, '#09090b');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 500, 500);
+
+    // Subtle Carbon Fiber Mesh Lines
+    ctx.strokeStyle = 'rgba(250, 204, 21, 0.08)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 500; i += 20) {
+      ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 500); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(500, i); ctx.stroke();
+    }
+
+    // 2. Outer Frame Border
+    ctx.strokeStyle = 'rgba(250, 204, 21, 0.4)';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(12, 12, 476, 476);
+
+    // 3. Top Banner (Product Type)
+    ctx.fillStyle = 'var(--accent-color, #facc15)';
+    ctx.fillRect(12, 12, 476, 42);
+    ctx.fillStyle = '#000000';
+    ctx.font = '900 16px sans-serif';
+    ctx.textAlign = 'center';
+    
+    let typeTag = '👕 JERSEY OFICIAL SIDELINE';
+    if (category === 'chamarras') typeTag = '🧥 SUDADERA / HOODIE SIDELINE';
+    if (category === 'gorras') typeTag = '🧢 GORRA NEW ERA 59FIFTY';
+    if (category === 'dama') typeTag = '👩 JERSEY CORTE DAMA';
+    
+    ctx.fillText(typeTag, 250, 38);
+
+    // 4. Load Team Logo and draw centered
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => {
+      const logoSize = category === 'gorras' ? 180 : 200;
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur = 25;
+      ctx.drawImage(img, (500 - logoSize)/2, (500 - logoSize)/2 - 10, logoSize, logoSize);
+      ctx.shadowBlur = 0;
+
+      // Draw Team Name Footer
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 20px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(teamName.toUpperCase(), 250, 442);
+
+      ctx.fillStyle = 'rgba(250, 204, 21, 0.9)';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText('PRODUCTO OFICIAL DE UTILERÍA · CATCH SPORTS', 250, 466);
+
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.onerror = () => {
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 22px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(teamName.toUpperCase(), 250, 250);
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.src = logoUrl || 'assets/catch_sports_logo.png';
+  });
+}
+
+// Seed Demo Catalog Full (EVERY SPORT & EVERY TEAM: 100% MATCHING FOTOS)
 window.seedDemoCatalogFull = async function() {
-  if (!confirm("🌱 ¿Deseas inyectar el catálogo completo con FOTOS REALES de prendas (Jerseys, Sudaderas, Gorras y Damas) para TODOS los equipos (~250 productos)?")) return;
+  if (!confirm("🌱 ¿Deseas inyectar el catálogo completo de prueba? Se crearán Jerseys, Sudaderas, Gorras y Damas con FOTOS Y LOGOS 100% COINCIDENTES para cada equipo (~250 productos).")) return;
 
   const btnSeed = document.getElementById('tabSeedBtn');
   if (btnSeed) btnSeed.disabled = true;
@@ -654,14 +706,19 @@ window.seedDemoCatalogFull = async function() {
   try {
     const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
     const itemsToInject = [];
-    let pIdx = 0;
 
-    catalog.forEach(sportObj => {
-      sportObj.leagues.forEach(leagueObj => {
-        leagueObj.teams.forEach(teamObj => {
+    for (const sportObj of catalog) {
+      for (const leagueObj of sportObj.leagues) {
+        for (const teamObj of leagueObj.teams) {
+          const logoUrl = teamObj.logo || "assets/catch_sports_logo.png";
           
-          // 1. JERSEY OFICIAL CABALLERO (FOTO REAL DE JERSEY)
-          const jerseyImg = REAL_PRODUCT_PHOTOS.jerseys[pIdx % REAL_PRODUCT_PHOTOS.jerseys.length];
+          // Generate 4 100% matching product photos for this specific team!
+          const jerseyPhoto = await createTeamProductMockupBase64('jerseys', teamObj.name, logoUrl);
+          const hoodiePhoto = await createTeamProductMockupBase64('chamarras', teamObj.name, logoUrl);
+          const capPhoto = await createTeamProductMockupBase64('gorras', teamObj.name, logoUrl);
+          const damaPhoto = await createTeamProductMockupBase64('dama', teamObj.name, logoUrl);
+
+          // 1. JERSEY OFICIAL CABALLERO
           itemsToInject.push({
             name: `Jersey Oficial Home ${teamObj.name}`,
             team: teamObj.id,
@@ -678,12 +735,11 @@ window.seedDemoCatalogFull = async function() {
             ],
             sizes: ["S", "M", "L", "XL"],
             description: `Jersey oficial bordado de utilería Nike/Adidas/Puma de los ${teamObj.name}. Tela de alto rendimiento transpirable.`,
-            imageUrl: jerseyImg,
+            imageUrl: jerseyPhoto,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
 
-          // 2. SUDADERA / HOODIE SIDELINE (FOTO REAL DE SUDADERA)
-          const hoodieImg = REAL_PRODUCT_PHOTOS.chamarras[pIdx % REAL_PRODUCT_PHOTOS.chamarras.length];
+          // 2. SUDADERA / HOODIE SIDELINE
           itemsToInject.push({
             name: `Sudadera / Hoodie Sideline Fleece ${teamObj.name}`,
             team: teamObj.id,
@@ -699,12 +755,11 @@ window.seedDemoCatalogFull = async function() {
             ],
             sizes: ["M", "L", "XL"],
             description: `Chamarra sudadera oficial con gorro y felpa térmica de los ${teamObj.name}. Edición Sideline 2026.`,
-            imageUrl: hoodieImg,
+            imageUrl: hoodiePhoto,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
 
-          // 3. GORRA NEW ERA (FOTO REAL DE GORRA)
-          const capImg = REAL_PRODUCT_PHOTOS.gorras[pIdx % REAL_PRODUCT_PHOTOS.gorras.length];
+          // 3. GORRA NEW ERA
           itemsToInject.push({
             name: `Gorra New Era 59FIFTY Oficial ${teamObj.name}`,
             team: teamObj.id,
@@ -721,12 +776,11 @@ window.seedDemoCatalogFull = async function() {
             ],
             sizes: ["7 1/4", "7 3/8", "7 1/2", "Ajustable"],
             description: `Gorra oficial New Era 59FIFTY/9FIFTY de los ${teamObj.name} con logo bordado en 3D de alta densidad.`,
-            imageUrl: capImg,
+            imageUrl: capPhoto,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
 
-          // 4. JERSEY CORTE DAMA (FOTO REAL DE DAMA)
-          const damaImg = REAL_PRODUCT_PHOTOS.dama[pIdx % REAL_PRODUCT_PHOTOS.dama.length];
+          // 4. JERSEY CORTE DAMA
           itemsToInject.push({
             name: `Jersey Dama Edición Especial ${teamObj.name}`,
             team: teamObj.id,
@@ -743,14 +797,12 @@ window.seedDemoCatalogFull = async function() {
             ],
             sizes: ["XS Dama", "S Dama", "M Dama", "L Dama"],
             description: `Jersey corte especial para dama de los ${teamObj.name}. Ajuste silueta deportiva con cuello en V.`,
-            imageUrl: damaImg,
+            imageUrl: damaPhoto,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
-
-          pIdx++;
-        });
-      });
-    });
+        }
+      }
+    }
 
     // Write in chunks of 40 items in parallel
     const chunkSize = 40;
@@ -768,7 +820,7 @@ window.seedDemoCatalogFull = async function() {
       return batch.commit();
     }));
 
-    alert(`✅ ¡Catálogo inyectado con FOTOS REALES DE PRENDAS! Se crearon ${itemsToInject.length} productos con fotos de Jerseys, Sudaderas, Gorras y prendas de Dama.`);
+    alert(`✅ ¡Catálogo inyectado con FOTOS MOCKUP 100% COINCIDENTES! Se crearon ${itemsToInject.length} productos con fotos personalizadas para cada equipo.`);
     if (btnSeed) btnSeed.disabled = false;
     loadAdminProducts();
 
