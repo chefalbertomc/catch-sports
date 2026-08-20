@@ -229,97 +229,108 @@ window.resetWizardToStep1 = function() {
 };
 
 // =================================================================
-// 3-LEVEL CASCADING VISUAL SELECTOR SYSTEM
+// SINGLE-LINE EXPANDABLE CASCADING SELECTOR SYSTEM
 // LEVEL 1: NOMBRES DE LOS DEPORTES (Fútbol Americano, Básquetbol, Béisbol, Fútbol, F1)
 // LEVEL 2: LOGOS CHIQUITOS DE LAS LIGAS (NFL, NBA, MLB, Liga MX, Europeas)
 // LEVEL 3: LOGOS CHIQUITOS DE LOS EQUIPOS (Steelers, Cowboys, América, Real Madrid)
+// TODO EN LA MISMA LÍNEA CONTINUA SIN OCUPAR ESPACIO VERTICAL
 // =================================================================
 
-window.selectSportLevel = function(sportKey) {
-  activeSportFilter = sportKey;
-  activeTeamFilter = 'all';
-  activeCategoryFilter = 'all';
+let cascadingLevel = 1; // 1: Sports, 2: Leagues, 3: Teams
+
+function renderSingleLineCascadingBar() {
+  const bar = document.getElementById('singleLineCascadingBar');
+  if (!bar) return;
 
   const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
-  const sportObj = catalog.find(s => s.sportKey === sportKey);
-  
-  if (!sportObj) return;
 
-  wizardSportObj = sportObj;
-  wizardLeagueObj = sportObj.leagues[0] || null;
-  wizardTeamObj = null;
-
-  // Highlight Level 1 Pill
-  document.querySelectorAll('.mobile-league-scroll-bar .league-dock-chip').forEach(c => c.classList.remove('active'));
-  document.getElementById(`sport-pill-${sportKey}`)?.classList.add('active');
-
-  // Populate LEVEL 2: LOGOS CHIQUITOS DE LAS LIGAS
-  const leagueContainer = document.getElementById('leagueLevelContainer');
-  if (leagueContainer) {
-    leagueContainer.style.display = 'flex';
-    leagueContainer.innerHTML = `
-      <span style="font-size: 10px; font-weight: 900; color: var(--accent-color); text-transform: uppercase; white-space: nowrap; align-self: center; margin-right: 4px; flex-shrink: 0;">
-        🏆 LIGAS (${sportObj.sport.toUpperCase()}):
+  // LEVEL 1: SHOW SPORTS ON THE SINGLE LINE
+  if (cascadingLevel === 1) {
+    bar.innerHTML = `
+      <span style="font-size: 10px; font-weight: 900; color: var(--accent-color); text-transform: uppercase; white-space: nowrap; align-self: center; margin-right: 2px; flex-shrink: 0;">
+        ⚡ DEPORTE:
       </span>
-      ${sportObj.leagues.map((l, index) => `
-        <div onclick="selectLeagueLevel('${l.league}')" class="league-level-chip ${index === 0 ? 'active' : ''}" id="league-chip-${l.league.replace(/[^a-zA-Z0-9]/g, '-')}" style="background: #1a1a20; border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 16px; padding: 4px 10px; display: flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; font-size: 11px; font-weight: 800; color: #fff; flex-shrink: 0;">
-          <img src="${l.leagueLogo}" style="width: 20px; height: 20px; object-fit: contain;" onerror="this.src='assets/catch_sports_logo.png'"/>
-          <span>${l.league}</span>
-        </div>
+      ${catalog.map(s => `
+        <button onclick="onSingleLineSportClick('${s.sportKey}')" class="league-dock-chip ${wizardSportObj && wizardSportObj.sportKey === s.sportKey ? 'active' : ''}">
+          <span style="font-size: 14px;">${s.icon}</span> ${s.sport}
+        </button>
       `).join('')}
     `;
   }
 
-  // Trigger first league automatically
-  if (sportObj.leagues.length > 0) {
-    selectLeagueLevel(sportObj.leagues[0].league);
-  }
-};
-
-window.selectLeagueLevel = function(leagueName) {
-  if (!wizardSportObj) return;
-
-  wizardLeagueObj = wizardSportObj.leagues.find(l => l.league === leagueName);
-  wizardTeamObj = null;
-
-  // Highlight Level 2 Chip
-  document.querySelectorAll('#leagueLevelContainer .league-level-chip').forEach(c => {
-    c.style.borderColor = 'rgba(250, 204, 21, 0.3)';
-    c.style.background = '#1a1a20';
-    c.style.color = '#fff';
-  });
-  const activeLeagueEl = document.getElementById(`league-chip-${leagueName.replace(/[^a-zA-Z0-9]/g, '-')}`);
-  if (activeLeagueEl) {
-    activeLeagueEl.style.borderColor = 'var(--accent-color)';
-    activeLeagueEl.style.background = 'var(--accent-color)';
-    activeLeagueEl.style.color = '#000';
-  }
-
-  // Populate LEVEL 3: LOGOS CHIQUITOS DE LOS EQUIPOS
-  const teamContainer = document.getElementById('teamLevelContainer');
-  if (teamContainer && wizardLeagueObj) {
-    teamContainer.style.display = 'flex';
-    teamContainer.innerHTML = `
-      <span style="font-size: 10px; font-weight: 900; color: var(--accent-color); text-transform: uppercase; white-space: nowrap; align-self: center; margin-right: 4px; flex-shrink: 0;">
-        🛡️ EQUIPOS (${wizardLeagueObj.league}):
+  // LEVEL 2: SHOW LEAGUES ON THE EXACT SAME SINGLE LINE
+  else if (cascadingLevel === 2 && wizardSportObj) {
+    bar.innerHTML = `
+      <button onclick="goBackSingleLineLevel(1)" class="league-dock-chip" style="background: rgba(250, 204, 21, 0.15); border-color: var(--accent-color); color: var(--accent-color);">
+        ↩️ Deportes
+      </button>
+      <span style="font-size: 10px; font-weight: 900; color: #aaa; text-transform: uppercase; white-space: nowrap; align-self: center; margin-right: 2px; flex-shrink: 0;">
+        🏆 LIGAS:
       </span>
-      <div onclick="selectTeamLevel('all')" class="team-level-chip active" id="team-chip-all" style="background: var(--accent-color); color: #000; border: 1px solid var(--accent-color); border-radius: 16px; padding: 4px 10px; display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; font-size: 11px; font-weight: 800; flex-shrink: 0;">
-        <span>🔥 Todos (${wizardLeagueObj.teams.length})</span>
-      </div>
+      ${wizardSportObj.leagues.map(l => `
+        <button onclick="onSingleLineLeagueClick('${l.league}')" class="league-dock-chip ${wizardLeagueObj && wizardLeagueObj.league === l.league ? 'active' : ''}">
+          <img src="${l.leagueLogo}" style="width: 18px; height: 18px; object-fit: contain;" onerror="this.src='assets/catch_sports_logo.png'"/>
+          ${l.league}
+        </button>
+      `).join('')}
+    `;
+  }
+
+  // LEVEL 3: SHOW TEAMS WITH SMALL LOGOS ON THE EXACT SAME SINGLE LINE
+  else if (cascadingLevel === 3 && wizardLeagueObj) {
+    bar.innerHTML = `
+      <button onclick="goBackSingleLineLevel(2)" class="league-dock-chip" style="background: rgba(250, 204, 21, 0.15); border-color: var(--accent-color); color: var(--accent-color);">
+        ↩️ ${wizardLeagueObj.league}
+      </button>
+      <button onclick="onSingleLineTeamClick('all')" class="league-dock-chip ${activeTeamFilter === 'all' ? 'active' : ''}">
+        🔥 Todos los Equipos
+      </button>
       ${wizardLeagueObj.teams.map(t => `
-        <div onclick="selectTeamLevel('${t.id}')" class="team-level-chip" id="team-chip-${t.id}" style="background: #202026; border: 1px solid #333; border-radius: 16px; padding: 4px 10px; display: flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; font-size: 11px; font-weight: 800; color: #fff; flex-shrink: 0;">
-          <img src="${t.logo}" style="width: 20px; height: 20px; object-fit: contain;" onerror="this.src='assets/catch_sports_logo.png'"/>
-          <span>${t.name}</span>
-        </div>
+        <button onclick="onSingleLineTeamClick('${t.id}')" class="league-dock-chip ${activeTeamFilter === t.id ? 'active' : ''}">
+          <img src="${t.logo}" style="width: 18px; height: 18px; object-fit: contain;" onerror="this.src='assets/catch_sports_logo.png'"/>
+          ${t.name}
+        </button>
       `).join('')}
     `;
   }
 
+  bar.scrollTo({ left: 0, behavior: 'smooth' });
+}
+
+window.onSingleLineSportClick = function(sportKey) {
+  const catalog = window.SPORTS_CATALOG || SPORTS_CATALOG;
+  wizardSportObj = catalog.find(s => s.sportKey === sportKey);
+  wizardLeagueObj = null;
+  wizardTeamObj = null;
+
+  activeSportFilter = sportKey;
+  activeTeamFilter = 'all';
+
+  if (wizardSportObj && wizardSportObj.leagues.length === 1) {
+    wizardLeagueObj = wizardSportObj.leagues[0];
+    cascadingLevel = 3; // Go directly to teams if only 1 league
+  } else {
+    cascadingLevel = 2; // Show leagues
+  }
+
+  renderSingleLineCascadingBar();
   updateStoreHeader();
   renderProducts();
 };
 
-window.selectTeamLevel = function(teamId) {
+window.onSingleLineLeagueClick = function(leagueName) {
+  if (!wizardSportObj) return;
+  wizardLeagueObj = wizardSportObj.leagues.find(l => l.league === leagueName);
+  wizardTeamObj = null;
+
+  cascadingLevel = 3; // Show teams of that league
+
+  renderSingleLineCascadingBar();
+  updateStoreHeader();
+  renderProducts();
+};
+
+window.onSingleLineTeamClick = function(teamId) {
   if (teamId === 'all') {
     activeTeamFilter = 'all';
     wizardTeamObj = null;
@@ -330,19 +341,25 @@ window.selectTeamLevel = function(teamId) {
     }
   }
 
-  // Highlight Level 3 Chip
-  document.querySelectorAll('#teamLevelContainer .team-level-chip').forEach(c => {
-    c.style.borderColor = '#333';
-    c.style.background = '#202026';
-    c.style.color = '#fff';
-  });
-  const activeTeamEl = document.getElementById(`team-chip-${teamId}`);
-  if (activeTeamEl) {
-    activeTeamEl.style.borderColor = 'var(--accent-color)';
-    activeTeamEl.style.background = 'var(--accent-color)';
-    activeTeamEl.style.color = '#000';
+  renderSingleLineCascadingBar();
+  updateStoreHeader();
+  renderProducts();
+};
+
+window.goBackSingleLineLevel = function(targetLevel) {
+  cascadingLevel = targetLevel;
+  if (targetLevel === 1) {
+    wizardSportObj = null;
+    wizardLeagueObj = null;
+    wizardTeamObj = null;
+    activeSportFilter = 'all';
+    activeTeamFilter = 'all';
+  } else if (targetLevel === 2) {
+    wizardTeamObj = null;
+    activeTeamFilter = 'all';
   }
 
+  renderSingleLineCascadingBar();
   updateStoreHeader();
   renderProducts();
 };
@@ -572,8 +589,8 @@ function initCategorySlideshowEngine() {
 document.addEventListener('DOMContentLoaded', () => {
   initDOMReferences();
   initCategorySlideshowEngine();
-  if (typeof selectSportLevel === 'function') {
-    selectSportLevel('nfl');
+  if (typeof renderSingleLineCascadingBar === 'function') {
+    renderSingleLineCascadingBar();
   }
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
