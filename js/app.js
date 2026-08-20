@@ -529,7 +529,7 @@ window.setGenderFilter = function(genderKey, btnEl) {
 // DYNAMIC COMPACT ROTATING REAL FIRESTORE PRODUCT PHOTOS SLIDESHOW ENGINE
 let catSlideIndex = 0;
 
-function initCategorySlideshowEngine() {
+function updateCategorySlideshowNow() {
   const cardJ = document.getElementById('catCardJerseys');
   const cardH = document.getElementById('catCardHoodies');
   const cardC = document.getElementById('catCardCaps');
@@ -542,47 +542,68 @@ function initCategorySlideshowEngine() {
 
   if (!cardJ && !cardH) return;
 
-  function updateSlides() {
-    catSlideIndex++;
-    const products = allProducts && allProducts.length > 0 ? allProducts : [];
-    
-    // Filter real Firestore products for each category
-    const jerseyProds = products.filter(p => p.category === 'jerseys' && p.imageUrl);
-    const hoodieProds = products.filter(p => p.category === 'chamarras' && p.imageUrl);
-    const capProds = products.filter(p => p.category === 'gorras' && p.imageUrl);
-    const damaProds = products.filter(p => (p.gender === 'dama' || p.category === 'dama') && p.imageUrl);
-
-    // 1. Jersey Slide
-    if (jerseyProds.length > 0) {
-      const p = jerseyProds[catSlideIndex % jerseyProds.length];
-      if (cardJ) cardJ.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
-      if (subJ) subJ.textContent = p.name;
+  catSlideIndex++;
+  const products = allProducts && allProducts.length > 0 ? allProducts : [];
+  
+  // Filter base products according to currently selected Sport or Team!
+  const baseProducts = products.filter(p => {
+    if (activeSportFilter !== 'all') {
+      const taxonomy = typeof getFullTaxonomy !== 'undefined' ? getFullTaxonomy(p.team) : null;
+      if (taxonomy && taxonomy.sportKey !== activeSportFilter) return false;
     }
+    if (activeTeamFilter !== 'all' && p.team !== activeTeamFilter) return false;
+    return true;
+  });
 
-    // 2. Hoodie Slide
-    if (hoodieProds.length > 0) {
-      const p = hoodieProds[catSlideIndex % hoodieProds.length];
-      if (cardH) cardH.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
-      if (subH) subH.textContent = p.name;
-    }
+  const jerseyProds = baseProducts.filter(p => p.category === 'jerseys' && p.imageUrl);
+  const hoodieProds = baseProducts.filter(p => p.category === 'chamarras' && p.imageUrl);
+  const capProds = baseProducts.filter(p => p.category === 'gorras' && p.imageUrl);
+  const damaProds = baseProducts.filter(p => (p.gender === 'dama' || p.category === 'dama') && p.imageUrl);
 
-    // 3. Cap Slide
-    if (capProds.length > 0) {
-      const p = capProds[catSlideIndex % capProds.length];
-      if (cardC) cardC.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
-      if (subC) subC.textContent = p.name;
-    }
-
-    // 4. Dama Slide
-    if (damaProds.length > 0) {
-      const p = damaProds[catSlideIndex % damaProds.length];
-      if (cardD) cardD.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
-      if (subD) subD.textContent = p.name;
-    }
+  // 1. Jersey Slide
+  if (jerseyProds.length > 0) {
+    const p = jerseyProds[catSlideIndex % jerseyProds.length];
+    if (cardJ) cardJ.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
+    if (subJ) subJ.textContent = p.name;
+  } else {
+    if (cardJ) cardJ.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(10,10,12,0.9) 100%), url('assets/catch_sports_logo.png')`;
+    if (subJ) subJ.textContent = 'Ver Jerseys...';
   }
 
-  updateSlides();
-  setInterval(updateSlides, 3200);
+  // 2. Hoodie Slide
+  if (hoodieProds.length > 0) {
+    const p = hoodieProds[catSlideIndex % hoodieProds.length];
+    if (cardH) cardH.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
+    if (subH) subH.textContent = p.name;
+  } else {
+    if (cardH) cardH.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(10,10,12,0.9) 100%), url('assets/catch_sports_logo.png')`;
+    if (subH) subH.textContent = 'Ver Sudaderas...';
+  }
+
+  // 3. Cap Slide
+  if (capProds.length > 0) {
+    const p = capProds[catSlideIndex % capProds.length];
+    if (cardC) cardC.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
+    if (subC) subC.textContent = p.name;
+  } else {
+    if (cardC) cardC.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(10,10,12,0.9) 100%), url('assets/catch_sports_logo.png')`;
+    if (subC) subC.textContent = 'Ver Gorras...';
+  }
+
+  // 4. Dama Slide
+  if (damaProds.length > 0) {
+    const p = damaProds[catSlideIndex % damaProds.length];
+    if (cardD) cardD.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,12,0.92) 100%), url('${p.imageUrl}')`;
+    if (subD) subD.textContent = p.name;
+  } else {
+    if (cardD) cardD.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(10,10,12,0.9) 100%), url('assets/catch_sports_logo.png')`;
+    if (subD) subD.textContent = 'Ver Colección Dama...';
+  }
+}
+
+function initCategorySlideshowEngine() {
+  updateCategorySlideshowNow();
+  setInterval(updateCategorySlideshowNow, 3200);
 }
 
 // Search & Selector Initializer
