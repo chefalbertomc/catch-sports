@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Catch Sports — Tienda Oficial de Deportes & Utilería</title>
-  <link rel="stylesheet" href="css/styles.css?v=13000.0">
+  <link rel="stylesheet" href="css/styles.css?v=14000.0">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -75,25 +75,25 @@
 
         <!-- 4 Category Cards -->
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 8px;" id="catCardsGridDesktop">
-          <div id="catCardJerseys" class="compact-cat-card" onclick="openDepartmentHub('jerseys')">
+          <div id="catCardJerseys" class="compact-cat-card" onclick="onCategoryDropdownSelectChange('jerseys')">
             <div class="compact-cat-overlay">
               <div class="compact-cat-title">👕 Jerseys Oficiales</div>
               <div class="compact-cat-subtitle" id="subJerseys">Cargando jerseys...</div>
             </div>
           </div>
-          <div id="catCardHoodies" class="compact-cat-card" onclick="openDepartmentHub('chamarras')">
+          <div id="catCardHoodies" class="compact-cat-card" onclick="onCategoryDropdownSelectChange('chamarras')">
             <div class="compact-cat-overlay">
               <div class="compact-cat-title">🧥 Sudaderas & Hoodies</div>
               <div class="compact-cat-subtitle" id="subHoodies">Cargando sudaderas...</div>
             </div>
           </div>
-          <div id="catCardCaps" class="compact-cat-card" onclick="openDepartmentHub('gorras')">
+          <div id="catCardCaps" class="compact-cat-card" onclick="onCategoryDropdownSelectChange('gorras')">
             <div class="compact-cat-overlay">
               <div class="compact-cat-title">🧢 Gorras New Era</div>
               <div class="compact-cat-subtitle" id="subCaps">Cargando gorras...</div>
             </div>
           </div>
-          <div id="catCardDama" class="compact-cat-card" onclick="toggleDropdownCategory('dama')">
+          <div id="catCardDama" class="compact-cat-card" onclick="onCategoryDropdownSelectChange('dama')">
             <div class="compact-cat-overlay">
               <div class="compact-cat-title">👩 Colección Dama</div>
               <div class="compact-cat-subtitle" id="subDama">Cargando prendas dama...</div>
@@ -108,23 +108,23 @@
   <!-- Main Content -->
   <main class="container" style="max-width: 1000px; padding: 0 8px;">
 
-    <!-- PRODUCT TYPE DROPDOWN FILTER STRIP -->
-    <div style="margin: 6px 0 10px;">
-      
-      <!-- Interactive Dropdown Category Pills Strip -->
-      <div class="gender-nav-strip" id="productTypeFilterStrip">
-        <button class="filter-pill active" id="btnType-all" onclick="toggleDropdownCategory('all', this)">🔥 TODOS</button>
-        <button class="filter-pill" id="btnType-jerseys" onclick="toggleDropdownCategory('jerseys', this)">👕 JERSEYS ▼</button>
-        <button class="filter-pill" id="btnType-chamarras" onclick="toggleDropdownCategory('chamarras', this)">🧥 SUDADERAS & HOODIES ▼</button>
-        <button class="filter-pill" id="btnType-gorras" onclick="toggleDropdownCategory('gorras', this)">🧢 GORRAS NEW ERA ▼</button>
-        <button class="filter-pill" id="btnType-dama" onclick="toggleDropdownCategory('dama', this)">👩 COLECCIÓN DAMA ▼</button>
+    <!-- LISTA DESPLEGABLE ÚNICAMENTE DE TÍTULOS (CATEGORÍAS DE DEPARTAMENTOS) -->
+    <div style="margin: 10px 0 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
+      <label for="categoryDropdownSelect" style="font-family: var(--font-display); font-size: 11px; font-weight: 900; color: var(--accent-color); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;">
+        📂 DEPARTAMENTO / TIPO DE PRODUCTO:
+      </label>
+      <div style="position: relative; width: 100%; max-width: 440px;">
+        <select id="categoryDropdownSelect" onchange="onCategoryDropdownSelectChange(this.value)" style="width: 100%; background: #121216; border: 2px solid var(--accent-color); color: #ffffff; font-family: var(--font-display); font-size: 13px; font-weight: 800; padding: 10px 38px 10px 16px; border-radius: 22px; outline: none; appearance: none; -webkit-appearance: none; cursor: pointer; box-shadow: 0 4px 14px var(--accent-glow); text-transform: uppercase; letter-spacing: 0.5px;">
+          <option value="all">🔥 TODOS LOS PRODUCTOS</option>
+          <option value="jerseys">👕 JERSEYS OFICIALES</option>
+          <option value="chamarras">🧥 SUDADERAS & HOODIES</option>
+          <option value="gorras">🧢 GORRAS NEW ERA</option>
+          <option value="dama">👩 COLECCIÓN DAMA</option>
+          <option value="calzado">👟 CALZADO DEPORTIVO</option>
+          <option value="balones">🏈 BALONES & ACCESORIOS</option>
+        </select>
+        <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--accent-color); font-size: 13px; pointer-events: none;">▼</span>
       </div>
-
-      <!-- DESPLEGABLE CON ARTÍCULOS DESTACADOS QUE LLAMAN LA ATENCIÓN -->
-      <div id="categoryDropdownDrawer" style="display: none; background: #141418; border: 2px solid var(--accent-color); border-radius: 14px; padding: 14px; margin-top: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
-        <!-- Injected dynamically via JS when a category is tapped -->
-      </div>
-
     </div>
 
     <!-- Hidden Team Select (for programatic sync) -->
@@ -206,8 +206,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-  <script src="js/firebase-config.js?v=13000.0"></script>
-  <script src="js/teams.js?v=13000.0"></script>
-  <script src="js/app.js?v=13000.0"></script>
+  <script src="js/firebase-config.js?v=14000.0"></script>
+  <script src="js/teams.js?v=14000.0"></script>
+  <script src="js/app.js?v=14000.0"></script>
 </body>
 </html>
