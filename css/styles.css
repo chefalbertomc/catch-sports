@@ -1000,3 +1000,143 @@ textarea.form-control {
   font-weight: 700;
 }
 
+/* ================================================================= */
+/* 3x3 COMPACT PRODUCT GRID ("9 CUADRITOS COMPACTOS")                */
+/* ================================================================= */
+.products-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding-bottom: 30px;
+}
+
+@media (max-width: 480px) {
+  .products-grid-compact {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+  }
+}
+
+.compact-product-card {
+  background: #121216;
+  border: 1px solid rgba(250, 204, 21, 0.25);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.compact-product-card:hover, .compact-product-card:active {
+  border-color: var(--accent-color);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(250, 204, 21, 0.25);
+}
+
+.compact-prod-img-box {
+  width: 100%;
+  height: 115px;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+}
+
+.compact-prod-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.compact-prod-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: var(--accent-color);
+  color: #000;
+  font-size: 8px;
+  font-weight: 900;
+  padding: 1px 4px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.compact-prod-team-logo {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+}
+
+.compact-prod-info {
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.compact-prod-title {
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.compact-prod-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.compact-prod-price {
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--accent-color);
+}
+
+/* ================================================================= */
+/* FULL-SCREEN PRODUCT DETAIL MODAL ("VENTANA COMPLETA DEL PRODUCTO")*/
+/* ================================================================= */
+.product-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.product-modal-overlay.open {
+  display: flex;
+}
+
+.product-modal-content {
+  background: #141418;
+  border: 2px solid var(--accent-color);
+  border-radius: 18px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 20px;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(250, 204, 21, 0.25);
+  color: #fff;
+}
+

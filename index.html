@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Catch Sports — Tienda Oficial de Deportes & Utilería</title>
-  <link rel="stylesheet" href="css/styles.css?v=1800.0">
+  <link rel="stylesheet" href="css/styles.css?v=2300.0">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,37 +42,33 @@
   </nav>
 
   <!-- ================================================================= -->
-  <!-- SINGLE-LINE EXPANDABLE CASCADING BAR                              -->
-  <!-- Se transforma dinámicamente en esa MISMA LÍNEA:                   -->
+  <!-- SINGLE-LINE EXPANDABLE CASCADING BAR (TOP STICKY BAR)              -->
   <!-- Deporte ➔ Ligas (logos chiquitos) ➔ Equipos (logos chiquitos)     -->
   <!-- ================================================================= -->
   <div class="mobile-league-scroll-bar" id="singleLineCascadingBar" style="position: sticky; top: 60px; z-index: 90; background: #0a0a0c; min-height: 44px;">
     <!-- Injected dynamically via JS -->
   </div>
 
-  <!-- DYNAMIC PORTAL CONTAINER (Se renderiza dinámicamente según la liga/departamento activo) -->
-  <div id="dynamicPortalHero" style="margin-bottom: 20px;">
+  <!-- DYNAMIC PORTAL CONTAINER -->
+  <div id="dynamicPortalHero" style="margin-bottom: 12px;">
     <!-- Default General Portal Banner -->
-    <section style="background: radial-gradient(circle at 50% 30%, #242217 0%, #09090b 100%); border-bottom: 1px solid var(--border-gold); padding: 20px 14px; text-align: center;">
+    <section style="background: radial-gradient(circle at 50% 30%, #242217 0%, #09090b 100%); border-bottom: 1px solid var(--border-gold); padding: 16px 12px; text-align: center;">
       <div class="container" style="max-width: 950px; padding: 0;">
-        <span style="background: rgba(250, 204, 21, 0.15); border: 1px solid var(--accent-color); color: var(--accent-color); font-size: 10px; font-weight: 900; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 6px;">
+        <span style="background: rgba(250, 204, 21, 0.15); border: 1px solid var(--accent-color); color: var(--accent-color); font-size: 10px; font-weight: 900; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 4px;">
           ⭐ TIENDA OFICIAL DE UTILERÍA Y EDICIONES DE FANÁTICO 2026
         </span>
-        <h1 style="font-family: var(--font-display); font-size: clamp(18px, 4vw, 32px); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 4px; text-transform: uppercase;">
+        <h1 style="font-family: var(--font-display); font-size: clamp(16px, 3.8vw, 28px); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 2px; text-transform: uppercase;">
           EQUÍPATE CON LO OFICIAL DE TU <span style="color: var(--accent-color);">EQUIPO FAVORITO</span>
         </h1>
-        <p style="color: #aaa; font-size: 11px; max-width: 600px; margin: 0 auto 12px; line-height: 1.3;">
-          Jerseys oficiales bordados, sudaderas Sideline fleece, gorras New Era y ropa para caballero y dama.
-        </p>
 
         <!-- Ultra-Compact Dynamic Rotating Real Firestore Product Photos Grid (4 Cards) -->
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px;" id="catCardsGridDesktop">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 8px;" id="catCardsGridDesktop">
           
-          <!-- Card 1: Jerseys (Rotates real Firestore product photos!) -->
+          <!-- Card 1: Jerseys -->
           <div id="catCardJerseys" class="compact-cat-card" onclick="openDepartmentHub('jerseys')">
             <div class="compact-cat-overlay">
               <div class="compact-cat-title">👕 Jerseys Oficiales</div>
-              <div class="compact-cat-subtitle" id="subJerseys">Cargando fotos reales de utilería...</div>
+              <div class="compact-cat-subtitle" id="subJerseys">Cargando jerseys...</div>
             </div>
           </div>
 
@@ -80,7 +76,7 @@
           <div id="catCardHoodies" class="compact-cat-card" onclick="openDepartmentHub('chamarras')">
             <div class="compact-cat-overlay">
               <div class="compact-cat-title">🧥 Sudaderas & Hoodies</div>
-              <div class="compact-cat-subtitle" id="subHoodies">Cargando fotos reales Sideline...</div>
+              <div class="compact-cat-subtitle" id="subHoodies">Cargando sudaderas...</div>
             </div>
           </div>
 
@@ -88,7 +84,7 @@
           <div id="catCardCaps" class="compact-cat-card" onclick="openDepartmentHub('gorras')">
             <div class="compact-cat-overlay">
               <div class="compact-cat-title">🧢 Gorras New Era</div>
-              <div class="compact-cat-subtitle" id="subCaps">Cargando fotos 59FIFTY...</div>
+              <div class="compact-cat-subtitle" id="subCaps">Cargando gorras...</div>
             </div>
           </div>
 
@@ -96,7 +92,7 @@
           <div id="catCardDama" class="compact-cat-card" onclick="setGenderFilter('dama', this)">
             <div class="compact-cat-overlay">
               <div class="compact-cat-title">👩 Colección Dama</div>
-              <div class="compact-cat-subtitle" id="subDama">Cargando edicionales dama...</div>
+              <div class="compact-cat-subtitle" id="subDama">Cargando prendas dama...</div>
             </div>
           </div>
 
@@ -106,64 +102,26 @@
   </div>
 
   <!-- Main Content -->
-  <main class="container" style="max-width: 1000px; padding: 0 12px;">
-
-    <!-- SECUENCIA GUIADA OBLIGATORIA (DEPORTE > LIGA > EQUIPO) -->
-    <section class="wizard-container" id="flowWizardContainer" style="border: 2px solid var(--accent-color); border-radius: 16px; padding: 20px; background: rgba(250, 204, 21, 0.03); margin-bottom: 24px;">
-      
-      <!-- Indicator Breadcrumbs Pills -->
-      <div class="wizard-steps-header">
-        <div class="wizard-step-pill active" id="pillStep1" onclick="goToWizardStep(1)">
-          1️⃣ Deporte <span id="selectedSportLabel" style="font-weight: 900; color: #fff;"></span>
-        </div>
-        <span class="wizard-step-arrow">➔</span>
-        <div class="wizard-step-pill" id="pillStep2" onclick="goToWizardStep(2)">
-          2️⃣ Liga <span id="selectedLeagueLabel" style="font-weight: 900; color: #fff;"></span>
-        </div>
-        <span class="wizard-step-arrow">➔</span>
-        <div class="wizard-step-pill" id="pillStep3" onclick="goToWizardStep(3)">
-          3️⃣ Equipo <span id="selectedTeamLabel" style="font-weight: 900; color: #fff;"></span>
-        </div>
-      </div>
-
-      <!-- Step Title & Subtitle -->
-      <h2 class="wizard-title" id="wizardTitle">PASO 1: SELECCIONA EL DEPORTE</h2>
-      <p class="wizard-subtitle" id="wizardSubtitle">Elige la disciplina deportiva para comenzar la búsqueda</p>
-
-      <!-- Step Dynamic Cards Grid -->
-      <div class="wizard-cards-grid" id="wizardCardsGrid">
-        <!-- Visual cards injected via JS -->
-      </div>
-      
-      <!-- Reset/View All Toggle Button -->
-      <div style="text-align: center; margin-top: 16px;">
-        <button class="btn btn-outline" id="btnResetWizard" onclick="resetWizardToStep1()" style="display: none; font-size: 12px; padding: 8px 16px;">
-          🔄 Empezar de nuevo (Cambiar Deporte)
-        </button>
-        <button class="btn btn-outline" id="btnShowAllDirect" onclick="showAllProductsDirectly()" style="font-size: 12px; padding: 8px 16px; margin-left: 8px;">
-          ⚡ Ver Todo el Catálogo Directamente
-        </button>
-      </div>
-    </section>
+  <main class="container" style="max-width: 1000px; padding: 0 8px;">
 
     <!-- Toolbar & Gender Department Selector -->
-    <div id="catalogToolbar" style="display: block;">
+    <div id="catalogToolbar" style="display: block; margin-bottom: 12px;">
       
       <!-- Gender Strip -->
       <div class="gender-nav-strip">
-        <span style="font-size: 12px; font-weight: 800; color: #888; text-transform: uppercase;">DEPARTAMENTO:</span>
+        <span style="font-size: 11px; font-weight: 800; color: #888; text-transform: uppercase;">FILTRAR:</span>
         <button class="filter-pill active" onclick="setGenderFilter('all', this)">🔥 TODOS</button>
         <button class="filter-pill" onclick="setGenderFilter('caballero', this)">👨 CABALLERO</button>
         <button class="filter-pill" onclick="setGenderFilter('dama', this)">👩 DAMA</button>
-        <button class="filter-pill" onclick="setGenderFilter('nino', this)">🧒 NIÑO / INFANTIL</button>
-        <button class="filter-pill" onclick="setGenderFilter('unisex', this)">🧢 UNISEX / GORRAS</button>
+        <button class="filter-pill" onclick="setGenderFilter('nino', this)">🧒 NIÑO</button>
+        <button class="filter-pill" onclick="setGenderFilter('unisex', this)">🧢 GORRAS</button>
       </div>
 
       <!-- Search Box & Direct Select -->
-      <div class="toolbar-container">
+      <div class="toolbar-container" style="margin: 8px 0;">
         <div class="search-box">
           <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" class="search-input" placeholder="Buscar artículo, equipo o modelo... (ej. Steelers, Jersey Caballero, Gorra)">
+          <input type="text" id="searchInput" class="search-input" placeholder="Buscar artículo o equipo... (ej. Steelers, Jersey, Gorra)">
         </div>
         <div class="select-box">
           <select id="teamFilterSelect" class="form-control" onchange="onTeamSelectChange()">
@@ -174,56 +132,65 @@
     </div>
 
     <!-- Section Title Header -->
-    <div class="section-header">
+    <div class="section-header" style="margin-bottom: 10px;">
       <div>
-        <h1 id="storeTitle" class="section-title">CATÁLOGO <span style="color: var(--accent-color);">OFICIAL</span></h1>
-        <p id="storeSubtitle" class="section-subtitle">Artículos deportivos clasificados por Deporte, Liga, Equipo y Departamento</p>
+        <h1 id="storeTitle" class="section-title" style="font-size: 18px;">CATÁLOGO <span style="color: var(--accent-color);">OFICIAL</span></h1>
+        <p id="storeSubtitle" class="section-subtitle" style="font-size: 11px;">Toca cualquier producto para abrir la vista completa en pantalla</p>
       </div>
     </div>
 
     <!-- Loading State -->
     <div id="loader" class="loader-container">
       <div class="spinner"></div>
-      <p style="margin-top: 16px; color: var(--accent-color); font-weight: bold;">Cargando catálogo deportivo en vivo...</p>
+      <p style="margin-top: 16px; color: var(--accent-color); font-weight: bold;">Cargando catálogo en vivo...</p>
     </div>
 
-    <!-- Products Grid -->
-    <div id="productGrid" class="products-grid">
-      <!-- Product Cards dynamically loaded from Firestore -->
+    <!-- 3x3 COMPACT PRODUCT GRID ("9 CUADRITOS COMPACTOS") -->
+    <div id="productGrid" class="products-grid-compact">
+      <!-- 9 Compact Product Cards dynamically loaded from Firestore -->
     </div>
 
     <!-- Fanatics Trust Badges Bar (4 Columns) -->
-    <section style="margin-top: 40px; padding: 24px 16px; background: #111; border: 1px solid #282828; border-radius: 16px;">
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; text-align: center;">
+    <section style="margin-top: 30px; padding: 18px 12px; background: #111; border: 1px solid #282828; border-radius: 14px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; text-align: center;">
         
         <div>
-          <div style="font-size: 28px; margin-bottom: 6px;">🚚</div>
-          <div style="font-weight: 800; font-size: 13px; color: #fff; margin-bottom: 2px;">Envío Rápido a Todo México</div>
-          <p style="font-size: 11px; color: #aaa;">Envíos asegurados por DHL, FedEx y Estafeta.</p>
+          <div style="font-size: 24px; margin-bottom: 4px;">🚚</div>
+          <div style="font-weight: 800; font-size: 12px; color: #fff; margin-bottom: 2px;">Envío Rápido a Todo México</div>
+          <p style="font-size: 10px; color: #aaa;">Envíos asegurados por DHL, FedEx y Estafeta.</p>
         </div>
 
         <div>
-          <div style="font-size: 28px; margin-bottom: 6px;">🛡️</div>
-          <div style="font-weight: 800; font-size: 13px; color: #fff; margin-bottom: 2px;">Utilería 100% Garantizada</div>
-          <p style="font-size: 11px; color: #aaa;">Calidad oficial bordada con acabados de juego.</p>
+          <div style="font-size: 24px; margin-bottom: 4px;">🛡️</div>
+          <div style="font-weight: 800; font-size: 12px; color: #fff; margin-bottom: 2px;">Utilería 100% Garantizada</div>
+          <p style="font-size: 10px; color: #aaa;">Calidad oficial bordada con acabados de juego.</p>
         </div>
 
         <div>
-          <div style="font-size: 28px; margin-bottom: 6px;">📲</div>
-          <div style="font-weight: 800; font-size: 13px; color: #fff; margin-bottom: 2px;">Atención Directa WhatsApp</div>
-          <p style="font-size: 11px; color: #aaa;">Asesoría en vivo al (442) 337-6955 para elegir tu talla.</p>
+          <div style="font-size: 24px; margin-bottom: 4px;">📲</div>
+          <div style="font-weight: 800; font-size: 12px; color: #fff; margin-bottom: 2px;">Atención Directa WhatsApp</div>
+          <p style="font-size: 10px; color: #aaa;">Asesoría en vivo al (442) 337-6955 para elegir tu talla.</p>
         </div>
 
         <div>
-          <div style="font-size: 28px; margin-bottom: 6px;">💳</div>
-          <div style="font-weight: 800; font-size: 13px; color: #fff; margin-bottom: 2px;">Pagos Flexibles</div>
-          <p style="font-size: 11px; color: #aaa;">Depósito en OXXO, Transferencias SPEI y Tarjetas.</p>
+          <div style="font-size: 24px; margin-bottom: 4px;">💳</div>
+          <div style="font-weight: 800; font-size: 12px; color: #fff; margin-bottom: 2px;">Pagos Flexibles</div>
+          <p style="font-size: 10px; color: #aaa;">Depósito en OXXO, SPEI y Tarjetas.</p>
         </div>
 
       </div>
     </section>
 
   </main>
+
+  <!-- ================================================================= -->
+  <!-- FULL-SCREEN PRODUCT DETAIL MODAL ("VENTANA COMPLETA DEL PRODUCTO") -->
+  <!-- ================================================================= -->
+  <div id="productDetailOverlay" class="product-modal-overlay" onclick="closeProductDetailModal()">
+    <div id="productDetailModal" class="product-modal-content" onclick="event.stopPropagation()">
+      <!-- Injected dynamically via JS when a product card is clicked -->
+    </div>
+  </div>
 
   <!-- Slide-Over Shopping Cart Drawer -->
   <div id="cartOverlay" class="cart-overlay" onclick="toggleCartDrawer()"></div>
@@ -249,9 +216,9 @@
   </aside>
 
   <!-- Footer -->
-  <footer style="margin-top: 60px; padding: 40px 0; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 13px;">
+  <footer style="margin-top: 40px; padding: 30px 0; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 12px;">
     <div class="container">
-      <div class="logo-text" style="justify-content: center; margin-bottom: 12px;">CATCH <span>SPORTS</span></div>
+      <div class="logo-text" style="justify-content: center; margin-bottom: 8px;">CATCH <span>SPORTS</span></div>
       <p>© 2026 Catch Sports — Tienda Oficial de Artículos Deportivos de Utilería y Fanáticos.</p>
     </div>
   </footer>
@@ -261,8 +228,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-  <script src="js/firebase-config.js?v=1800.0"></script>
-  <script src="js/teams.js?v=1800.0"></script>
-  <script src="js/app.js?v=1800.0"></script>
+  <script src="js/firebase-config.js?v=2300.0"></script>
+  <script src="js/teams.js?v=2300.0"></script>
+  <script src="js/app.js?v=2300.0"></script>
 </body>
 </html>

@@ -861,7 +861,7 @@ window.addToCartFromCard = function(productId, defaultSize) {
   addToCart(prod, size);
 };
 
-// Filter & Render Products
+// Filter & Render Products (3x3 COMPACT PRODUCT GRID)
 function renderProducts() {
   initDOMReferences();
   if (typeof updateCategorySlideshowNow === 'function') {
@@ -913,11 +913,165 @@ function renderProducts() {
     return;
   }
 
+  // Render 3x3 compact product cards
   filtered.forEach(p => {
-    const card = createProductCard(p, p.id);
+    const card = createCompactProductCard(p, p.id);
     productGrid.appendChild(card);
   });
 }
+
+// =================================================================
+// COMPACT 3x3 PRODUCT GRID & FULL-SCREEN PRODUCT DETAIL MODAL
+// =================================================================
+
+function createCompactProductCard(product, id) {
+  const card = document.createElement('div');
+  card.className = 'compact-product-card';
+  card.onclick = () => openProductDetailModal(id);
+  
+  const tax = typeof getFullTaxonomy !== 'undefined' ? getFullTaxonomy(product.team) : { teamLogo: 'assets/catch_sports_logo.png' };
+  const formattedPrice = typeof formatPrice !== 'undefined' ? formatPrice(product.price) : `$${product.price} MXN`;
+
+  card.innerHTML = `
+    <div class="compact-prod-img-box">
+      <img src="${product.imageUrl}" class="compact-prod-img" onerror="this.src='assets/catch_sports_logo.png'"/>
+      ${tax.teamLogo ? `<img src="${tax.teamLogo}" class="compact-prod-team-logo"/>` : ''}
+      ${product.badge && product.badge !== 'ninguno' ? `<span class="compact-prod-badge">OFICIAL</span>` : ''}
+    </div>
+    <div class="compact-prod-info">
+      <div class="compact-prod-title">${product.name}</div>
+      <div class="compact-prod-price-row">
+        <span class="compact-prod-price">${formattedPrice}</span>
+        <span style="font-size: 9px; color: var(--accent-color); font-weight: 900;">VER ➔</span>
+      </div>
+    </div>
+  `;
+  return card;
+}
+
+window.openProductDetailModal = function(productId) {
+  const product = allProducts.find(p => p.id === productId);
+  if (!product) return;
+
+  const overlay = document.getElementById('productDetailOverlay');
+  const modal = document.getElementById('productDetailModal');
+  if (!overlay || !modal) return;
+
+  const tax = typeof getFullTaxonomy !== 'undefined' ? getFullTaxonomy(product.team) : { sport: 'Deportes', icon: '🏆', league: 'Oficial', team: product.team, teamLogo: 'assets/catch_sports_logo.png' };
+  const formattedPrice = typeof formatPrice !== 'undefined' ? formatPrice(product.price) : `$${product.price} MXN`;
+  const formattedOrig = product.originalPrice ? (typeof formatPrice !== 'undefined' ? formatPrice(product.originalPrice) : `$${product.originalPrice} MXN`) : null;
+
+  const sizeStockMap = product.sizeStockMap || [];
+  const sizes = (sizeStockMap.length > 0) ? sizeStockMap.map(s => s.size) : (product.sizes || ["M", "L"]);
+  const defaultSize = sizes[0] || 'M';
+
+  if (!window.selectedSizesState[productId]) {
+    window.selectedSizesState[productId] = defaultSize;
+  }
+  const currentSize = window.selectedSizesState[productId];
+  const sizeData = sizeStockMap.find(s => s.size === currentSize);
+
+  let immQty = sizeData ? (sizeData.immediateQty || 0) : 'Disponible';
+  let whQty = sizeData ? (sizeData.warehouseQty || 0) : 'Disponible';
+
+  modal.innerHTML = `
+    <button onclick="closeProductDetailModal()" style="position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,0.1); border: 1px solid #444; color: #fff; border-radius: 50%; width: 32px; height: 32px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 20;">✕</button>
+
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+      <img src="${tax.teamLogo}" style="height: 28px; width: 28px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));" onerror="this.src='assets/catch_sports_logo.png'"/>
+      <span style="font-size: 11px; font-weight: 900; color: var(--accent-color); text-transform: uppercase;">
+        ${tax.icon} ${tax.sport} · ${tax.league} · ${tax.team}
+      </span>
+    </div>
+
+    <img src="${product.imageUrl}" style="width: 100%; height: 260px; object-fit: contain; background: #000; border-radius: 12px; border: 1px solid #333; margin-bottom: 14px;" onerror="this.src='assets/catch_sports_logo.png'"/>
+
+    <h2 style="font-size: 20px; font-weight: 900; color: #fff; line-height: 1.2; margin-bottom: 6px;">${product.name}</h2>
+    
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+      <span style="font-size: 24px; font-weight: 900; color: var(--accent-color);">${formattedPrice}</span>
+      ${formattedOrig ? `<span style="font-size: 14px; text-decoration: line-through; color: #777;">${formattedOrig}</span>` : ''}
+      <span style="background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 900;">PRODUCTO OFICIAL VERIFICADO</span>
+    </div>
+
+    <p style="font-size: 12px; color: #aaa; line-height: 1.4; margin-bottom: 16px; background: #0a0a0c; padding: 10px; border-radius: 8px; border: 1px solid #222;">
+      ${product.description || 'Artículo deportivo oficial de utilería bordada y alta resistencia.'}
+    </p>
+
+    <!-- TALLAS Y DISPONIBILIDAD -->
+    <div style="margin-bottom: 16px;">
+      <label style="font-size: 11px; font-weight: 800; color: var(--accent-color); text-transform: uppercase; display: block; margin-bottom: 6px;">
+        1️⃣ SELECCIONA TU TALLA:
+      </label>
+      <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="modalSizesContainer">
+        ${sizes.map(sz => `
+          <button onclick="selectModalSize('${productId}', '${sz}')" class="size-chip ${sz === currentSize ? 'selected' : ''}" style="padding: 8px 14px; font-size: 12px; font-weight: 800;">
+            ${sz}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- STOCK CAPSULE -->
+    <div id="modalStockStatusBox" style="background: #0d0d0f; border: 1px solid #282828; border-radius: 10px; padding: 10px; margin-bottom: 18px;">
+      <div style="font-size: 10px; font-weight: 800; color: var(--accent-color); text-transform: uppercase; margin-bottom: 6px;">
+        DISPONIBILIDAD TALLA ${currentSize}:
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="stock-pill-inmediata">⚡ Tienda Física: ${immQty} pzs</span>
+        <span class="stock-pill-bodega">🏢 Bodega Central: ${whQty} pzs</span>
+      </div>
+    </div>
+
+    <!-- ACCIONES COMPRA -->
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <button onclick="addToCartFromModal('${productId}')" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 900;">
+        🛒 Agregar al Carrito
+      </button>
+      
+      <button onclick="buyNowWhatsApp('${productId}')" class="btn btn-whatsapp" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 900;">
+        📲 Comprar Directo por WhatsApp →
+      </button>
+    </div>
+  `;
+
+  overlay.classList.add('open');
+};
+
+window.closeProductDetailModal = function() {
+  const overlay = document.getElementById('productDetailOverlay');
+  if (overlay) overlay.classList.remove('open');
+};
+
+window.selectModalSize = function(productId, size) {
+  window.selectedSizesState[productId] = size;
+  openProductDetailModal(productId);
+};
+
+window.addToCartFromModal = function(productId) {
+  const prod = allProducts.find(p => p.id === productId);
+  if (!prod) return;
+  const size = window.selectedSizesState[productId] || 'M';
+  addToCart(prod, size);
+  closeProductDetailModal();
+  toggleCartDrawer();
+};
+
+window.buyNowWhatsApp = function(productId) {
+  const prod = allProducts.find(p => p.id === productId);
+  if (!prod) return;
+  const size = window.selectedSizesState[productId] || 'M';
+  const tax = typeof getFullTaxonomy !== 'undefined' ? getFullTaxonomy(prod.team) : { team: prod.team };
+  
+  const msg = `¡Hola Catch Sports! 👋 Me interesa comprar directamente este artículo de la tienda:%0A%0A` +
+              `🏆 *${prod.name}*%0A` +
+              `🛡️ Equipo: ${tax.team}%0A` +
+              `📏 Talla seleccionada: ${size}%0A` +
+              `💵 Precio: $${prod.price} MXN%0A%0A` +
+              `¿Tienen disponibilidad inmediata para envío?`;
+              
+  window.open(`https://wa.me/524423376955?text=${msg}`, '_blank');
+};
 
 // Fetch products from Firebase Firestore
 async function loadProducts() {
